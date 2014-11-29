@@ -24,7 +24,7 @@ class AutoCompletionManager:
             if event.type in show_event_types and event.value == "PRESS":
                 self.auto_complete_box.hide = False
                 self.auto_complete_box.selected_index = 0
-                find_all_existing_words()
+                update_word_list()
             if event.type in hide_event_types:
                 self.auto_complete_box.hide = True
         
@@ -108,15 +108,21 @@ class AutoCompleteTextBox:
 def clamp(value, min_value, max_value):
     return min(max(value, min_value), max_value)
     
-existing_words = []
+words = []
+def update_word_list():
+    global words
+    words = []
+    words.extend(find_all_existing_words())
+    words.sort()
+
 def find_all_existing_words():
-    global existing_words
     existing_words = []
     text = bpy.context.space_data.text.as_string()
-    all_existing_words = list(set(re.sub("[^\w]", " ", text).split()))
+    all_existing_words = set(re.sub("[^\w]", " ", text).split())
     for word in all_existing_words:
         if not word.isdigit(): existing_words.append(word)
-    existing_words.sort()
+    return existing_words
+    
     
     
     
@@ -128,7 +134,7 @@ def get_text_operators():
 def get_extend_word_operators():
     operators = []
     word_start = get_word_start().upper()
-    all_existing_words = existing_words
+    all_existing_words = words
     additional_existing_words = []
     for word in all_existing_words:
         if word.upper().startswith(word_start):
