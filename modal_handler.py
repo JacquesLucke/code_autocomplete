@@ -1,4 +1,4 @@
-import bpy, re
+import bpy, re, keyword
 from bgl import glBegin, glVertex2f, glEnd, GL_POLYGON
 from script_auto_complete.draw_functions import *
 from script_auto_complete.text_editor_utils import *
@@ -113,6 +113,8 @@ def update_word_list():
     global words
     words = []
     words.extend(find_all_existing_words())
+    words.extend(keyword.kwlist)
+    words = list(set(words))
     words.sort()
 
 def find_all_existing_words():
