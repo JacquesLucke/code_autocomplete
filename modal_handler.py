@@ -2,6 +2,7 @@ import bpy, blf
 from bgl import glBegin, glVertex2f, glEnd, GL_POLYGON
 from script_auto_complete.draw_functions import *
 from script_auto_complete.text_editor_utils import *
+from script_auto_complete.utils import *
 
 class AutoCompletionManager:
     def __init__(self):
@@ -15,14 +16,23 @@ class AutoCompletionManager:
         self.mouse_position = (event.mouse_region_x, event.mouse_region_y)
         
     def draw(self):    
+        textBox = AutoCompleteTextBox()
+        textBox.draw()
+        
+        
+class AutoCompleteTextBox:
+    def __init__(self):
         editor_info = TextEditorInfo()
+        self.editor_info = editor_info
         
-        x1, y1 = editor_info.cursor_position
-        x2, y2 = editor_info.cursor_position
-        y1 -= editor_info.line_height
-        x2 += editor_info.character_width * 25
-        y2 -= editor_info.line_height * 10
+    def draw(self):
+        scale = self.editor_info.line_height / 20
         
-        draw_rectangle(x1, y1, x2, y2)
+        x, y = self.editor_info.cursor_position
+        rectangle = Rectangle(x, y, 200 * scale, 150 * scale)
+        rectangle.move_down(7 * scale)
+    
+        draw_rectangle(rectangle)
         
-        #draw_text("Hello", self.cursor_position, 14, align = "LEFT")
+    def getCompleteLines(self):
+        return ["bpy", "Operator", "Panel", "math"]
