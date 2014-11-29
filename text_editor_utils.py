@@ -6,6 +6,7 @@ class TextEditorInfo:
         
         space = context.space_data
         region = context.region
+
         
         text_block = space.text
         

@@ -18,13 +18,14 @@ class StartAutocompletion(bpy.types.Operator):
     
     def modal(self, context, event):
         context.area.tag_redraw()
-        self.modal_handler.update(event)
-
-        if event.type in {'ESC'}:
-            self.modal_handler.free()
-            return { "FINISHED" }
-        return { "PASS_THROUGH" }
-        #return { "RUNNING_MODAL" }
+        event_used = self.modal_handler.update(event)
+            
+        if not event_used:
+            if event.type in {'ESC'}:
+                self.modal_handler.free()
+                return { "FINISHED" }
+            return { "PASS_THROUGH" }
+        return { "RUNNING_MODAL" }
 
     def invoke(self, context, event):
         self.modal_handler = AutoCompletionManager()
