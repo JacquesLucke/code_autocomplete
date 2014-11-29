@@ -6,6 +6,7 @@ class ExtendWordOperator:
     def __init__(self, target_word):
         self.target_word = target_word
         self.display_name = target_word
+        self.align = "LEFT"
         
     def execute(self, text_block):
         text_line = text_block.current_line
@@ -28,6 +29,7 @@ class InsertTextOperator:
     def __init__(self, name, text):
         self.display_name = name
         self.insert_text = text
+        self.align = "CENTER"
         
     def execute(self, text_block):
         line_index = text_block.current_line_index

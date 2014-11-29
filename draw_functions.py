@@ -33,8 +33,12 @@ def draw_rectangle_border(rectangle, thickness = 1, color = (0.1, 0.1, 0.1, 1.0)
     glEnd()
   
 font_id = 1 
-def draw_text_on_rectangle(text, rectangle, color = (0.2, 0.2, 0.2, 1.0), size = 20):
-    draw_text(text, position = (rectangle.left, rectangle.bottom + rectangle.height / 3), size = size, horizontal_align = "LEFT", vertical_align = "BOTTOM")
+def draw_text_on_rectangle(text, rectangle, color = (0.2, 0.2, 0.2, 1.0), size = 20, align = "LEFT"):
+    position = (rectangle.left, rectangle.bottom + rectangle.height / 3)
+    if align == "CENTER":
+        center = rectangle.center
+        position = (center[0], rectangle.bottom + rectangle.height / 3)
+    draw_text(text, position, size = size, horizontal_align = align, vertical_align = "BOTTOM")
 
 def draw_text(text = "", position = (0, 0), size = 20, horizontal_align = "CENTER", vertical_align = "BOTTOM", color = (0.2, 0.2, 0.2, 1.0)):
     glColor4f(*color)
@@ -42,7 +46,7 @@ def draw_text(text = "", position = (0, 0), size = 20, horizontal_align = "CENTE
     dimensions = blf.dimensions(font_id, text)
     
     if horizontal_align == "CENTER":
-        position = (position[0] - dimensions[0] / 2, position[1] - dimensions[1] / 2)
+        position = (position[0] - dimensions[0] / 2, position[1])
     if vertical_align == "TOP":
         position = (position[0], position[1] - dimensions[1])
         

@@ -93,7 +93,7 @@ class AutoCompleteTextBox:
                 if i == self.selected_index:
                     highlight_rectangle = Rectangle(rectangle.left, rectangle.top - index*element_height - element_height / 4, rectangle.width, element_height)
                     draw_rectangle(highlight_rectangle, color = (0.95, 0.95, 0.95, 1.0))
-                draw_text_on_rectangle(operator.display_name, text_rectangle, size = text_size)
+                draw_text_on_rectangle(operator.display_name, text_rectangle, size = text_size, align = operator.align)
         
         draw_rectangle_border(rectangle, thickness = border_thickness)
         restore_opengl_defaults()

@@ -17,5 +17,9 @@ class Rectangle:
     def height(self):
         return self.top - self.bottom
         
+    @property
+    def center(self):
+        return [(self.left+self.right) / 2, (self.top+self.bottom) / 2]
+        
     def get_inset_rectangle(self, border):
         return Rectangle(self.left + border, self.top - border, self.width - 2*border, self.height - 2*border)
