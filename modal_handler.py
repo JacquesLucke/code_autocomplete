@@ -33,6 +33,12 @@ class AutoCompleteTextBox:
         rectangle.move_down(7 * scale)
     
         draw_rectangle(rectangle)
+        draw_rectangle_border(rectangle, thickness = 5 * scale)
+        
+        inset = rectangle.get_inset_rectangle(10 * scale)
+        draw_rectangle(inset, color = (0.7, 0.2, 0.2, 1.0))
+        
+        restore_opengl_defaults()
         
     def getCompleteLines(self):
         return ["bpy", "Operator", "Panel", "math"]

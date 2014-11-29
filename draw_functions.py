@@ -1,5 +1,5 @@
 import bpy, blf
-from bgl import glBegin, glVertex2f, glEnd, GL_POLYGON, glEnable, glDisable, GL_POLYGON_SMOOTH, GL_BLEND, glColor4f
+from bgl import glBegin, glVertex2f, glEnd, GL_POLYGON, glEnable, glDisable, GL_POLYGON_SMOOTH, GL_BLEND, glColor4f, GL_LINE_STRIP, glLineWidth, GL_LINES
 
 def draw_rectangle(rectangle, color = (0.8, 0.8, 0.8, 1.0)):
     glColor4f(*color)
@@ -9,6 +9,27 @@ def draw_rectangle(rectangle, color = (0.8, 0.8, 0.8, 1.0)):
     glVertex2f(rectangle.right, rectangle.top)
     glVertex2f(rectangle.right, rectangle.bottom)
     glVertex2f(rectangle.left, rectangle.bottom)
+    glEnd()
+    
+def draw_rectangle_border(rectangle, thickness = 1, color = (0.1, 0.1, 0.1, 1.0)):
+    glColor4f(*color)
+    
+    d = thickness / 2.5
+    
+    glLineWidth(thickness)
+    glBegin(GL_LINES)
+    
+    glVertex2f(rectangle.left - d, rectangle.top)
+    glVertex2f(rectangle.right + d, rectangle.top)
+    
+    glVertex2f(rectangle.right, rectangle.top + d)
+    glVertex2f(rectangle.right, rectangle.bottom - d)
+    
+    glVertex2f(rectangle.right + d, rectangle.bottom)
+    glVertex2f(rectangle.left - d, rectangle.bottom)
+    
+    glVertex2f(rectangle.left, rectangle.bottom - d)
+    glVertex2f(rectangle.left, rectangle.top + d)
     glEnd()
   
 font_id = 1 
@@ -24,4 +45,10 @@ def draw_text(text = "", position = (0, 0), size = 20, horizontal_align = "CENTE
         
     blf.position(font_id, position[0], position[1], 0)
     blf.draw(font_id, text)
+    
+    
+def restore_opengl_defaults():
+    glLineWidth(1)
+    glDisable(GL_BLEND)
+    glColor4f(0.0, 0.0, 0.0, 1.0)
     
