@@ -130,8 +130,28 @@ def find_all_existing_words():
     
 def get_text_operators():
     operators = []
+    operators.extend(get_insert_text_operators())
     operators.extend(get_extend_word_operators())
     return operators
+   
+insertPanelText = '''    bl_idname = "name"
+    bl_label = "label"
+    
+    def draw(self, context):
+        layout = self.layout'''
+    
+def get_insert_text_operators():
+    operators = []
+    text_before = get_text_before()
+    if text_before.endswith("Panel):"):
+        operators.append(InsertTextOperator("New Panel", insertPanelText))
+    return operators
+    
+def get_text_before():
+    text_block = bpy.context.space_data.text
+    text_line = text_block.current_line
+    character_index = text_block.current_character
+    return text_line.body[:character_index]
     
 def get_extend_word_operators():
     operators = []
