@@ -1,4 +1,4 @@
-import bpy, blf
+import bpy, re
 from bgl import glBegin, glVertex2f, glEnd, GL_POLYGON
 from script_auto_complete.draw_functions import *
 from script_auto_complete.text_editor_utils import *
@@ -12,28 +12,26 @@ class AutoCompletionManager:
     def __init__(self):
         self._handle = bpy.types.SpaceTextEditor.draw_handler_add(self.draw, (), "WINDOW", "POST_PIXEL")
         self.auto_complete_box = AutoCompleteTextBox()
-        self.use_auto_complete_box = False
         
     def free(self):
         bpy.types.SpaceTextEditor.draw_handler_remove(self._handle, "WINDOW")
         
     def update(self, event):
         event_used = False
-        
-        if self.use_auto_complete_box:
-            event_used = self.auto_complete_box.update(event) or event_used
+        event_used = self.auto_complete_box.update(event) or event_used
         
         if not event_used:
             if event.type in show_event_types and event.value == "PRESS":
-                self.use_auto_complete_box = True
+                self.auto_complete_box.hide = False
+                self.auto_complete_box.selected_index = 0
+                find_all_existing_words()
             if event.type in hide_event_types:
-                self.use_auto_complete_box = False
+                self.auto_complete_box.hide = True
         
         return event_used
         
     def draw(self):    
-        if self.use_auto_complete_box:
-            self.auto_complete_box.draw()
+        self.auto_complete_box.draw()
         
         
 class AutoCompleteTextBox:
@@ -42,7 +40,11 @@ class AutoCompleteTextBox:
         self.top_index = 3
         self.line_amount = 8
         
+        self.hide = True
+        
     def update(self, event):
+        if self.hide: return False
+        
         if event.value == "PRESS":
             if event.type == "DOWN_ARROW":
                 self.selected_index += 1
@@ -53,6 +55,7 @@ class AutoCompleteTextBox:
             if event.type == "TAB":
                 operators = get_text_operators()
                 operators[self.selected_index].execute(bpy.context.space_data.text)
+                self.hide = True
                 return True
         return False
         
@@ -61,6 +64,7 @@ class AutoCompleteTextBox:
         return self.top_index + self.line_amount - 1
          
     def draw(self):
+        if self.hide: return
         editor_info = TextEditorInfo()
         self.editor_info = editor_info
     
@@ -74,7 +78,7 @@ class AutoCompleteTextBox:
         
         x, y = self.editor_info.cursor_position
         rectangle = Rectangle(x, y, 200 * scale, self.line_amount * element_height + 2 * padding)
-        rectangle.move_down(7 * scale)
+        rectangle.move_down(10 * scale)
     
         draw_rectangle(rectangle)
         
@@ -99,14 +103,51 @@ class AutoCompleteTextBox:
         self.selected_index = clamp(self.selected_index, 0, amount - 1)
         self.top_index = clamp(self.top_index, 0, amount - 1)
         self.top_index = clamp(self.top_index, self.selected_index - self.line_amount + 1, self.selected_index)
-       
         
+  
 def clamp(value, min_value, max_value):
     return min(max(value, min_value), max_value)
     
+existing_words = []
+def find_all_existing_words():
+    global existing_words
+    existing_words = []
+    text = bpy.context.space_data.text.as_string()
+    all_existing_words = list(set(re.sub("[^\w]", " ", text).split()))
+    for word in all_existing_words:
+        if not word.isdigit(): existing_words.append(word)
+    existing_words.sort()
+    
+    
+    
 def get_text_operators():
     operators = []
-    target_words = ["import", "bpy", "Operator", "Panel", "math", "context", "active_object", "modifiers", "constraints", "name", "object", "event", "draw"]
-    for target_word in target_words:
-        operators.append(ExtendWordOperator(target_word))
+    operators.extend(get_extend_word_operators())
     return operators
+    
+def get_extend_word_operators():
+    operators = []
+    word_start = get_word_start().upper()
+    all_existing_words = existing_words
+    additional_existing_words = []
+    for word in all_existing_words:
+        if word.upper().startswith(word_start):
+            operators.append(ExtendWordOperator(word))
+        else:
+            additional_existing_words.append(word)
+    for word in additional_existing_words:
+        operators.append(ExtendWordOperator(word))
+    return operators
+    
+def get_word_start():
+    text_block = bpy.context.space_data.text
+    text_line = text_block.current_line
+    text = text_line.body
+    character_index = text_block.current_character
+    return text[get_word_start_index(text, character_index):character_index]
+    
+def get_word_start_index(text, character_index):
+    for i in reversed(range(0, character_index)):
+        if text[i].upper() not in word_characters:
+            return i + 1
+    return 0

@@ -19,9 +19,7 @@ class ExtendWordOperator():
         select_text_by_replacing(random_select_sequence)
         
 def get_word_start_index(text, character_index):
-    print(text)
     for i in reversed(range(0, character_index)):
-        print(text[i])
         if text[i].upper() not in word_characters:
             return i + 1
     return 0
