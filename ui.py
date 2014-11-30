@@ -10,7 +10,7 @@ class AutoCompleteSettingsPanel(bpy.types.Panel):
         
     def draw(self, context):
         layout = self.layout
-        layout.operator("sript_autocomplete.start_auto_completion")
+        layout.operator("script_auto_complete.start_auto_completion")
         
 
 class StartAutoCompletion(bpy.types.Operator):
