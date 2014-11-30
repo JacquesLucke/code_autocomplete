@@ -12,7 +12,7 @@ class AutoCompleteSettingsPanel(bpy.types.Panel):
         layout.operator("sript_autocomplete.start_auto_completion")
         
 
-class StartAutocompletion(bpy.types.Operator):
+class StartAutoCompletion(bpy.types.Operator):
     bl_idname = "sript_autocomplete.start_auto_completion"
     bl_label = "Start Auto Completion"
     

@@ -70,8 +70,8 @@ class AutoCompleteTextBox:
         
     def execute_selected_operator(self):
         try:
-            operators = get_text_operators()
-            operators[self.selected_index].execute(bpy.context.space_data.text)
+            operator = self.selected_operator
+            operator.execute(bpy.context.space_data.text)
         except: pass
         
     @property
@@ -138,6 +138,12 @@ class AutoCompleteTextBox:
                 
         return box_rectangle, inner_rectangle, line_rectangles, text_rectangles
       
+    @property
+    def selected_operator(self):
+        operators = get_text_operators()
+        self.correct_index(len(operators))
+        try: return operators[self.selected_index]
+        except: return None
         
     def correct_index(self, amount):
         self.selected_index = clamp(self.selected_index, 0, amount - 1)
