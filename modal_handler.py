@@ -150,9 +150,7 @@ class AutoCompleteTextBox:
         self.top_index = clamp(self.top_index, 0, amount - 1)
         self.top_index = clamp(self.top_index, self.selected_index - self.line_amount + 1, self.selected_index)
         
-  
-def clamp(value, min_value, max_value):
-    return min(max(value, min_value), max_value)
+
     
 words = []
 def update_word_list():

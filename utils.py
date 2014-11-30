@@ -1,3 +1,6 @@
+def clamp(value, min_value, max_value):
+    return min(max(value, min_value), max_value)
+
 class Rectangle:
     # (x, y) is the top left corner
     def __init__(self, x, y, width, height):
