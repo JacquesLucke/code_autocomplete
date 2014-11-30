@@ -37,6 +37,9 @@ bl_info = {
 ###########################################
 currentPath = os.path.dirname(__file__)
 
+if __name__ != "script_auto_complete":
+	sys.modules["script_auto_complete"] = sys.modules[__name__]
+
 def getAllImportFiles():
     def get_path(base):
         b, t = os.path.split(base)
