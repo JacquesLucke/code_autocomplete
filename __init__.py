@@ -69,6 +69,12 @@ import bpy
 if reload_event:
     for module in auto_complete_modules:
         importlib.reload(module)
+        
+        
+class AutoCompleteSettings(bpy.types.PropertyGroup):
+    line_amount = bpy.props.IntProperty(default = 8, min = 1, max = 20, name = "Lines")
+    
+        
     
 # register
 ##################################
@@ -76,6 +82,7 @@ if reload_event:
 def register():
     try: bpy.utils.register_module("script_auto_complete")
     except: pass
+    bpy.types.Scene.auto_complete_settings = bpy.props.PointerProperty(type = AutoCompleteSettings, name = "Auto Complete Settings")
     print("Loaded Script Auto Completion with {} modules".format(len(auto_complete_modules)))
 
 def unregister():

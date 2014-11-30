@@ -76,7 +76,7 @@ class AutoCompleteTextBox:
         
     @property
     def bottom_index(self):
-        return self.top_index + self.line_amount - 1
+        return self.top_index + get_line_amount() - 1
          
     def draw(self):
         if self.hide: return
@@ -114,7 +114,7 @@ class AutoCompleteTextBox:
         
         x, y = editor_info.cursor_position
         # the box in which the operators are displayed
-        box_rectangle = Rectangle(x, y, box_width, self.line_amount * element_height + 2 * padding)
+        box_rectangle = Rectangle(x, y, box_width, get_line_amount() * element_height + 2 * padding)
         box_rectangle.move_down(move_down_distance)
         
         # box rectangle with applied padding, to get a few pixels between the text and the border line
@@ -122,7 +122,7 @@ class AutoCompleteTextBox:
         
         line_rectangles = []
         text_rectangles = []
-        for i in range(self.line_amount):
+        for i in range(get_line_amount()):
             # rectangle that is drawn to highlight this operator
             line_rectangles.append(Rectangle(
                 box_rectangle.left,
@@ -148,9 +148,11 @@ class AutoCompleteTextBox:
     def correct_index(self, amount):
         self.selected_index = clamp(self.selected_index, 0, amount - 1)
         self.top_index = clamp(self.top_index, 0, amount - 1)
-        self.top_index = clamp(self.top_index, self.selected_index - self.line_amount + 1, self.selected_index)
+        self.top_index = clamp(self.top_index, self.selected_index - get_line_amount() + 1, self.selected_index)
         
-
+def get_line_amount():
+    return bpy.context.scene.auto_complete_settings.line_amount
+        
     
 words = []
 def update_word_list():
