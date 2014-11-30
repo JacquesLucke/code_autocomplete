@@ -8,4 +8,10 @@ pairs["data"] = ("actions", "armatures", "brushes", "cameras", "curves", "filepa
     "sounds", "speakers", "texts", "textures", "use_autopack", "window_manager", "worlds")
 pairs["types"] = ("Panel", "Operator", "Menu")
 pairs["context"] = ("active_object", "selected_objects", "scene", "world", "mesh", "material")
-pairs["layout"] = ("row", "column", "box", "split", "prop", "prop_search", "prop_enum", "prop_menu_enum", "operator", "operator_enum", "operator_menu_enum", "label", "menu", "separator")
+
+layout = ("row", "column", "box", "split", "prop", "prop_search", "prop_enum", "prop_menu_enum", "operator", "operator_enum", "operator_menu_enum", "label", "menu", "separator")
+layout_element = layout + ("scale_x", "scale_y")
+pairs["layout"] = layout
+pairs["row"] = layout_element
+pairs["col"] = layout_element
+pairs["box"] = layout_element
