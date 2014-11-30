@@ -65,41 +65,66 @@ class AutoCompleteTextBox:
          
     def draw(self):
         if self.hide: return
+        
         editor_info = TextEditorInfo()
-        self.editor_info = editor_info
+        scale = editor_info.scale
+        text_size = 100 * scale
+        border_thickness = 3 * scale
+        
+        box_rectangle, inner_rectangle, line_rectangles, text_rectangles = self.get_draw_rectangles(editor_info)
     
-        scale = self.editor_info.line_height / 20
+        draw_rectangle(box_rectangle)
+        
+        operators = get_text_operators()
+        self.correct_index(len(operators))
+        for i, operator in enumerate(operators):
+            if i < self.top_index or i > self.bottom_index: continue
+            
+            index = i - self.top_index
+            if i == self.selected_index:
+                draw_rectangle(line_rectangles[index], color = (0.95, 0.95, 0.95, 1.0))
+            draw_text_on_rectangle(operator.display_name, text_rectangles[index], size = text_size, align = operator.align)
+        
+        draw_rectangle_border(box_rectangle, thickness = border_thickness)
+        restore_opengl_defaults()
+        
+    def get_draw_rectangles(self, editor_info):
+        scale = editor_info.scale
         
         padding = 8 * scale
         element_height = 21 * scale
         real_element_height = 20 * scale
-        text_size = 100 * scale
-        border_thickness = 3 * scale
+        box_width = 200 * scale
+        move_down_distance = 10 * scale
         
-        x, y = self.editor_info.cursor_position
-        rectangle = Rectangle(x, y, 200 * scale, self.line_amount * element_height + 2 * padding)
-        rectangle.move_down(10 * scale)
-    
-        draw_rectangle(rectangle)
+        x, y = editor_info.cursor_position
+        # the box in which the operators are displayed
+        box_rectangle = Rectangle(x, y, box_width, self.line_amount * element_height + 2 * padding)
+        box_rectangle.move_down(move_down_distance)
         
-        inner_rectangle = rectangle.get_inset_rectangle(padding)
+        # box rectangle with applied padding, to get a few pixels between the text and the border line
+        inner_rectangle = box_rectangle.get_inset_rectangle(padding)
         
-        operators = get_text_operators()
-        self.correct_index(operators)
-        for i, operator in enumerate(operators):
-            if i >= self.top_index and i < self.top_index + self.line_amount:
-                index = i - self.top_index
-                text_rectangle = Rectangle(inner_rectangle.left, inner_rectangle.top - index*element_height, inner_rectangle.width, real_element_height)
-                if i == self.selected_index:
-                    highlight_rectangle = Rectangle(rectangle.left, rectangle.top - index*element_height - element_height / 4, rectangle.width, element_height)
-                    draw_rectangle(highlight_rectangle, color = (0.95, 0.95, 0.95, 1.0))
-                draw_text_on_rectangle(operator.display_name, text_rectangle, size = text_size, align = operator.align)
+        line_rectangles = []
+        text_rectangles = []
+        for i in range(self.line_amount):
+            # rectangle that is drawn to highlight this operator
+            line_rectangles.append(Rectangle(
+                box_rectangle.left,
+                box_rectangle.top - i*element_height - element_height / 4,
+                box_rectangle.width,
+                element_height))
+            # rectangle to draw the text in
+            text_rectangles.append(Rectangle(
+                inner_rectangle.left,
+                inner_rectangle.top - i*element_height,
+                inner_rectangle.width,
+                real_element_height))
+                
+        return box_rectangle, inner_rectangle, line_rectangles, text_rectangles
+      
         
-        draw_rectangle_border(rectangle, thickness = border_thickness)
-        restore_opengl_defaults()
-        
-    def correct_index(self, operators):
-        amount = len(operators)
+    def correct_index(self, amount):
         self.selected_index = clamp(self.selected_index, 0, amount - 1)
         self.top_index = clamp(self.top_index, 0, amount - 1)
         self.top_index = clamp(self.top_index, self.selected_index - self.line_amount + 1, self.selected_index)
@@ -176,8 +201,8 @@ def get_extend_word_operators():
             operators.append(ExtendWordOperator(word))
         else:
             additional_existing_words.append(word)
-    for word in additional_existing_words:
-        operators.append(ExtendWordOperator(word))
+    # for word in additional_existing_words:
+        # operators.append(ExtendWordOperator(word))
     return operators
     
 def get_word_start():

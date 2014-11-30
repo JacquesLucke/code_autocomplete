@@ -27,4 +27,6 @@ class TextEditorInfo:
         self.cursor_position = (
             self.character_width * self.character_index,
             self.height - self.line_height * self.visible_line_index - self.line_height / 2 )
+            
+        self.scale = self.line_height / 20
         
