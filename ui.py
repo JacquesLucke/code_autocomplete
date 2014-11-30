@@ -3,7 +3,7 @@ from script_auto_complete.modal_handler import AutoCompletionManager
 
 class AutoCompleteSettingsPanel(bpy.types.Panel):
     bl_idname = "sript_autocomplete.settings_panel"
-    bl_label = "Autocomplete"
+    bl_label = "Auto Complete"
     bl_space_type = "TEXT_EDITOR"
     bl_region_type = "UI"
         
