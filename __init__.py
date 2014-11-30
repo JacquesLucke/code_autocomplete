@@ -36,13 +36,14 @@ bl_info = {
 # import all modules in same/subdirectories
 ###########################################
 currentPath = os.path.dirname(__file__)
-sys.modules["script_auto_complete"] = sys.modules[__name__]
+module_name = "script_auto_complete"
+sys.modules[module_name] = sys.modules[__name__]
 
 def getAllImportFiles():
     def get_path(base):
         b, t = os.path.split(base)
         if __name__ == t:
-            return ["script_auto_complete"]
+            return [module_name]
         else:
             return get_path(b) + [t]
 
@@ -71,22 +72,27 @@ if reload_event:
         importlib.reload(module)
         
         
-class AutoCompleteSettings(bpy.types.PropertyGroup):
+class AddonPreferences(bpy.types.AddonPreferences):
+    bl_idname = module_name
+    
     line_amount = bpy.props.IntProperty(default = 8, min = 1, max = 20, name = "Lines")
     
-        
+    def draw(self, context):
+        layout = self.layout
+        row = layout.row(align = False)
+        row.prop(self, "line_amount")
+               
     
 # register
 ##################################
 
 def register():
-    try: bpy.utils.register_module("script_auto_complete")
+    try: bpy.utils.register_module(module_name)
     except: pass
-    bpy.types.Scene.auto_complete_settings = bpy.props.PointerProperty(type = AutoCompleteSettings, name = "Auto Complete Settings")
     print("Loaded Script Auto Completion with {} modules".format(len(auto_complete_modules)))
 
 def unregister():
-    try: bpy.utils.unregister_module("script_auto_complete")
+    try: bpy.utils.unregister_module(module_name)
     except: pass
         
 if __name__ == "__main__":

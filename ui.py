@@ -10,9 +10,7 @@ class AutoCompleteSettingsPanel(bpy.types.Panel):
         
     def draw(self, context):
         layout = self.layout
-        settings = context.scene.auto_complete_settings
         layout.operator("script_auto_complete.start_auto_completion")
-        layout.prop(settings, "line_amount", text = "Lines")
         
 
 class StartAutoCompletion(bpy.types.Operator):

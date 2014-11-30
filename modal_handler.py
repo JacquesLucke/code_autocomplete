@@ -62,7 +62,7 @@ class AutoCompleteTextBox:
             for i, line_rectangle in enumerate(line_rectangles):
                 if line_rectangle.contains(event.mouse_region_x, event.mouse_region_y):
                     self.selected_index = self.top_index + i
-                    if event.value == "PRESS":
+                    if event.value == "PRESS" and event.type == "LEFTMOUSE":
                         self.execute_selected_operator()
                         self.hide = True
                     return True
@@ -149,9 +149,11 @@ class AutoCompleteTextBox:
         self.selected_index = clamp(self.selected_index, 0, amount - 1)
         self.top_index = clamp(self.top_index, 0, amount - 1)
         self.top_index = clamp(self.top_index, self.selected_index - get_line_amount() + 1, self.selected_index)
-        
+      
 def get_line_amount():
-    return bpy.context.scene.auto_complete_settings.line_amount
+    return get_addon_preferences().line_amount
+def get_addon_preferences():
+    return bpy.context.user_preferences.addons["script_auto_complete"].preferences
         
     
 words = []
