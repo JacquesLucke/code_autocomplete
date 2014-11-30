@@ -159,7 +159,7 @@ def update_word_list():
     words.extend(find_all_existing_words())
     words.extend(keyword.kwlist)
     words = list(set(words))
-    words.sort()
+    words.sort(key = str.lower)
 
 def find_all_existing_words():
     existing_words = []
