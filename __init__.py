@@ -36,7 +36,6 @@ bl_info = {
 # import all modules in same/subdirectories
 ###########################################
 currentPath = os.path.dirname(__file__)
-
 sys.modules["script_auto_complete"] = sys.modules[__name__]
 
 def getAllImportFiles():
