@@ -14,8 +14,8 @@ templates["New Panel"] = ("Panel):", '''    bl_idname = "name"
     def draw(self, context):
         layout = self.layout''')
         
-templates["New Operator"] = ("Operator):", '''    bl_idname = "name"
-    bl_label = "my.operator"
+templates["New Operator"] = ("Operator):", '''    bl_idname = "my.operator"
+    bl_label = "label"
     bl_description = ""
     
     @classmethod
