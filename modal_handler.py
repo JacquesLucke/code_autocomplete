@@ -44,7 +44,6 @@ class AutoCompleteTextBox:
         
     def update(self, event):
         if self.hide: return False
-        
         if event.value == "PRESS":
             if event.type == "DOWN_ARROW":
                 self.selected_index += 1
@@ -53,11 +52,27 @@ class AutoCompleteTextBox:
                 self.selected_index -= 1
                 return True
             if event.type == "TAB":
-                operators = get_text_operators()
-                operators[self.selected_index].execute(bpy.context.space_data.text)
+                self.execute_selected_operator()
                 self.hide = True
                 return True
+        
+        if event.type in ["MOUSEMOVE", "LEFTMOUSE"]:
+            editor_info = TextEditorInfo()
+            line_rectangles = self.get_draw_rectangles(editor_info)[2]
+            for i, line_rectangle in enumerate(line_rectangles):
+                if line_rectangle.contains(event.mouse_region_x, event.mouse_region_y):
+                    self.selected_index = self.top_index + i
+                    if event.value == "PRESS":
+                        self.execute_selected_operator()
+                        self.hide = True
+                    return True
         return False
+        
+    def execute_selected_operator(self):
+        try:
+            operators = get_text_operators()
+            operators[self.selected_index].execute(bpy.context.space_data.text)
+        except: pass
         
     @property
     def bottom_index(self):
