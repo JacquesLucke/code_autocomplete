@@ -23,7 +23,7 @@ class AutoCompletionManager:
         event_used = self.auto_complete_box.update(event) or event_used
         
         if not event_used:
-            if event.type in show_event_types and event.value == "PRESS":
+            if event.type in show_event_types and event.value == "PRESS" and is_event_current_region(event):
                 self.auto_complete_box.hide = False
                 self.auto_complete_box.selected_index = 0
                 update_word_list()
@@ -45,8 +45,7 @@ class AutoCompleteTextBox:
         self.hide = True
         
     def update(self, event):
-        region = bpy.context.region
-        if not Rectangle(0, region.height, region.width, region.height).contains(event.mouse_region_x, event.mouse_region_y):
+        if not is_event_current_region(event):
             self.hide = True
         if self.hide: return False
         
@@ -160,3 +159,8 @@ def get_line_amount():
     return get_addon_preferences().line_amount
 def get_addon_preferences():
     return bpy.context.user_preferences.addons["script_auto_complete"].preferences
+    
+def is_event_current_region(event):
+    region = bpy.context.region
+    viewport = Rectangle(0, region.height, region.width, region.height)
+    return viewport.contains(event.mouse_region_x, event.mouse_region_y)
