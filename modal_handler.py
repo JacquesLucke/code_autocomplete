@@ -224,8 +224,6 @@ def get_extend_word_operators():
             operators.append(ExtendWordOperator(word))
         else:
             additional_existing_words.append(word)
-    # for word in additional_existing_words:
-        # operators.append(ExtendWordOperator(word))
     return operators
     
 def get_word_start():
