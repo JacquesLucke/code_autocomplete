@@ -75,12 +75,12 @@ if reload_event:
 ##################################
 
 def register():
-    try: bpy.utils.register_module(__name__)
+    try: bpy.utils.register_module("script_auto_complete")
     except: pass
     print("Loaded Script Auto Completion with {} modules".format(len(auto_complete_modules)))
 
 def unregister():
-    try: bpy.utils.unregister_module(__name__)
+    try: bpy.utils.unregister_module("script_auto_complete")
     except: pass
         
 if __name__ == "__main__":
