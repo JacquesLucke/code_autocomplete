@@ -4,6 +4,9 @@ from script_auto_complete.draw_functions import *
 from script_auto_complete.text_editor_utils import *
 from script_auto_complete.utils import *
 from script_auto_complete.text_operators import *
+from script_auto_complete.operators.operator_hub import *
+from script_auto_complete.operators.extend_word_operators import *
+
 
 show_event_types = ["SPACE", "PERIOD"] + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 hide_event_types = ["RET", "LEFTMOUSE", "LEFT_ARROW", "RIGHT_ARROW"]
@@ -156,31 +159,7 @@ def get_addon_preferences():
     return bpy.context.user_preferences.addons["script_auto_complete"].preferences
         
     
-words = []
-def update_word_list():
-    global words
-    words = []
-    words.extend(find_all_existing_words())
-    words.extend(keyword.kwlist)
-    words = list(set(words))
-    words.sort(key = str.lower)
-
-def find_all_existing_words():
-    existing_words = []
-    text = bpy.context.space_data.text.as_string()
-    all_existing_words = set(re.sub("[^\w]", " ", text).split())
-    for word in all_existing_words:
-        if not word.isdigit(): existing_words.append(word)
-    return existing_words
     
-    
-    
-    
-def get_text_operators():
-    operators = []
-    operators.extend(get_insert_text_operators())
-    operators.extend(get_extend_word_operators())
-    return operators
    
 insert_panel_text = '''    bl_idname = "name"
     bl_label = "label"
@@ -213,28 +192,3 @@ def get_text_before():
     text_line = text_block.current_line
     character_index = text_block.current_character
     return text_line.body[:character_index]
-    
-def get_extend_word_operators():
-    operators = []
-    word_start = get_word_start().upper()
-    all_existing_words = words
-    additional_existing_words = []
-    for word in all_existing_words:
-        if word.upper().startswith(word_start):
-            operators.append(ExtendWordOperator(word))
-        else:
-            additional_existing_words.append(word)
-    return operators
-    
-def get_word_start():
-    text_block = bpy.context.space_data.text
-    text_line = text_block.current_line
-    text = text_line.body
-    character_index = text_block.current_character
-    return text[get_word_start_index(text, character_index):character_index]
-    
-def get_word_start_index(text, character_index):
-    for i in reversed(range(0, character_index)):
-        if text[i].upper() not in word_characters:
-            return i + 1
-    return 0

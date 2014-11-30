@@ -1,4 +1,4 @@
-import bpy
+import bpy, re
 
 class TextEditorInfo:
     def __init__(self):
@@ -32,3 +32,20 @@ class TextEditorInfo:
         
 def active_text_block_exists():
     return bpy.context.space_data.text is not None
+    
+def select_text_by_replacing(text):
+    space = bpy.context.space_data
+    space.find_text = text
+    space.replace_text = ""
+    space.use_find_wrap = True
+    space.use_find_all = False
+    bpy.ops.text.replace()
+    bpy.ops.text.replace()
+    
+def get_existing_words():
+    existing_words = []
+    text = bpy.context.space_data.text.as_string()
+    all_existing_words = set(re.sub("[^\w]", " ", text).split())
+    for word in all_existing_words:
+        if not word.isdigit(): existing_words.append(word)
+    return existing_words
