@@ -3,7 +3,7 @@ from script_auto_complete.modal_handler import AutoCompletionManager
 from script_auto_complete.text_editor_utils import *
 
 class AutoCompleteSettingsPanel(bpy.types.Panel):
-    bl_idname = "sript_autocomplete.settings_panel"
+    bl_idname = "script_auto_complete.settings_panel"
     bl_label = "Auto Complete"
     bl_space_type = "TEXT_EDITOR"
     bl_region_type = "UI"
@@ -14,7 +14,7 @@ class AutoCompleteSettingsPanel(bpy.types.Panel):
         
 
 class StartAutoCompletion(bpy.types.Operator):
-    bl_idname = "sript_autocomplete.start_auto_completion"
+    bl_idname = "script_auto_complete.start_auto_completion"
     bl_label = "Start Auto Completion"
     
     def modal(self, context, event):
