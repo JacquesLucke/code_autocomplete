@@ -1,4 +1,5 @@
 import bpy
+from script_auto_complete.text_editor_utils import *
         
 word_characters = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_")
 random_select_sequence = "random select sequence"
