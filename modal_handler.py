@@ -7,7 +7,7 @@ from script_auto_complete.operators.operator_hub import *
 from script_auto_complete.operators.extend_word_operators import *
 
 
-show_event_types = ["SPACE", "PERIOD"] + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+show_event_types = ["PERIOD"] + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 hide_event_types = ["RET", "LEFTMOUSE", "LEFT_ARROW", "RIGHT_ARROW"]
 
 class AutoCompletionManager:
@@ -45,7 +45,11 @@ class AutoCompleteTextBox:
         self.hide = True
         
     def update(self, event):
+        region = bpy.context.region
+        if not Rectangle(0, region.height, region.width, region.height).contains(event.mouse_region_x, event.mouse_region_y):
+            self.hide = True
         if self.hide: return False
+        
         if event.value == "PRESS":
             if event.type == "DOWN_ARROW":
                 self.selected_index += 1
