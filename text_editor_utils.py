@@ -30,3 +30,5 @@ class TextEditorInfo:
             
         self.scale = self.line_height / 20
         
+def active_text_block_exists():
+    return bpy.context.space_data.text is not None
