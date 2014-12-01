@@ -31,13 +31,8 @@ def get_word_start_index(text, character_index):
     return 0
     
     
-builtin_function_names = (
-    "abs", "all", "any", "ascii", "bin", "bool", "bytearray", "bytes", "callable", "chr", "classmethod", "compile", "complex", "delattr",
-    "dict", "dir", "divmod", "enumerate", "eval", "exec", "filter", "float", "format", "frozenset", "getattr", "globals", "hasattr", "hash",
-    "help", "hex", "id", "input", "int", "isinstance", "issubclass", "iter", "len", "list", "locals", "map", "max", "memoryview",
-    "min", "next", "object", "oct", "open", "ord", "pow", "print", "property", "range", "repr", "reversed", "round", "set",
-    "setattr", "slice", "sorted", "staticmethod", "str", "sum", "super", "tuple", "type", "vars", "zip", "__import__")
-blender_names = ("register", "unregister", "default")
+builtin_function_names = dir(__builtins__)
+
 def update_word_list():
     global words
     words = []
