@@ -3,7 +3,7 @@ def get_before_after_pairs():
 
 pairs = {}
 pairs["bpy"] = ("context", "data", "ops", "types", "utils", "path", "app", "props")
-pairs["types"] = ("Panel", "Operator", "Menu")
+pairs["types"] = ("Panel", "Operator", "Menu", "Scene")
 pairs["context"] = ("active_object", "selected_objects", "scene", "world", "mesh", "material")
 pairs["props"] = ("BoolProperty", "BoolVectorProperty", "CollectionProperty", "EnumProperty", "FloatProperty", "FloatVectorProperty", "IntProperty", "IntVectorProperty", "PointerProperty", "RemoveProperty", "StringProperty")
 
