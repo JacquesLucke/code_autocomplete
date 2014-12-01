@@ -127,7 +127,7 @@ class AutoCompleteTextBox:
         box_width = 300 * scale
         move_down_distance = 10 * scale
         description_distance = 10 * scale
-        description_width = 200 * scale
+        description_width = 500 * scale
         description_height = 50 * scale
         
         x, y = editor_info.cursor_position

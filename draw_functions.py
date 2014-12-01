@@ -54,6 +54,7 @@ def draw_text(text = "", position = (0, 0), size = 20, horizontal_align = "LEFT"
     blf.draw(font_id, text)
     
     
+    
 def restore_opengl_defaults():
     glLineWidth(1)
     glDisable(GL_BLEND)
