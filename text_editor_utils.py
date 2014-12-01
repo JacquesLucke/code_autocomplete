@@ -29,6 +29,48 @@ class TextEditorInfo:
             self.height - self.line_height * self.visible_line_index - self.line_height / 2 )
             
         self.scale = self.line_height / 20
+     
+     
+def get_word_start():
+    text_block = bpy.context.space_data.text
+    text_line = text_block.current_line
+    text = text_line.body
+    character_index = text_block.current_character
+    return text[get_word_start_index(text, character_index):character_index]
+    
+word_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789"
+def get_word_start_index(text, character_index):
+    for i in reversed(range(0, character_index)):
+        if text[i].upper() not in word_characters:
+            return i + 1
+    return 0
+     
+     
+def get_last_word():
+    text_block = bpy.context.space_data.text
+    text_line = text_block.current_line
+    character_index = text_block.current_character
+    line = text_line.body[:character_index]
+    
+    is_word_before = False
+    word_before = ""
+    for char in reversed(line):
+        if is_word_before:
+            if is_variable_char(char): word_before = char + word_before
+            else: break
+        else:
+            if char == ".":
+                is_word_before = True
+                continue
+            if is_variable_char(char): continue
+            else: break
+    return word_before
+
+variable_chars = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789")
+def is_variable_char(char):
+    return char.upper() in variable_chars
+    
+    
         
 def active_text_block_exists():
     return bpy.context.space_data.text is not None

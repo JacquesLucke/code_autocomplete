@@ -24,6 +24,10 @@ class Rectangle:
     def center(self):
         return [(self.left+self.right) / 2, (self.top+self.bottom) / 2]
         
+    @property
+    def top_left(self):
+        return [self.left, self.top]
+        
     def contains(self, x, y):
         return self.left <= x <= self.right and self.top >= y >= self.bottom
         

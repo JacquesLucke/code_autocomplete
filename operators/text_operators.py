@@ -4,9 +4,10 @@ from script_auto_complete.text_editor_utils import *
 word_characters = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_")
 random_select_sequence = "random select sequence"
 class ExtendWordOperator:
-    def __init__(self, target_word):
+    def __init__(self, target_word, description = ""):
         self.target_word = target_word
         self.display_name = target_word
+        self.description = description
         self.align = "LEFT"
         
     def execute(self, text_block):
@@ -27,9 +28,10 @@ def get_word_start_index(text, character_index):
     return 0
 
 class InsertTextOperator:
-    def __init__(self, name, text):
+    def __init__(self, name, text, description):
         self.display_name = name
         self.insert_text = text
+        self.description = description
         self.align = "CENTER"
         
     def execute(self, text_block):

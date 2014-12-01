@@ -90,8 +90,9 @@ class AutoCompleteTextBox:
         scale = editor_info.scale
         text_size = 100 * scale
         border_thickness = 3 * scale
+        padding = 8 * scale
         
-        box_rectangle, inner_rectangle, line_rectangles, text_rectangles = self.get_draw_rectangles(editor_info)
+        box_rectangle, inner_rectangle, line_rectangles, text_rectangles, description_rectangle = self.get_draw_rectangles(editor_info)
     
         draw_rectangle(box_rectangle)
         
@@ -106,6 +107,15 @@ class AutoCompleteTextBox:
             draw_text_on_rectangle(operator.display_name, text_rectangles[index], size = text_size, align = operator.align)
         
         draw_rectangle_border(box_rectangle, thickness = border_thickness)
+        
+        if len(operators) > self.selected_index:
+            operator = operators[self.selected_index]
+            description = operator.description
+            if description != "":
+                draw_rectangle(description_rectangle)
+                position = description_rectangle.get_inset_rectangle(padding).top_left
+                draw_text(description, position, size = text_size, vertical_align = "TOP")
+        
         restore_opengl_defaults()
         
     def get_draw_rectangles(self, editor_info):
@@ -116,6 +126,9 @@ class AutoCompleteTextBox:
         real_element_height = 20 * scale
         box_width = 300 * scale
         move_down_distance = 10 * scale
+        description_distance = 10 * scale
+        description_width = 200 * scale
+        description_height = 50 * scale
         
         x, y = editor_info.cursor_position
         # the box in which the operators are displayed
@@ -141,7 +154,9 @@ class AutoCompleteTextBox:
                 inner_rectangle.width,
                 real_element_height))
                 
-        return box_rectangle, inner_rectangle, line_rectangles, text_rectangles
+        description_rectangle = Rectangle(box_rectangle.right + description_distance, box_rectangle.top, description_width, description_height)
+                
+        return box_rectangle, inner_rectangle, line_rectangles, text_rectangles, description_rectangle
       
     @property
     def selected_operator(self):
@@ -151,7 +166,7 @@ class AutoCompleteTextBox:
         except: return None
         
     def correct_index(self, amount):
-        self.selected_index = clamp(self.selected_index, 0, amount - 1)
+        self.selected_index = clamp(self.selected_index, 0, max(amount - 1, 0))
         self.top_index = clamp(self.top_index, 0, amount - 1)
         self.top_index = clamp(self.top_index, self.selected_index - get_line_amount() + 1, self.selected_index)
       

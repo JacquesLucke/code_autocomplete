@@ -40,7 +40,7 @@ def draw_text_on_rectangle(text, rectangle, color = (0.2, 0.2, 0.2, 1.0), size =
         position = (center[0], rectangle.bottom + rectangle.height / 3)
     draw_text(text, position, size = size, horizontal_align = align, vertical_align = "BOTTOM")
 
-def draw_text(text = "", position = (0, 0), size = 20, horizontal_align = "CENTER", vertical_align = "BOTTOM", color = (0.2, 0.2, 0.2, 1.0)):
+def draw_text(text = "", position = (0, 0), size = 20, horizontal_align = "LEFT", vertical_align = "BOTTOM", color = (0.2, 0.2, 0.2, 1.0)):
     glColor4f(*color)
     blf.size(font_id, int(size), 12)
     dimensions = blf.dimensions(font_id, text)
