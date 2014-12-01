@@ -28,14 +28,14 @@ def get_word_start_index(text, character_index):
     return 0
     
     
-builtin_function_names = dir(__builtins__)
+blender_names = ["register", "unregister", "default"]
 
 def update_word_list():
     global words
     words = []
     words.extend(get_existing_words())
     words.extend(keyword.kwlist)
-    words.extend(builtin_function_names)
+    words.extend(dir(__builtins__))
     words.extend(blender_names)
     words = list(set(words))
     words.sort(key = str.lower)
