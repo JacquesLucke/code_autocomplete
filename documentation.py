@@ -174,7 +174,7 @@ class Documentation:
             
     def get_subproperties_of_property(self, property_name):
         properties = []
-        for type in self.get_possible_property_types(property_name):
+        for type in self.get_types_with_property(property_name):
             properties.extend(self.get_properties_of_type(type))
         return properties
             
@@ -190,13 +190,13 @@ class Documentation:
     def get_type_description(self, type_name):
         return self.types[type_name].description
     
-    def get_possible_property_types(self, property_name):
-        return list(set([property.type for property in self.get_possible_properties(property_name)]))
+    def get_types_with_property(self, property_name):
+        return list(set([property.type for property in self.get_properties_by_name(property_name)]))
     
-    def get_possible_property_descriptions(self, property_name):
-        return list(set(property.description for property in self.get_possible_properties(property_name)))
+    def get_descriptions_for_property_name(self, property_name):
+        return list(set(property.description for property in self.get_properties_by_name(property_name)))
     
-    def get_possible_properties(self, property_name):
+    def get_properties_by_name(self, property_name):
         return self.properties_by_name[property_name]
     
     def get_function_names_of_type(self, type_name):
@@ -204,6 +204,15 @@ class Documentation:
     
     def get_functions_of_type(self, type_name):
         return self.functions_by_owner[type_name]
+        
+    def get_functions_by_name(self, function_name):
+        return self.functions_by_name[function_name]
+        
+    def get_sub_functions_of_property(self, property_name):
+        functions = []
+        for type in self.get_types_with_property(property_name):
+            functions.extend(self.get_functions_of_type(type))
+        return functions
         
         
 class PropertyDocumentation:

@@ -114,29 +114,45 @@ class AutoCompleteTextBox:
             additional_data = getattr(operator, "additional_data", None)
             if isinstance(additional_data, PropertyDocumentation):
                 self.draw_property_documentation(additional_data, scale)
+            if isinstance(additional_data, FunctionDocumentation):
+                self.draw_function_documentation(additional_data, scale)
         
         restore_opengl_defaults()
         
     def draw_property_documentation(self, property, scale):
+        self.draw_documentation_background(scale)
+        
+        doc_height = 200 * scale
+        element_height = 28 * scale
+        padding = 8 * scale
+        text_size = 130 * scale
+        
+        draw_text("Type: " + str(property.type), (padding, doc_height - element_height * 1), size = text_size)
+        draw_text("Description: " + str(property.description), (padding, doc_height - element_height * 2), size = text_size)
+        if property.is_readonly:
+            draw_text("Readonly", (padding, doc_height - element_height * 3), size = text_size)
+        if property.type == "Enum":
+            draw_text(str(property.enum_items), ( padding, doc_height - element_height * 4), size = text_size)
+            
+    def draw_function_documentation(self, functions, scale):
+        self.draw_documentation_background(scale)
+        
+        doc_height = 200 * scale
+        element_height = 28 * scale
+        padding = 8 * scale
+        text_size = 130 * scale
+        
+        draw_text("Type: " + str(functions), (padding, doc_height - element_height * 1), size = text_size)
+        
+    def draw_documentation_background(self, scale):
         region = bpy.context.region
         
-        doc_width = region.width#400 * scale
-        doc_height = 100 * scale
-        element_height = 21 * scale
-        padding = 8 * scale
-        text_size = 100 * scale
+        doc_width = region.width
+        doc_height = 200 * scale
         
-        x = (region.width - doc_width) / 2
-        rectangle = Rectangle(x, doc_height, doc_width, doc_height)
+        rectangle = Rectangle(0, doc_height, doc_width, doc_height)
         
         draw_rectangle(rectangle, color = (0.8, 0.8, 0.8, 0.9))
-        
-        draw_text("Type: " + str(property.type), (x + padding, doc_height - element_height * 1), size = text_size)
-        draw_text("Description: " + str(property.description), (x + padding, doc_height - element_height * 2), size = text_size)
-        if property.is_readonly:
-            draw_text("Readonly", (x + padding, doc_height - element_height * 3), size = text_size)
-        if property.type == "Enum":
-            draw_text(str(property.enum_items), (x + padding, doc_height - element_height * 4), size = text_size)
         
     def get_draw_rectangles(self, editor_info):
         scale = editor_info.scale
