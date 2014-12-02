@@ -5,6 +5,7 @@ from script_auto_complete.text_editor_utils import *
 from script_auto_complete.utils import *
 from script_auto_complete.operators.operator_hub import *
 from script_auto_complete.operators.extend_word_operators import *
+from script_auto_complete.documentation import *
 
 
 show_event_types = ["PERIOD"] + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -94,7 +95,7 @@ class AutoCompleteTextBox:
         
         box_rectangle, inner_rectangle, line_rectangles, text_rectangles, description_rectangle = self.get_draw_rectangles(editor_info)
     
-        draw_rectangle(box_rectangle)
+        draw_rectangle(box_rectangle, color = (0.8, 0.8, 0.8, 0.9))
         
         operators = get_text_operators()
         self.correct_index(len(operators))
@@ -103,20 +104,39 @@ class AutoCompleteTextBox:
             
             index = i - self.top_index
             if i == self.selected_index:
-                draw_rectangle(line_rectangles[index], color = (0.95, 0.95, 0.95, 1.0))
+                draw_rectangle(line_rectangles[index], color = (0.95, 0.95, 0.95, 1))
             draw_text_on_rectangle(operator.display_name, text_rectangles[index], size = text_size, align = operator.align)
         
         draw_rectangle_border(box_rectangle, thickness = border_thickness)
         
         if len(operators) > self.selected_index:
             operator = operators[self.selected_index]
-            description = operator.description
-            if description != "":
-                draw_rectangle(description_rectangle)
-                position = description_rectangle.get_inset_rectangle(padding).top_left
-                draw_text(description, position, size = text_size, vertical_align = "TOP")
+            additional_data = getattr(operator, "additional_data", None)
+            if isinstance(additional_data, PropertyDocumentation):
+                self.draw_property_documentation(additional_data, scale)
         
         restore_opengl_defaults()
+        
+    def draw_property_documentation(self, property, scale):
+        region = bpy.context.region
+        
+        doc_width = region.width#400 * scale
+        doc_height = 100 * scale
+        element_height = 21 * scale
+        padding = 8 * scale
+        text_size = 100 * scale
+        
+        x = (region.width - doc_width) / 2
+        rectangle = Rectangle(x, doc_height, doc_width, doc_height)
+        
+        draw_rectangle(rectangle, color = (0.8, 0.8, 0.8, 0.9))
+        
+        draw_text("Type: " + str(property.type), (x + padding, doc_height - element_height * 1), size = text_size)
+        draw_text("Description: " + str(property.description), (x + padding, doc_height - element_height * 2), size = text_size)
+        if property.is_readonly:
+            draw_text("Readonly", (x + padding, doc_height - element_height * 3), size = text_size)
+        if property.type == "Enum":
+            draw_text(str(property.enum_items), (x + padding, doc_height - element_height * 4), size = text_size)
         
     def get_draw_rectangles(self, editor_info):
         scale = editor_info.scale

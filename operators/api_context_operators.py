@@ -9,16 +9,14 @@ def get_api_context_operators():
     word_start = get_word_start()
     
     documentation = get_documentation()
-    words = documentation.get_subproperty_names_of_property(last_word)
-    words.sort()
+    properties = documentation.get_subproperties_of_property(last_word)
     
     secondary_operators = []
-    for word in words:
-        if word.startswith(word_start):
-            operators.append(ExtendWordOperator(word))
-        elif word_start in word:
-            secondary_operators.append(ExtendWordOperator(word))
-    print(repr(word_start))
+    for property in properties:
+        if property.name.startswith(word_start):
+            operators.append(ExtendWordOperator(property.name, additional_data = property))
+        elif word_start in property.name:
+            secondary_operators.append(ExtendWordOperator(property.name, additional_data = property))
     return operators + secondary_operators
 
 

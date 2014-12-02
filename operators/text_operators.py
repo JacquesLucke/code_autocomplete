@@ -2,12 +2,13 @@ import bpy
 from script_auto_complete.text_editor_utils import *
         
 word_characters = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_")
-random_select_sequence = "random select sequence"
+random_select_sequence = "!*_*_*!"
 class ExtendWordOperator:
-    def __init__(self, target_word, description = ""):
+    def __init__(self, target_word, description = "", additional_data = None):
         self.target_word = target_word
         self.display_name = target_word
         self.description = description
+        self.additional_data = additional_data
         self.align = "LEFT"
         
     def execute(self, text_block):

@@ -3,7 +3,7 @@ from bgl import glBegin, glVertex2f, glEnd, GL_POLYGON, glEnable, glDisable, GL_
 
 def draw_rectangle(rectangle, color = (0.8, 0.8, 0.8, 1.0)):
     glColor4f(*color)
-    
+    glEnable(GL_BLEND)
     glBegin(GL_POLYGON)
     glVertex2f(rectangle.left, rectangle.top)
     glVertex2f(rectangle.right, rectangle.top)
