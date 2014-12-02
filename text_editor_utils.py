@@ -41,7 +41,6 @@ def get_word_start():
 word_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789"
 def get_word_start_index(text, character_index):
     for i in reversed(range(0, character_index - 1)):
-        print(len(text), i)
         if text[i].upper() not in word_characters:
             return i + 1
     return 0
@@ -85,7 +84,7 @@ def is_variable_char(char):
     
         
 def active_text_block_exists():
-    return bpy.context.space_data.text is not None
+    return getattr(bpy.context.space_data, "text", None) is not None
     
 def select_text_by_replacing(text):
     space = bpy.context.space_data
