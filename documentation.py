@@ -3,7 +3,11 @@ from collections import defaultdict
 
 class Documentation:
     def __init__(self):
-        pass
+        self.is_build = False
+        
+    def build_if_necessary(self):
+        if not self.is_build:
+            self.build()
     
     def build(self):
         self.reset()
@@ -12,6 +16,7 @@ class Documentation:
         self.build_attribute_documentation(all_bpy_types)
         self.add_custom_properties() 
         self.categorize_attributes()
+        self.is_build = True
         
     def reset(self):
         self.types = defaultdict(TypeDocumentation)
@@ -21,6 +26,7 @@ class Documentation:
         self.properties = []
         self.properties_by_name = defaultdict(list)
         self.properties_by_owner = defaultdict(list)
+        self.is_build = False
         
     def build_type_documentation(self, bpy_types):
         for type in bpy_types:
@@ -114,6 +120,8 @@ class Documentation:
     def add_custom_properties(self):
         props = self.properties
         
+        props.append(PropertyDocumentation("context", type = "Context", is_readonly = True, owner = None))
+        
         # Screen Context
         props.append(PropertyDocumentation("visible_objects", type = "Object Sequence", is_readonly = True, owner = "Context"))
         props.append(PropertyDocumentation("visible_bases", type = "ObjectBase Sequence", is_readonly = True, owner = "Context"))
@@ -171,8 +179,8 @@ class Documentation:
         return properties
             
     def get_types_with_property(self, property_name):
-        return [property.owner for property in self.properties_by_name[property_name]]
-    
+        return [property.owner for property in self.properties_by_name[property_name]]    
+
     def get_property_names_of_type(self, type_name):
         return [property.name for property in self.get_properties_of_type(type_name)]
     
@@ -237,3 +245,9 @@ class TypeDocumentation:
 
     def __repr__(self):
         return self.name
+        
+        
+documentation = Documentation()
+def get_documentation():
+    global documentation
+    return documentation

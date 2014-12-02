@@ -1,6 +1,7 @@
 import bpy
 from script_auto_complete.modal_handler import AutoCompletionManager
 from script_auto_complete.text_editor_utils import *
+from script_auto_complete.documentation import get_documentation
 
 class AutoCompleteSettingsPanel(bpy.types.Panel):
     bl_idname = "script_auto_complete.settings_panel"
@@ -11,6 +12,8 @@ class AutoCompleteSettingsPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         layout.operator("script_auto_complete.start_auto_completion")
+        if get_documentation().is_build:
+            layout.operator("script_auto_complete.rebuild_documentation")
         
 
 class StartAutoCompletion(bpy.types.Operator):
@@ -31,6 +34,21 @@ class StartAutoCompletion(bpy.types.Operator):
         return { "RUNNING_MODAL" }
 
     def invoke(self, context, event):
+        get_documentation().build_if_necessary()
         self.modal_handler = AutoCompletionManager()
         context.window_manager.modal_handler_add(self)
         return { "RUNNING_MODAL" }
+        
+        
+class RebuildDocumentation(bpy.types.Operator):
+    bl_idname = "script_auto_complete.rebuild_documentation"
+    bl_label = "Rebuild Documentation"
+    
+    @classmethod
+    def poll(cls, context):
+        return get_documentation().is_build
+    
+    def execute(self, context):
+        get_documentation().build()
+        return { "FINISHED" }
+        

@@ -40,7 +40,7 @@ def get_word_start():
     
 word_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789"
 def get_word_start_index(text, character_index):
-    for i in reversed(range(0, character_index - 1)):
+    for i in reversed(range(0, character_index)):
         if text[i].upper() not in word_characters:
             return i + 1
     return 0

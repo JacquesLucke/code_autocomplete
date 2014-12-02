@@ -28,7 +28,7 @@ def get_word_start_index(text, character_index):
     return 0
 
 class InsertTextOperator:
-    def __init__(self, name, text, description):
+    def __init__(self, name, text, description = ""):
         self.display_name = name
         self.insert_text = text
         self.description = description
