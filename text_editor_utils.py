@@ -40,10 +40,22 @@ def get_word_start():
     
 word_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789"
 def get_word_start_index(text, character_index):
-    for i in reversed(range(0, character_index)):
+    for i in reversed(range(0, character_index - 1)):
+        print(len(text), i)
         if text[i].upper() not in word_characters:
             return i + 1
     return 0
+    
+  
+def get_text_since_last_dot():
+    text_block = bpy.context.space_data.text
+    text_line = text_block.current_line
+    character_index = text_block.current_character
+    line = text_line.body[:character_index]
+    index = line.rfind(".")
+    if index > 0:
+        line = line[:index]
+    return line
      
      
 def get_last_word():
