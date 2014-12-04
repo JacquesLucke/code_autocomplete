@@ -207,9 +207,14 @@ class AutoCompleteTextBox:
         self.top_index = clamp(self.top_index, self.selected_index - get_line_amount() + 1, self.selected_index)
       
 def get_line_amount():
-    return get_addon_preferences().line_amount
+    preferences = get_addon_preferences()
+    if preferences is None: return 8
+    else: return preferences.line_amount
 def get_addon_preferences():
-    return bpy.context.user_preferences.addons["script_auto_complete"].preferences
+    addon = bpy.context.user_preferences.addons.get("script_auto_complete")
+    if addon is None: return None
+    else: return addon.preferences
+      
     
 def is_event_current_region(event):
     region = bpy.context.region
