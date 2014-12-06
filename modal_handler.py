@@ -93,8 +93,12 @@ class AutoCompleteTextBox:
         scale = editor_info.scale
         
         box_position_info = self.get_operator_box_position_info(editor_info)  
-        self.draw_operator_box(box_position_info, operators, scale)
+        operator_box_rectangle = self.draw_operator_box(box_position_info, operators, scale)
         
+        
+        active_operator = self.get_active_operator(operators)
+        attribute_info_position = (operator_box_rectangle.right + 10 * scale, operator_box_rectangle.top)
+        self.draw_attribute_info_box(attribute_info_position, getattr(active_operator, "additional_data", None), scale)
     
         restore_opengl_defaults()
     
@@ -140,6 +144,8 @@ class AutoCompleteTextBox:
             self.operator_line_rectangles.append(line_rectangle)
             
         draw_rectangle_border(outer_rectangle, color = border_color, thickness = border_thickness)
+        
+        return outer_rectangle
    
     def get_operator_line_rectangle(self, outer_rectangle, padding_rectangle, element_height, draw_index):
         line_rectangle = Rectangle(
@@ -163,12 +169,40 @@ class AutoCompleteTextBox:
         draw_text(text, position, text_size, color = color)
         
         
-    def draw_property_info_box(self, position, property):
-        pass
+    def draw_attribute_info_box(self, position, attribute, scale):
+        if isinstance(attribute, PropertyDocumentation):
+            self.draw_property_info_box(position, attribute, scale)
+        
+    def draw_property_info_box(self, position, property, scale):
+        box_width = 400 * scale
+        box_height = 200 * scale
+        padding = 8 * scale
+        text_size = 100 * scale
+        line_height = 25 * scale
+        text_color = (0.2, 0.2, 0.2, 1.0)
+        
+        outer_rectangle = Rectangle(position[0], position[1], box_width, box_height)
+        draw_rectangle(outer_rectangle)
+        
+        padding_rectangle = outer_rectangle.get_inset_rectangle(padding)
+        
+        text_x = padding_rectangle.left
+        
+        owner_text_y = padding_rectangle.top - line_height
+        draw_text(str(property), (text_x, owner_text_y), size = text_size, color = text_color)
+        
+        type_text_y = padding_rectangle.top - 2 * line_height
+        draw_text("  " + property.type, (text_x, type_text_y), size = text_size, color = text_color)
+        
+        description_y = padding_rectangle.top - 4 * line_height
+        draw_text_block(property.description, (text_x, description_y), size = text_size, block_width = padding_rectangle.width, line_height = line_height, color = text_color)
    
     @property
     def selected_operator(self):
         operators = get_text_operators()
+        return self.get_active_operator(operators)
+        
+    def get_active_operator(self, operators):
         self.correct_index(len(operators))
         try: return operators[self.selected_index]
         except: return None

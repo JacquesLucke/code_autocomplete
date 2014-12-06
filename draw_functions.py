@@ -53,10 +53,10 @@ def draw_text(text = "", position = (0, 0), size = 200, horizontal_align = "LEFT
     blf.position(font_id, int(position[0]), int(position[1]), 0)
     blf.draw(font_id, text)
     
-def draw_text_block(text = "", position = (0, 0), size = 200, block_width = 400, color = (0.2, 0.2, 0.2, 1.0)):
+def draw_text_block(text = "", position = (0, 0), size = 200, block_width = 400, line_height = 15, color = (0.2, 0.2, 0.2, 1.0)):
     lines = get_text_lines(text, size, block_width)
     for i, line in enumerate(lines):
-        draw_position = (position[0], position[1] + i * 15)
+        draw_position = (position[0], position[1] - i * line_height)
         draw_text(line, draw_position, size, color = color)
     
 def get_text_dimensions(text, size, font_id = font_id):
@@ -92,8 +92,4 @@ def restore_opengl_defaults():
     glLineWidth(1)
     glDisable(GL_BLEND)
     glColor4f(0.0, 0.0, 0.0, 1.0)
-    
-    blf.disable(font_id, blf.ROTATION)
-    blf.disable(font_id, blf.SHADOW)
-    blf.disable(font_id, blf.KERNING_DEFAULT)
     
