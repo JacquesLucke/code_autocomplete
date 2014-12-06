@@ -47,9 +47,7 @@ class AutoCompleteTextBox:
         self.hide = True
         
     def update(self, event):
-        if not is_event_current_region(event):
-            self.hide = True
-        if self.hide: return False
+        if self.hide or not is_event_current_region(event): return False
         
         if event.value == "PRESS":
             if event.type == "DOWN_ARROW":
@@ -62,15 +60,24 @@ class AutoCompleteTextBox:
                 self.execute_selected_operator()
                 self.hide = True
                 return True
-        
-        if event.type in ["MOUSEMOVE", "LEFTMOUSE"]:
+        if event.type in ["LEFTMOUSE", "MOUSEMOVE"] and event.value in ["PRESS", "RELEASE"]:
             for i, line_rectangle in enumerate(self.operator_line_rectangles):
                 if line_rectangle.contains(event.mouse_region_x, event.mouse_region_y):
-                    self.selected_index = self.top_index + i
-                    if event.value == "PRESS" and event.type == "LEFTMOUSE":
+                    index = self.top_index + i
+                    if self.selected_index == index and event.type == "LEFTMOUSE" and event.value == "RELEASE":
                         self.execute_selected_operator()
                         self.hide = True
+                    else:
+                        if event.value == "PRESS":
+                            self.selected_index = index
                     return True
+        if self.operator_box_rectangle.contains(event.mouse_region_x, event.mouse_region_y):
+            if event.type == "WHEELUPMOUSE":
+                self.selected_index -= 1
+                return True
+            if event.type == "WHEELDOWNMOUSE":
+                self.selected_index += 1
+                return True
         return False
         
     def execute_selected_operator(self):
@@ -129,6 +136,7 @@ class AutoCompleteTextBox:
             outer_rectangle = Rectangle(x, y, box_width, box_height)
         else: outer_rectangle = Rectangle(x, y + box_height, box_width, box_height)
         draw_rectangle(outer_rectangle, color = background_color)
+        self.operator_box_rectangle = outer_rectangle
         
         padding_rectangle = outer_rectangle.get_inset_rectangle(padding)
         
