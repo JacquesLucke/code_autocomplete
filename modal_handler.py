@@ -106,6 +106,7 @@ class AutoCompleteTextBox:
         
         operators = get_text_operators()
         self.correct_index(len(operators))
+        if len(operators) == 0: return
         
         editor_info = TextEditorInfo()
         scale = editor_info.scale
@@ -122,12 +123,12 @@ class AutoCompleteTextBox:
     
     def get_operator_box_position_info(self, editor_info):
         x, y = editor_info.cursor_position
-        if y < editor_info.height / 2:
+        if y < editor_info.height / 3:
             align = "Bottom"
-            y += 10 * editor_info.scale
+            y += 20 * editor_info.scale
         else:
             align = "Top"
-            y -= 10 * editor_info.scale
+            y -= 20 * editor_info.scale
         return x, y, align
         
     def draw_operator_box(self, position_info, operators, scale):
@@ -180,7 +181,10 @@ class AutoCompleteTextBox:
         
     def draw_operator_in_rectangle(self, operator, rectangle, text_size, color):
         text = operator.display_name
-        position = (rectangle.left, rectangle.bottom + rectangle.height / 4)
+        position = [rectangle.left, rectangle.bottom + rectangle.height / 4]
+        if operator.align == "CENTER":
+            dimensions = get_text_dimensions(text, text_size)
+            position[0] += (rectangle.width - dimensions[0]) / 2
         draw_text(text, position, text_size, color = color)
         
         
