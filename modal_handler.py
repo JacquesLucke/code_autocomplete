@@ -139,12 +139,16 @@ class AutoCompleteTextBox:
     def draw_operator_box(self, position_info, operators, scale):
         box_width = 300 * scale
         box_height = 400 * scale
+        padding = 8 * scale
+        background_color = (0.8, 0.8, 0.8, 1.0)
         x, y, align = position_info
     
         if align == "Top":
             outer_rectangle = Rectangle(x, y, box_width, box_height)
         else: outer_rectangle = Rectangle(x, y + box_height, box_width, box_height)
-        draw_rectangle(outer_rectangle)
+        draw_rectangle(outer_rectangle, color = background_color)
+        
+        padding_rectangle = outer_rectangle.get_inset_rectangle(padding)
         
     def draw_property_documentation(self, property, scale):
         self.draw_documentation_background(scale)
