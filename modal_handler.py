@@ -87,37 +87,64 @@ class AutoCompleteTextBox:
     def draw(self):
         if self.hide: return
         
-        editor_info = TextEditorInfo()
-        scale = editor_info.scale
-        text_size = 100 * scale
-        border_thickness = 3 * scale
-        padding = 8 * scale
-        
-        box_rectangle, inner_rectangle, line_rectangles, text_rectangles, description_rectangle = self.get_draw_rectangles(editor_info)
-    
-        draw_rectangle(box_rectangle, color = (0.8, 0.8, 0.8, 0.9))
-        
         operators = get_text_operators()
         self.correct_index(len(operators))
-        for i, operator in enumerate(operators):
-            if i < self.top_index or i > self.bottom_index: continue
+        
+        editor_info = TextEditorInfo()
+        scale = editor_info.scale
+        
+        box_position_info = self.get_operator_box_position_info(editor_info)
+        
+        self.draw_operator_box(box_position_info, operators, scale)
+        
+        # text_size = 100 * scale
+        # border_thickness = 3 * scale
+        # padding = 8 * scale
+        
+        # box_rectangle, inner_rectangle, line_rectangles, text_rectangles, description_rectangle = self.get_draw_rectangles(editor_info)
+    
+        # draw_rectangle(box_rectangle, color = (0.8, 0.8, 0.8, 0.9))
+        
+        
+        # for i, operator in enumerate(operators):
+            # if i < self.top_index or i > self.bottom_index: continue
             
-            index = i - self.top_index
-            if i == self.selected_index:
-                draw_rectangle(line_rectangles[index], color = (0.95, 0.95, 0.95, 1))
-            draw_text_on_rectangle(operator.display_name, text_rectangles[index], size = text_size, align = operator.align)
+            # index = i - self.top_index
+            # if i == self.selected_index:
+                # draw_rectangle(line_rectangles[index], color = (0.95, 0.95, 0.95, 1))
+            # draw_text_on_rectangle(operator.display_name, text_rectangles[index], size = text_size, align = operator.align)
         
-        draw_rectangle_border(box_rectangle, thickness = border_thickness)
+        # draw_rectangle_border(box_rectangle, thickness = border_thickness)
         
-        if len(operators) > self.selected_index:
-            operator = operators[self.selected_index]
-            additional_data = getattr(operator, "additional_data", None)
-            if isinstance(additional_data, PropertyDocumentation):
-                self.draw_property_documentation(additional_data, scale)
-            if isinstance(additional_data, FunctionDocumentation):
-                self.draw_function_documentation(additional_data, scale)
+        # if len(operators) > self.selected_index:
+            # operator = operators[self.selected_index]
+            # additional_data = getattr(operator, "additional_data", None)
+            # if isinstance(additional_data, PropertyDocumentation):
+                # self.draw_property_documentation(additional_data, scale)
+            # if isinstance(additional_data, FunctionDocumentation):
+                # self.draw_function_documentation(additional_data, scale)
         
         restore_opengl_defaults()
+    
+    def get_operator_box_position_info(self, editor_info):
+        x, y = editor_info.cursor_position
+        if y < editor_info.height / 2:
+            align = "Bottom"
+            y += 10 * editor_info.scale
+        else:
+            align = "Top"
+            y -= 10 * editor_info.scale
+        return x, y, align
+        
+    def draw_operator_box(self, position_info, operators, scale):
+        box_width = 300 * scale
+        box_height = 400 * scale
+        x, y, align = position_info
+    
+        if align == "Top":
+            outer_rectangle = Rectangle(x, y, box_width, box_height)
+        else: outer_rectangle = Rectangle(x, y + box_height, box_width, box_height)
+        draw_rectangle(outer_rectangle)
         
     def draw_property_documentation(self, property, scale):
         self.draw_documentation_background(scale)
