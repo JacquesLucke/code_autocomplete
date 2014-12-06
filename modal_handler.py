@@ -43,6 +43,7 @@ class AutoCompleteTextBox:
         self.top_index = 3
         self.line_amount = 8
         self.operator_line_rectangles = []
+        self.operator_box_rectangle = Rectangle(0, 0, 0, 0)
         
         self.hide = True
         
@@ -180,10 +181,12 @@ class AutoCompleteTextBox:
     def draw_attribute_info_box(self, position, attribute, scale):
         if isinstance(attribute, PropertyDocumentation):
             self.draw_property_info_box(position, attribute, scale)
+        elif isinstance(attribute, FunctionDocumentation):
+            self.draw_function_info_box(position, attribute, scale)
         
     def draw_property_info_box(self, position, property, scale):
         box_width = 400 * scale
-        box_height = 200 * scale
+        box_height = 300 * scale
         padding = 8 * scale
         text_size = 100 * scale
         line_height = 25 * scale
@@ -202,8 +205,53 @@ class AutoCompleteTextBox:
         type_text_y = padding_rectangle.top - 2 * line_height
         draw_text("  " + property.type, (text_x, type_text_y), size = text_size, color = text_color)
         
+        description_y = padding_rectangle.top - 3.5 * line_height
+        description_line_amount = draw_text_block(property.description, (text_x, description_y), size = text_size,
+            block_width = padding_rectangle.width, line_height = line_height, color = text_color, max_lines = 7)
+            
+        if property.type == "Enum":
+            items = property.enum_items
+            items_y = padding_rectangle.top - (4 + description_line_amount) * line_height
+            draw_text_block(str(items), (text_x, items_y), size = text_size,
+                block_width = padding_rectangle.width, line_height = line_height, color = text_color, max_lines = 8 - description_line_amount)
+   
+    def draw_function_info_box(self, position, function, scale):
+        text_size = 100 * scale
+        padding = 8 * scale
+        box_height = 200 * scale
+        line_height = 25 * scale
+        text_color = (0.2, 0.2, 0.2, 1.0)
+        
+        function_header_text = function.owner + "." + function.name + "(" + ", ".join(function.get_input_names()) + ")"
+        output_names = function.get_output_names()
+        if len(output_names) > 0: return_text = " > " + ", ".join(function.get_output_names())
+        else: return_text = ""
+        
+        width = get_text_dimensions(function_header_text, text_size)[0]
+        width = max(width, get_text_dimensions(return_text, text_size)[0])
+        width += 2 * padding
+        
+        box_width = max(350 * scale, width)
+        
+        outer_rectangle = Rectangle(position[0], position[1], box_width, box_height)
+        draw_rectangle(outer_rectangle)
+        
+        padding_rectangle = outer_rectangle.get_inset_rectangle(padding)
+        
+        text_x = padding_rectangle.left
+        
+        owner_text_y = padding_rectangle.top - line_height
+        
+        draw_text(function_header_text, (text_x, owner_text_y), size = text_size, color = text_color)
+        
+        return_y = padding_rectangle.top - 2 * line_height
+        draw_text(return_text, (text_x, return_y), size = text_size, color = text_color)
+        
         description_y = padding_rectangle.top - 4 * line_height
-        draw_text_block(property.description, (text_x, description_y), size = text_size, block_width = padding_rectangle.width, line_height = line_height, color = text_color)
+        draw_text_block(function.description, (text_x, description_y), size = text_size,
+            block_width = padding_rectangle.width, line_height = line_height, color = text_color)
+        
+            
    
     @property
     def selected_operator(self):
