@@ -9,8 +9,8 @@ def get_api_context_operators():
     word_start = get_word_start()
     
     documentation = get_documentation()
-    attributes = documentation.get_subproperties_of_property(last_word)
-    attributes += documentation.get_sub_functions_of_property(last_word)
+    attributes = documentation.get_possible_subproperties_of_property(last_word)
+    attributes += documentation.get_possible_subfunctions_of_property(last_word)
     
     secondary_operators = []
     for attribute in attributes:
