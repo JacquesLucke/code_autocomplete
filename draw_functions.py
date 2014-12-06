@@ -1,5 +1,5 @@
 import bpy, blf
-from bgl import glBegin, glVertex2f, glEnd, GL_POLYGON, glEnable, glDisable, GL_POLYGON_SMOOTH, GL_BLEND, glColor4f, GL_LINE_STRIP, glLineWidth, GL_LINES
+from bgl import glBegin, glVertex2f, glEnd, GL_POLYGON, glEnable, glDisable, GL_POLYGON_SMOOTH, GL_BLEND, glColor4f, GL_LINE_STRIP, glLineWidth, GL_LINES, glViewport
 
 def draw_rectangle(rectangle, color = (0.8, 0.8, 0.8, 1.0)):
     glColor4f(*color)
@@ -40,8 +40,8 @@ def draw_text_on_rectangle(text, rectangle, color = (0.2, 0.2, 0.2, 1.0), size =
         position = (center[0], rectangle.bottom + rectangle.height / 3)
     draw_text(text, position, size = size, horizontal_align = align, vertical_align = "BOTTOM")
 
-def draw_text(text = "", position = (0, 0), size = 20, horizontal_align = "LEFT", vertical_align = "BOTTOM", color = (0.2, 0.2, 0.2, 1.0)):
-    glColor4f(*color)
+def draw_text(text = "", position = (0, 0), size = 200, horizontal_align = "LEFT", vertical_align = "BOTTOM", color = (0.2, 0.2, 0.2, 1.0)):
+    
     set_text_size(size)
     dimensions = blf.dimensions(font_id, text)
     
@@ -49,9 +49,15 @@ def draw_text(text = "", position = (0, 0), size = 20, horizontal_align = "LEFT"
         position = (position[0] - dimensions[0] / 2, position[1])
     if vertical_align == "TOP":
         position = (position[0], position[1] - dimensions[1])
-        
+    glColor4f(*color)    
     blf.position(font_id, int(position[0]), int(position[1]), 0)
     blf.draw(font_id, text)
+    
+def draw_text_block(text = "", position = (0, 0), size = 200, block_width = 400, color = (0.2, 0.2, 0.2, 1.0)):
+    lines = get_text_lines(text, size, block_width)
+    for i, line in enumerate(lines):
+        draw_position = (position[0], position[1] + i * 15)
+        draw_text(line, draw_position, size, color = color)
     
 def get_text_dimensions(text, size, font_id = font_id):
     set_text_size(size)
