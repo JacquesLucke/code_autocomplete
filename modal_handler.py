@@ -45,6 +45,16 @@ class AutoCompleteTextBox:
         self.operator_line_rectangles = []
         self.operator_box_rectangle = Rectangle(0, 0, 0, 0)
         
+        self.background_color = (1.0, 1.0, 1.0, 1.0)
+        self.border_color = (0.9, 0.76, 0.4, 1.0)
+        self.text_color = (0.1, 0.1, 0.1, 1.0)
+        self.selection_color = (0.95, 0.95, 1.0, 1.0)
+        self.selection_border_color = (1.0, 0.8, 0.5, 1.0)
+        
+        self.info_background_color = (0.9, 0.91, 0.92, 1.0)
+        self.info_border_color = (0.8, 0.8, 0.86, 1.0)
+        
+        
         self.hide = True
         
     def update(self, event):
@@ -123,11 +133,6 @@ class AutoCompleteTextBox:
     def draw_operator_box(self, position_info, operators, scale):
         box_width = 300 * scale
         padding = 8 * scale
-        background_color = (0.8, 0.8, 0.8, 1.0)
-        text_color = (0.2, 0.2, 0.2, 1.0)
-        selection_color = (1.0, 1.0, 1.0, 1.0)
-        border_color = (0.05, 0.05, 0.05, 1.0)
-        border_thickness = 3 * scale
         x, y, align = position_info
         element_height = 26 * scale
         text_size = 100 * scale
@@ -136,7 +141,7 @@ class AutoCompleteTextBox:
         if align == "Top":
             outer_rectangle = Rectangle(x, y, box_width, box_height)
         else: outer_rectangle = Rectangle(x, y + box_height, box_width, box_height)
-        draw_rectangle(outer_rectangle, color = background_color)
+        draw_rectangle(outer_rectangle, color = self.background_color)
         self.operator_box_rectangle = outer_rectangle
         
         padding_rectangle = outer_rectangle.get_inset_rectangle(padding)
@@ -147,12 +152,13 @@ class AutoCompleteTextBox:
             draw_index = i - self.top_index
             line_rectangle = self.get_operator_line_rectangle(outer_rectangle, padding_rectangle, element_height, draw_index)
             if i == self.selected_index:
-                draw_rectangle(line_rectangle, color = selection_color)
+                draw_rectangle(line_rectangle, color = self.selection_color)
+                draw_rectangle_border(line_rectangle, thickness = 1, color = self.selection_border_color)
             text_draw_rectangle = self.get_text_draw_rectangle(padding_rectangle, element_height, draw_index)
-            self.draw_operator_in_rectangle(operator, text_draw_rectangle, text_size, text_color)
+            self.draw_operator_in_rectangle(operator, text_draw_rectangle, text_size, self.text_color)
             self.operator_line_rectangles.append(line_rectangle)
             
-        draw_rectangle_border(outer_rectangle, color = border_color, thickness = border_thickness)
+        draw_rectangle_border(outer_rectangle, color = self.border_color, thickness = 1)
         
         return outer_rectangle
    
@@ -190,37 +196,37 @@ class AutoCompleteTextBox:
         padding = 8 * scale
         text_size = 100 * scale
         line_height = 25 * scale
-        text_color = (0.2, 0.2, 0.2, 1.0)
         
         outer_rectangle = Rectangle(position[0], position[1], box_width, box_height)
-        draw_rectangle(outer_rectangle)
+        draw_rectangle(outer_rectangle, color = self.info_background_color)
         
         padding_rectangle = outer_rectangle.get_inset_rectangle(padding)
         
         text_x = padding_rectangle.left
         
         owner_text_y = padding_rectangle.top - line_height
-        draw_text(str(property), (text_x, owner_text_y), size = text_size, color = text_color)
+        draw_text(str(property), (text_x, owner_text_y), size = text_size, color = self.text_color)
         
         type_text_y = padding_rectangle.top - 2 * line_height
-        draw_text("  " + property.type, (text_x, type_text_y), size = text_size, color = text_color)
+        draw_text("  " + property.type, (text_x, type_text_y), size = text_size, color = self.text_color)
         
         description_y = padding_rectangle.top - 3.5 * line_height
         description_line_amount = draw_text_block(property.description, (text_x, description_y), size = text_size,
-            block_width = padding_rectangle.width, line_height = line_height, color = text_color, max_lines = 7)
+            block_width = padding_rectangle.width, line_height = line_height, color = self.text_color, max_lines = 7)
             
         if property.type == "Enum":
             items = property.enum_items
             items_y = padding_rectangle.top - (4 + description_line_amount) * line_height
             draw_text_block(str(items), (text_x, items_y), size = text_size,
-                block_width = padding_rectangle.width, line_height = line_height, color = text_color, max_lines = 8 - description_line_amount)
+                block_width = padding_rectangle.width, line_height = line_height, color = self.text_color, max_lines = 8 - description_line_amount)
+   
+        draw_rectangle_border(outer_rectangle, thickness = 1, color = self.info_border_color)
    
     def draw_function_info_box(self, position, function, scale):
         text_size = 100 * scale
         padding = 8 * scale
         box_height = 200 * scale
         line_height = 25 * scale
-        text_color = (0.2, 0.2, 0.2, 1.0)
         
         function_header_text = function.owner + "." + function.name + "(" + ", ".join(function.get_input_names()) + ")"
         output_names = function.get_output_names()
@@ -234,7 +240,7 @@ class AutoCompleteTextBox:
         box_width = max(350 * scale, width)
         
         outer_rectangle = Rectangle(position[0], position[1], box_width, box_height)
-        draw_rectangle(outer_rectangle)
+        draw_rectangle(outer_rectangle, color = self.info_background_color)
         
         padding_rectangle = outer_rectangle.get_inset_rectangle(padding)
         
@@ -242,16 +248,16 @@ class AutoCompleteTextBox:
         
         owner_text_y = padding_rectangle.top - line_height
         
-        draw_text(function_header_text, (text_x, owner_text_y), size = text_size, color = text_color)
+        draw_text(function_header_text, (text_x, owner_text_y), size = text_size, color = self.text_color)
         
         return_y = padding_rectangle.top - 2 * line_height
-        draw_text(return_text, (text_x, return_y), size = text_size, color = text_color)
+        draw_text(return_text, (text_x, return_y), size = text_size, color = self.text_color)
         
         description_y = padding_rectangle.top - 4 * line_height
         draw_text_block(function.description, (text_x, description_y), size = text_size,
-            block_width = padding_rectangle.width, line_height = line_height, color = text_color)
+            block_width = padding_rectangle.width, line_height = line_height, color = self.text_color)
         
-            
+        draw_rectangle_border(outer_rectangle, thickness = 1, color = self.info_border_color)
    
     @property
     def selected_operator(self):
