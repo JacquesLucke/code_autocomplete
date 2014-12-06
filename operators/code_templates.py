@@ -32,3 +32,13 @@ def unregister():
     
 if __name__ == "__main__":
     register()''')
+    
+templates["Addon Info"] = ("bl_info = {", '''    "name": "My Addon Name",
+    "description": "Single Line Explanation",
+    "author": "Your Name",
+    "version": (0, 0, 1),
+    "blender": (2, 72, 0),
+    "location": "View3D",
+    "warning": "This is an unstable version",
+    "wiki_url": "",
+    "category": "Object" }''')
