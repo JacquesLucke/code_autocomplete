@@ -2,6 +2,7 @@ import bpy, inspect, re
 from script_auto_complete.operators.text_operators import *
 from script_auto_complete.text_editor_utils import *
 from script_auto_complete.documentation import get_documentation
+from operator import attrgetter
 
 def get_api_context_operators():
     operators = []
@@ -18,7 +19,10 @@ def get_api_context_operators():
             operators.append(ExtendWordOperator(attribute.name, additional_data = attribute))
         elif word_start in attribute.name:
             secondary_operators.append(ExtendWordOperator(attribute.name, additional_data = attribute))
-    return operators + secondary_operators
+            
+    operators.extend(secondary_operators)
+    operators.sort(key = attrgetter("display_name"))
+    return operators
 
 
     
