@@ -137,14 +137,16 @@ class AutoCompleteTextBox:
         
     def draw_operator_box(self, position_info, operators, scale):
         box_width = 300 * scale
-        box_height = 400 * scale
         padding = 8 * scale
         background_color = (0.8, 0.8, 0.8, 1.0)
         text_color = (0.2, 0.2, 0.2, 1.0)
         selection_color = (1.0, 1.0, 1.0, 1.0)
+        border_color = (0.05, 0.05, 0.05, 1.0)
+        border_thickness = 3 * scale
         x, y, align = position_info
         element_height = 26 * scale
-        text_size = 110 * scale
+        text_size = 100 * scale
+        box_height = min(len(operators), get_line_amount()) * element_height + 2 * padding
     
         if align == "Top":
             outer_rectangle = Rectangle(x, y, box_width, box_height)
@@ -163,6 +165,8 @@ class AutoCompleteTextBox:
             text_draw_rectangle = self.get_text_draw_rectangle(padding_rectangle, element_height, draw_index)
             self.draw_operator_in_rectangle(operator, text_draw_rectangle, text_size, text_color)
             self.operator_line_rectangles.append(line_rectangle)
+            
+        draw_rectangle_border(outer_rectangle, color = border_color, thickness = border_thickness)
    
     def get_operator_line_rectangle(self, outer_rectangle, padding_rectangle, element_height, draw_index):
         line_rectangle = Rectangle(
@@ -182,7 +186,7 @@ class AutoCompleteTextBox:
         
     def draw_operator_in_rectangle(self, operator, rectangle, text_size, color):
         text = operator.display_name
-        position = (rectangle.left, rectangle.bottom + rectangle.height / 3)
+        position = (rectangle.left, rectangle.bottom + rectangle.height / 4)
         draw_text(text, position, text_size, color = color)
         
     def draw_property_documentation(self, property, scale):
