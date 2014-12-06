@@ -42,6 +42,7 @@ class AutoCompleteTextBox:
         self.selected_index = 0
         self.top_index = 3
         self.line_amount = 8
+        self.operator_line_rectangles = []
         
         self.hide = True
         
@@ -63,9 +64,7 @@ class AutoCompleteTextBox:
                 return True
         
         if event.type in ["MOUSEMOVE", "LEFTMOUSE"]:
-            editor_info = TextEditorInfo()
-            line_rectangles = self.get_draw_rectangles(editor_info)[2]
-            for i, line_rectangle in enumerate(line_rectangles):
+            for i, line_rectangle in enumerate(self.operator_line_rectangles):
                 if line_rectangle.contains(event.mouse_region_x, event.mouse_region_y):
                     self.selected_index = self.top_index + i
                     if event.value == "PRESS" and event.type == "LEFTMOUSE":
@@ -141,8 +140,11 @@ class AutoCompleteTextBox:
         box_height = 400 * scale
         padding = 8 * scale
         background_color = (0.8, 0.8, 0.8, 1.0)
+        text_color = (0.2, 0.2, 0.2, 1.0)
+        selection_color = (1.0, 1.0, 1.0, 1.0)
         x, y, align = position_info
-        element_height = 28 * scale
+        element_height = 26 * scale
+        text_size = 110 * scale
     
         if align == "Top":
             outer_rectangle = Rectangle(x, y, box_width, box_height)
@@ -151,12 +153,17 @@ class AutoCompleteTextBox:
         
         padding_rectangle = outer_rectangle.get_inset_rectangle(padding)
         
+        self.operator_line_rectangles = []
         for i, operator in enumerate(operators):
             if not self.top_index <= i <= self.bottom_index: continue
             draw_index = i - self.top_index
             line_rectangle = self.get_operator_line_rectangle(outer_rectangle, padding_rectangle, element_height, draw_index)
-            draw_rectangle(line_rectangle, color = (0.0, 1.0, 1.0, 1.0))
-            
+            if i == self.selected_index:
+                draw_rectangle(line_rectangle, color = selection_color)
+            text_draw_rectangle = self.get_text_draw_rectangle(padding_rectangle, element_height, draw_index)
+            self.draw_operator_in_rectangle(operator, text_draw_rectangle, text_size, text_color)
+            self.operator_line_rectangles.append(line_rectangle)
+   
     def get_operator_line_rectangle(self, outer_rectangle, padding_rectangle, element_height, draw_index):
         line_rectangle = Rectangle(
             x = outer_rectangle.left,
@@ -164,6 +171,19 @@ class AutoCompleteTextBox:
             width = outer_rectangle.width,
             height = element_height)
         return line_rectangle
+        
+    def get_text_draw_rectangle(self, padding_rectangle, element_height, draw_index):
+        draw_rectangle = Rectangle(
+            x = padding_rectangle.left,
+            y = padding_rectangle.top - draw_index * element_height,
+            width = padding_rectangle.width,
+            height = element_height)
+        return draw_rectangle
+        
+    def draw_operator_in_rectangle(self, operator, rectangle, text_size, color):
+        text = operator.display_name
+        position = (rectangle.left, rectangle.bottom + rectangle.height / 3)
+        draw_text(text, position, text_size, color = color)
         
     def draw_property_documentation(self, property, scale):
         self.draw_documentation_background(scale)
