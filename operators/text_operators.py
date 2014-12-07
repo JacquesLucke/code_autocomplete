@@ -21,12 +21,7 @@ class ExtendWordOperator:
         new_text = text[:word_start_index] + self.target_word + random_select_sequence + text[character_index:]
         text_line.body = new_text
         select_text_by_replacing(random_select_sequence)
-        
-def get_word_start_index(text, character_index):
-    for i in reversed(range(0, character_index)):
-        if text[i].upper() not in word_characters:
-            return i + 1
-    return 0
+
 
 class InsertTextOperator:
     def __init__(self, name, text, description = ""):
@@ -45,4 +40,5 @@ class InsertTextOperator:
         text = "\n".join(text_parts)
         text_block.from_string(text)
         select_text_by_replacing(random_select_sequence)
+          
         
