@@ -5,16 +5,19 @@ def get_templates():
     
 templates = {}
 
-templates["New Panel"] = ("Panel):", '''    bl_idname = "name"
+templates["New Panel"] = ("Panel):", '''
+    bl_idname = "name"
     bl_label = "label"
     bl_space_type = "VIEW_3D"
     bl_region_type = "TOOLS"
     bl_category = "category"
     
     def draw(self, context):
-        layout = self.layout''')
+        layout = self.layout
+        ''')
         
-templates["New Operator"] = ("Operator):", '''    bl_idname = "my.operator"
+templates["New Operator"] = ("Operator):", '''
+    bl_idname = "my.operator"
     bl_label = "label"
     bl_description = ""
     
@@ -23,17 +26,21 @@ templates["New Operator"] = ("Operator):", '''    bl_idname = "my.operator"
         return True
     
     def execute(self, context):
-        return {"FINISHED"}''')
+        return {"FINISHED"}
+        ''')
 
-templates["Register"] = ("register():", '''    bpy.utils.register_module(__name__)
+templates["Register"] = ("register():", '''
+    bpy.utils.register_module(__name__)
 
 def unregister():
     bpy.utils.unregister_module(__name__)
     
 if __name__ == "__main__":
-    register()''')
+    register()
+    ''')
     
-templates["Addon Info"] = ("bl_info = {", '''    "name": "My Addon Name",
+templates["Addon Info"] = ("bl_info = {", '''
+    "name": "My Addon Name",
     "description": "Single Line Explanation",
     "author": "Your Name",
     "version": (0, 0, 1),
@@ -41,4 +48,5 @@ templates["Addon Info"] = ("bl_info = {", '''    "name": "My Addon Name",
     "location": "View3D",
     "warning": "This is an unstable version",
     "wiki_url": "",
-    "category": "Object" }''')
+    "category": "Object" }
+    ''')

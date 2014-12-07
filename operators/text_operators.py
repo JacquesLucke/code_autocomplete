@@ -18,9 +18,9 @@ class ExtendWordOperator:
         text = text_line.body
         word_start_index = get_word_start_index(text, character_index)
         
-        new_text = text[:word_start_index] + self.target_word + random_select_sequence + text[character_index:]
+        new_text = text[:word_start_index] + self.target_word + text[character_index:]
         text_line.body = new_text
-        select_text_by_replacing(random_select_sequence)
+        set_text_cursor_position(text_block.current_line_index, len(text[:word_start_index] + self.target_word))
 
 
 class InsertTextOperator:
@@ -32,13 +32,19 @@ class InsertTextOperator:
         
     def execute(self, text_block):
         line_index = text_block.current_line_index
+        character_index = text_block.current_character
         text_parts = []
         for i, text_line in enumerate(text_block.lines):
-            text_parts.append(text_line.body)
             if i == line_index:
-                text_parts.append(self.insert_text + random_select_sequence)
-        text = "\n".join(text_parts)
+                text_parts.append(text_line.body[:character_index] + self.insert_text + text_line.body[character_index:])
+            else:
+                text_parts.append(text_line.body + "\n")
+        text = "".join(text_parts)
         text_block.from_string(text)
-        select_text_by_replacing(random_select_sequence)
+        
+        set_text_cursor_position(line_index, character_index)
+        
+        
+
           
         

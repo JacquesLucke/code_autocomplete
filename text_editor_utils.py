@@ -86,9 +86,17 @@ def is_variable_char(char):
 def active_text_block_exists():
     return getattr(bpy.context.space_data, "text", None) is not None
     
-def select_text_by_replacing(text):
+def set_text_cursor_position(line_index, character_index):
     space = bpy.context.space_data
-    space.find_text = text
+    text_block = space.text
+    select_sequence = "!*_*!" + "!"
+    
+    text_block.current_line_index = line_index
+    text = text_block.current_line.body
+    text = text[:character_index] + select_sequence + text[character_index:]
+    text_block.current_line.body = text
+    
+    space.find_text = select_sequence
     space.replace_text = ""
     space.use_find_wrap = True
     space.use_find_all = False
