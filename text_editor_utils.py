@@ -87,21 +87,18 @@ def active_text_block_exists():
     return getattr(bpy.context.space_data, "text", None) is not None
     
 def set_text_cursor_position(line_index, character_index):
-    space = bpy.context.space_data
-    text_block = space.text
-    select_sequence = "!*_*!" + "!"
+    current_line_index = bpy.context.space_data.text.current_line_index
+    line_changes = abs(current_line_index - line_index)
     
-    text_block.current_line_index = line_index
-    text = text_block.current_line.body
-    text = text[:character_index] + select_sequence + text[character_index:]
-    text_block.current_line.body = text
+    if current_line_index > line_index: move_direction = "PREVIOUS_LINE"
+    else: move_direction = "NEXT_LINE"
     
-    space.find_text = select_sequence
-    space.replace_text = ""
-    space.use_find_wrap = True
-    space.use_find_all = False
-    bpy.ops.text.replace()
-    bpy.ops.text.replace()
+    for i in range(line_changes):
+        bpy.ops.text.move(type = move_direction)
+        
+    bpy.ops.text.move(type = "LINE_BEGIN")
+    for i in range(character_index):
+        bpy.ops.text.move(type = "NEXT_CHARACTER")
     
 def get_existing_words():
     existing_words = []
