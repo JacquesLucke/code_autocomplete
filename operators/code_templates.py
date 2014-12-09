@@ -39,7 +39,7 @@ if __name__ == "__main__":
     register()
     ''')
     
-templates["Addon Info"] = ("bl_info = {", '''
+templates["Addon Info"] = ("bl_info =", ''' {
     "name": "My Addon Name",
     "description": "Single Line Explanation",
     "author": "Your Name",
