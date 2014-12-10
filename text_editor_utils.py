@@ -99,6 +99,7 @@ def set_text_cursor_position(line_index, character_index):
     bpy.ops.text.move(type = "LINE_BEGIN")
     for i in range(character_index):
         bpy.ops.text.move(type = "NEXT_CHARACTER")
+        if bpy.context.space_data.text.current_character >= character_index: break
     
 def get_existing_words():
     existing_words = []
