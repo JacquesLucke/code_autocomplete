@@ -157,6 +157,8 @@ class Documentation:
         props.append(PropertyDocumentation("selected_editable_sequences", type = "Sequence Sequence", owner = "Context"))
         
         props.append(PropertyDocumentation("active_operator", type = "Operator", owner = "Context"))
+        
+        props.append(PropertyDocumentation("event", type = "Event", is_readonly = True))
 
     
     def categorize_attributes(self):
@@ -227,6 +229,7 @@ class PropertyDocumentation:
         self.enum_items = enum_items
         
     def __repr__(self):
+        if self.owner is None: return self.name
         return self.owner + "." + self.name
         
         
