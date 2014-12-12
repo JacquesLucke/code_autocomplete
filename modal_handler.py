@@ -24,7 +24,7 @@ class AutoCompletionManager:
         event_used = self.auto_complete_box.update(event) or event_used
         
         if not event_used:
-            if event.type in show_event_types and event.value == "PRESS" and is_event_current_region(event):
+            if event.type in show_event_types and event.value == "PRESS" and not event.ctrl and is_event_current_region(event):
                 self.auto_complete_box.hide = False
                 self.auto_complete_box.selected_index = 0
                 update_word_list()

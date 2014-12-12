@@ -14,7 +14,7 @@ def get_extend_word_operators():
     return operators
     
     
-blender_names = ["register", "unregister", "default"]
+blender_names = ["register", "unregister", "default", "bl_info"]
 
 def update_word_list():
     global words
