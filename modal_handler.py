@@ -1,6 +1,6 @@
 import bpy, re, keyword
 from bgl import glBegin, glVertex2f, glEnd, GL_POLYGON
-from script_auto_complete.draw_functions import *
+from script_auto_complete.graphics import *
 from script_auto_complete.text_editor_utils import *
 from script_auto_complete.utils import *
 from script_auto_complete.operators.operator_hub import *
@@ -201,29 +201,80 @@ class AutoCompleteTextBox:
         text_size = 100 * scale
         line_height = 25 * scale
         
+        owner_label = Label()
+        owner_label.text = str(property)
+        owner_label.color = self.text_color
+        owner_label.text_size = text_size
+        owner_label.max_lines = 1
+        owner_label.font_id = 1
+        owner_dimensions = owner_label.get_draw_dimensions()
+
+        type_label = Label()
+        type_label.text = "  " + property.type
+        type_label.color = self.text_color
+        type_label.text_size = text_size
+        type_label.max_lines = 1
+        type_label.font_id = 1
+        type_dimensions = type_label.get_draw_dimensions()
+        
+        box_width = max(350 * scale, owner_dimensions[0], type_dimensions[0])
+        
+        description_label = Label()
+        description_label.text = property.description
+        description_label.color = self.text_color
+        description_label.text_size = text_size
+        description_label.max_lines = 15
+        description_label.font_id = 0
+        description_label.line_height = line_height
+        description_label.width = box_width
+        description_line_amount = len(description_label.get_draw_lines())
+        description_dimensions = description_label.get_draw_dimensions()
+        
+        
+        
+        box_width += 2 * padding
+        box_height = owner_dimensions[1] + \
+            type_dimensions[1] + \
+            description_dimensions[1] + \
+            line_height * 2.5
+            
+        if property.type == "Enum":
+            enum_items_label = Label()
+            enum_items_label.text = str(property.enum_items)
+            enum_items_label.color = self.text_color
+            enum_items_label.text_size = text_size * 0.9
+            enum_items_label.max_lines = 15
+            enum_items_label.font_id = 1
+            enum_items_label.width = box_width
+            enum_items_dimensions = enum_items_label.get_draw_dimensions()
+            
+            box_height += enum_items_dimensions[1]
+        
         outer_rectangle = Rectangle(position[0], position[1], box_width, box_height)
         draw_rectangle(outer_rectangle, color = self.info_background_color)
         
-        padding_rectangle = outer_rectangle.get_inset_rectangle(padding)
         
-        text_x = padding_rectangle.left
+        owner_position = [
+            outer_rectangle.left + padding,
+            outer_rectangle.top - padding - line_height / 4 * 3]
+        owner_label.draw(owner_position)
         
-        owner_text_y = padding_rectangle.top - line_height
-        draw_text(str(property), (text_x, owner_text_y), size = text_size, color = self.text_color)
+        type_position = [
+            owner_position[0],
+            owner_position[1] - line_height ]
+        type_label.draw(type_position)
         
-        type_text_y = padding_rectangle.top - 2 * line_height
-        draw_text("  " + property.type, (text_x, type_text_y), size = text_size, color = self.text_color)
+        description_position = [
+            owner_position[0],
+            type_position[1] - line_height * 1.5 ]
+        description_label.draw(description_position)
         
-        description_y = padding_rectangle.top - 3.5 * line_height
-        description_line_amount = draw_text_block(property.description, (text_x, description_y), size = text_size,
-            block_width = padding_rectangle.width, line_height = line_height, color = self.text_color, max_lines = 7)
-            
         if property.type == "Enum":
-            items = property.enum_items
-            items_y = padding_rectangle.top - (4 + description_line_amount) * line_height
-            draw_text_block(str(items), (text_x, items_y), size = text_size,
-                block_width = padding_rectangle.width, line_height = line_height, color = self.text_color, max_lines = 8 - description_line_amount)
-   
+            enum_items_position = [
+                owner_position[0],
+                description_position[1] - line_height * (description_line_amount + 0.5) ]
+            enum_items_label.draw(enum_items_position)
+        
         draw_rectangle_border(outer_rectangle, thickness = 1, color = self.info_border_color)
    
     def draw_function_info_box(self, position, function, scale):

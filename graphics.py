@@ -40,9 +40,9 @@ def draw_text_on_rectangle(text, rectangle, color = (0.2, 0.2, 0.2, 1.0), size =
         position = (center[0], rectangle.bottom + rectangle.height / 3)
     draw_text(text, position, size = size, horizontal_align = align, vertical_align = "BOTTOM")
 
-def draw_text(text = "", position = (0, 0), size = 200, horizontal_align = "LEFT", vertical_align = "BOTTOM", color = (0.2, 0.2, 0.2, 1.0)):
+def draw_text(text = "", position = (0, 0), size = 200, horizontal_align = "LEFT", vertical_align = "BOTTOM", color = (0.2, 0.2, 0.2, 1.0), font_id = font_id):
     
-    set_text_size(size)
+    set_text_size(size, font_id)
     dimensions = blf.dimensions(font_id, text)
     
     if horizontal_align == "CENTER":
@@ -63,7 +63,7 @@ def draw_text_block(text = "", position = (0, 0), size = 200, block_width = 400,
     return len(lines)
     
 def get_text_dimensions(text, size, font_id = font_id):
-    set_text_size(size)
+    set_text_size(size, font_id = font_id)
     return blf.dimensions(font_id, text)
     
 def set_text_size(size, font_id = font_id):
@@ -94,4 +94,98 @@ def restore_opengl_defaults():
     glLineWidth(1)
     glDisable(GL_BLEND)
     glColor4f(0.0, 0.0, 0.0, 1.0)
+    
+class Rectangle:
+    # (x, y) is the top left corner
+    def __init__(self, x, y, width, height):
+        self.left = x
+        self.right = x + width
+        self.top = y
+        self.bottom = y - height
+        
+    def move_down(self, amount):
+        self.top -= amount
+        self.bottom -= amount
+        
+    @property
+    def width(self):
+        return self.right - self.left
+    @property
+    def height(self):
+        return self.top - self.bottom
+        
+    @property
+    def center(self):
+        return [(self.left+self.right) / 2, (self.top+self.bottom) / 2]
+        
+    @property
+    def top_left(self):
+        return [self.left, self.top]
+        
+    def contains(self, x, y):
+        return self.left <= x <= self.right and self.top >= y >= self.bottom
+        
+    def get_inset_rectangle(self, border):
+        return Rectangle(self.left + border, self.top - border, self.width - 2*border, self.height - 2*border)
+    
+class Label:
+    def __init__(self):
+        self.text = ""
+        self.width = 1000
+        self.max_lines = 1
+        self.text_size = 100
+        self.line_height = 15
+        self.color = (0.2, 0.2, 0.2, 1.0)
+        self.font_id = 0
+        
+    def draw(self, position):
+        lines = self.get_draw_lines()
+        for i, line in enumerate(lines):
+            line_start_position = (position[0], position[1] - i * self.line_height)
+            draw_text(line, line_start_position, size = self.text_size, color = self.color, font_id = self.font_id)
+            
+    def get_draw_dimensions(self):
+        lines = self.get_draw_lines()
+        width = 0
+        for line in lines:
+            width = max(width, self.get_text_width(line))
+        height = len(lines) * self.line_height
+        return width, height
+        
+    def get_draw_lines(self):
+        text_lines = self.get_wrapped_lines()
+        draw_lines = text_lines[:self.max_lines]
+        
+        if len(text_lines) > self.max_lines:
+            draw_lines[-1] += "..."
+        
+        return draw_lines
+        
+    def get_wrapped_lines(self):
+        lines = []
+        text = self.text
+        while text != "":
+            next_line = self.get_text_to_line_end(text)
+            lines.append(next_line)
+            text = text[len(next_line):]
+            
+        for i in range(1, len(lines)):
+            lines[i] = lines[i].strip()
+        return lines
+            
+    def get_text_to_line_end(self, text):
+        index = 1
+        fitting_index = 0
+        while index > 0:
+            index = text.find(" ", index + 1)
+            if self.fits_in_line(text[:index]):
+                fitting_index = index
+            else:
+                return text[:fitting_index]
+        return text
+        
+    def fits_in_line(self, text):
+        return self.get_text_width(text) <= self.width
+    def get_text_width(self, text):
+        return get_text_dimensions(text, self.text_size, font_id = self.font_id)[0]
     
