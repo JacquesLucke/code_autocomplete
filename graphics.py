@@ -52,43 +52,14 @@ def draw_text(text = "", position = (0, 0), size = 200, horizontal_align = "LEFT
     glColor4f(*color)    
     blf.position(font_id, int(position[0]), int(position[1]), 0)
     blf.draw(font_id, text)
-    
-def draw_text_block(text = "", position = (0, 0), size = 200, block_width = 400, line_height = 15, color = (0.2, 0.2, 0.2, 1.0), max_lines = 1000):
-    lines = get_text_lines(text, size, block_width)
-    for i, line in enumerate(lines):
-        if i == max_lines - 1: line += " ..."
-        draw_position = (position[0], position[1] - i * line_height)
-        draw_text(line, draw_position, size, color = color)
-        if i == max_lines - 1: break
-    return len(lines)
-    
+
 def get_text_dimensions(text, size, font_id = font_id):
     set_text_size(size, font_id = font_id)
     return blf.dimensions(font_id, text)
     
 def set_text_size(size, font_id = font_id):
     blf.size(font_id, int(size), 12)
-    
-def get_text_lines(text, size, width, font_id = font_id):
-    lines = []
-    while text != "":
-        next_line = get_next_line(text, size, width, font_id)
-        lines.append(next_line.strip())
-        text = text[(len(next_line)):]   
-    return lines
-   
-def get_next_line(text, size, width, font_id = font_id):
-    index = 1
-    fitting_index = 0
-    while index > 0:
-        index = text.find(" ", index + 1)
-        subtext = text[:index]
-        dimensions = get_text_dimensions(subtext, size, font_id)
-        if dimensions[0] <= width:
-            fitting_index = index
-        else:
-            return text[:fitting_index]
-    return text
+
    
 def restore_opengl_defaults():
     glLineWidth(1)
@@ -157,7 +128,10 @@ class Label:
         draw_lines = text_lines[:self.max_lines]
         
         if len(text_lines) > self.max_lines:
-            draw_lines[-1] += "..."
+            last_line = draw_lines[-1] + "..."
+            if self.fits_in_line(last_line):
+                draw_lines[-1] = last_line
+            else: draw_lines[-1] = draw_lines[-1][:-3] + "..."
         
         return draw_lines
         

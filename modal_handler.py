@@ -244,6 +244,7 @@ class AutoCompleteTextBox:
             enum_items_label.text_size = text_size * 0.9
             enum_items_label.max_lines = 15
             enum_items_label.font_id = 1
+            enum_items_label.line_height = line_height * 0.9
             enum_items_label.width = box_width
             enum_items_dimensions = enum_items_label.get_draw_dimensions()
             
