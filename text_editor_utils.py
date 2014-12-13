@@ -56,6 +56,11 @@ def get_text_since_last_dot():
         line = line[:index]
     return line
      
+def get_text_before():
+    text_block = bpy.context.space_data.text
+    text_line = text_block.current_line
+    character_index = text_block.current_character
+    return text_line.body[:character_index]
      
 def get_last_word():
     text_block = bpy.context.space_data.text

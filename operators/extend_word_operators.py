@@ -7,8 +7,7 @@ words = []
 def get_extend_word_operators():
     operators = []
     word_start = get_word_start().upper()
-    all_existing_words = words
-    for word in all_existing_words:
+    for word in words:
         if word.upper().startswith(word_start):
             operators.append(ExtendWordOperator(word))
     return operators

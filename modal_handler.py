@@ -11,7 +11,9 @@ from script_auto_complete.documentation import *
 class BlockEvent(Exception):
     pass
 
-show_event_types = ["PERIOD"] + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+show_event_types = ["BACK_SPACE", "PERIOD", "SPACE", "COMMA", "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE",
+    "DEL", "SEMI_COLON", "MINUS", "RIGHT_BRACKET", "LEFT_BRACKET"] + \
+    list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 hide_event_types = ["RET", "LEFTMOUSE", "LEFT_ARROW", "RIGHT_ARROW"]
 
 class ModalHandler:
@@ -60,18 +62,19 @@ class AutoCompleteTextBox:
         self.hide = True
         
     def update(self, event):
-        self.update_visibility(event)
+        self.update_show(event)
         if self.hide or not is_event_current_region(event): return
         self.update_operator_selection(event)
         self.update_operator_execution(event)
+        self.update_hide(event)
         
-    def update_visibility(self, event):
-        # show when key is pressed
-        if event.type in show_event_types and event.value == "PRESS" and not event.ctrl and is_event_current_region(event):
+    def update_show(self, event):
+        if self.hide and event.type in show_event_types and event.value == "PRESS" and not event.ctrl and is_event_current_region(event):
             self.hide = False
             self.selected_index = 0
             update_word_list()
-        # hide on certain events    
+            
+    def update_hide(self, event):  
         if event.type in hide_event_types:
             self.hide = True
         
