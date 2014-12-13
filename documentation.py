@@ -14,8 +14,9 @@ class Documentation:
         all_bpy_types = inspect.getmembers(bpy.types)
         self.build_type_documentation(all_bpy_types)
         self.build_attribute_documentation(all_bpy_types)
+        self.build_operator_documentation()
         self.add_custom_properties() 
-        self.categorize_attributes()
+        self.categorize_data()
         self.is_build = True
         
     def reset(self):
@@ -26,6 +27,9 @@ class Documentation:
         self.properties = []
         self.properties_by_name = defaultdict(list)
         self.properties_by_owner = defaultdict(list)
+        self.operators = []
+        self.operators_by_container = defaultdict(list)
+        self.operators_by_full_name = {}
         self.is_build = False
         
     def build_type_documentation(self, bpy_types):
@@ -69,6 +73,32 @@ class Documentation:
             if parameter.is_output: outputs.append(parameter_doc)
             else: inputs.append(parameter_doc)
         return inputs, outputs
+         
+         
+    def build_operator_documentation(self):
+        container_names = dir(bpy.ops)
+        for container_name in container_names:
+            self.build_docs_for_container_name(container_name)
+            
+    def build_docs_for_container_name(self, container_name):
+        container = getattr(bpy.ops, container_name)
+        operator_names = dir(container)
+        for operator_name in operator_names:
+            self.build_doc_for_operator_name(container_name, container, operator_name)
+            
+    def build_doc_for_operator_name(self, container_name, container, operator_name):
+        operator = getattr(container, operator_name)
+        operator_rna = operator.get_rna().bl_rna
+        inputs = self.get_operator_inputs(operator_rna)
+        operator_doc = OperatorDocumentation(container_name, operator_name, operator_rna.description, inputs)
+        self.operators.append(operator_doc)
+        
+    def get_operator_inputs(self, operator_rna):
+        inputs = []
+        for property in operator_rna.properties:
+            if property.identifier != "rna_type":
+                inputs.append(self.get_documentation_of_property(property, None))
+        return inputs
             
     def get_documentation_of_property(self, property, owner):
         property_doc = PropertyDocumentation(property.identifier)
@@ -79,7 +109,7 @@ class Documentation:
         property_doc.is_readonly = property.is_readonly
         property_doc.owner = owner
         return property_doc
-    
+        
     def get_property_type(self, property):
         type = property.type
         
@@ -159,9 +189,10 @@ class Documentation:
         props.append(PropertyDocumentation("active_operator", type = "Operator", owner = "Context"))
         
         props.append(PropertyDocumentation("event", type = "Event", is_readonly = True))
-
+        for element in ("row", "col", "box", "subrow", "subcol", "subbox"):
+            props.append(PropertyDocumentation(element, type = "UILayout"))
     
-    def categorize_attributes(self):
+    def categorize_data(self):
         for property in self.properties:
             self.properties_by_name[property.name].append(property)
             self.properties_by_owner[property.owner].append(property)
@@ -170,6 +201,9 @@ class Documentation:
             self.functions_by_name[functions.name].append(functions)
             self.functions_by_owner[functions.owner].append(functions)
             
+        for operator in self.operators:
+            self.operators_by_container[operator.container_name].append(operator)
+            self.operators_by_full_name[operator.container_name + "." + operator.name] = operator
     
     # property methods
     def get_possible_subproperty_names_of_property(self, property_name):
@@ -217,6 +251,19 @@ class Documentation:
         
     def get_functions_by_name(self, function_name):
         return self.functions_by_name[function_name]
+        
+    # operator methods
+    def get_operator_container_names(self):
+        return [container_name for container_name in self.operators_by_container.keys()]
+        
+    def get_operator_names_in_container(self, container_name):
+        return [operator.name for operator in self.get_operators_in_container(container_name)]
+        
+    def get_operators_in_container(self, container_name):
+        return self.operators_by_container[container_name]
+        
+    def get_operator_by_full_name(self, full_name):
+        return self.operators_by_full_name.get(full_name, None)
               
         
 class PropertyDocumentation:
@@ -259,6 +306,19 @@ class TypeDocumentation:
 
     def __repr__(self):
         return self.name
+        
+class OperatorDocumentation:
+    def __init__(self, container_name = "", name = "", description = "", inputs = []):
+        self.container_name = container_name
+        self.name = name
+        self.description = description
+        self.inputs = inputs
+        
+    def get_input_names(self):
+        return [input.name for input in self.inputs]
+        
+    def __repr__(self):
+        return self.container_name + "." + self.name
         
 class WordDescription:
     def __init__(self, word, description):
