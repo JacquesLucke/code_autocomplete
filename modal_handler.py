@@ -211,6 +211,7 @@ class AutoCompleteTextBox:
 
         type_label = Label()
         type_label.text = "  " + property.type
+        if property.is_readonly: type_label.text += "  -  readonly"
         type_label.color = self.text_color
         type_label.text_size = text_size
         type_label.max_lines = 1
