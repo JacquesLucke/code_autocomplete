@@ -5,7 +5,7 @@ def get_templates():
     
 templates = {}
 
-templates["New Panel"] = ("Panel):", '''
+templates["New Panel"] = ("class \w*\(.*Panel\):", '''
     bl_idname = "name"
     bl_label = "label"
     bl_space_type = "VIEW_3D"
@@ -16,7 +16,7 @@ templates["New Panel"] = ("Panel):", '''
         layout = self.layout
         ''')
         
-templates["New Operator"] = ("Operator):", '''
+templates["New Operator"] = ("class \w*\(.*Operator\):", '''
     bl_idname = "my.operator"
     bl_label = "label"
     bl_description = ""
@@ -29,7 +29,7 @@ templates["New Operator"] = ("Operator):", '''
         return {"FINISHED"}
         ''')
 
-templates["Register"] = ("register():", '''
+templates["Register"] = ("def register\(\):", '''
     bpy.utils.register_module(__name__)
 
 def unregister():
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     register()
     ''')
     
-templates["Addon Info"] = ("bl_info =", ''' {
+templates["Addon Info"] = ("bl_info.*=.*", ''' {
     "name": "My Addon Name",
     "description": "Single Line Explanation",
     "author": "Your Name",
