@@ -7,6 +7,8 @@ from script_auto_complete.operators.operator_hub import *
 from script_auto_complete.operators.extend_word_operators import *
 from script_auto_complete.documentation import *
 
+class BlockEvent(Exception):
+    pass
 
 show_event_types = ["PERIOD"] + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 hide_event_types = ["RET", "LEFTMOUSE", "LEFT_ARROW", "RIGHT_ARROW"]
@@ -20,18 +22,12 @@ class AutoCompletionManager:
         bpy.types.SpaceTextEditor.draw_handler_remove(self._handle, "WINDOW")
         
     def update(self, event):
-        event_used = False
-        event_used = self.auto_complete_box.update(event) or event_used
-        
-        if not event_used:
-            if event.type in show_event_types and event.value == "PRESS" and not event.ctrl and is_event_current_region(event):
-                self.auto_complete_box.hide = False
-                self.auto_complete_box.selected_index = 0
-                update_word_list()
-            if event.type in hide_event_types:
-                self.auto_complete_box.hide = True
-        
-        return event_used
+        update_functions = [self.auto_complete_box.update]
+        try:
+            for update_function in update_functions:
+                update_function(event)
+            return False
+        except BlockEvent: return True
         
     def draw(self):    
         self.auto_complete_box.draw()
@@ -58,19 +54,54 @@ class AutoCompleteTextBox:
         self.hide = True
         
     def update(self, event):
-        if self.hide or not is_event_current_region(event): return False
+        self.update_visibility(event)
+        if self.hide or not is_event_current_region(event): return
+        self.update_operator_selection(event)
+        self.update_operator_execution(event)
         
+    def update_visibility(self, event):
+        # show when key is pressed
+        if event.type in show_event_types and event.value == "PRESS" and not event.ctrl and is_event_current_region(event):
+            self.hide = False
+            self.selected_index = 0
+            update_word_list()
+        # hide on certain events    
+        if event.type in hide_event_types:
+            self.hide = True
+        
+    def update_operator_selection(self, event):
+       self.move_selection_with_arrow_keys(event)
+       self.move_selection_with_mouse_wheel(event)
+       
+    def move_selection_with_arrow_keys(self, event):
         if event.value == "PRESS":
             if event.type == "DOWN_ARROW":
                 self.selected_index += 1
-                return True
+                raise BlockEvent()
             if event.type == "UP_ARROW":
                 self.selected_index -= 1
-                return True
-            if event.type == "TAB":
-                self.execute_selected_operator()
-                self.hide = True
-                return True
+                raise BlockEvent()
+                
+    def move_selection_with_mouse_wheel(self, event):
+        if self.operator_box_rectangle.contains(event.mouse_region_x, event.mouse_region_y):
+            if event.type == "WHEELUPMOUSE":
+                self.selected_index -= 1
+                raise BlockEvent()
+            if event.type == "WHEELDOWNMOUSE":
+                self.selected_index += 1
+                raise BlockEvent()
+        
+    def update_operator_execution(self, event):
+        self.execute_if_tab_is_pressed(event)
+        self.execute_on_mouse_click(event)   
+                    
+    def execute_if_tab_is_pressed(self, event):
+        if event.type == "TAB" and event.value == "PRESS":
+            self.execute_selected_operator()
+            self.hide = True
+            raise BlockEvent()
+            
+    def execute_on_mouse_click(self, event):
         if event.type in ["LEFTMOUSE", "MOUSEMOVE"] and event.value in ["PRESS", "RELEASE"]:
             for i, line_rectangle in enumerate(self.operator_line_rectangles):
                 if line_rectangle.contains(event.mouse_region_x, event.mouse_region_y):
@@ -81,15 +112,7 @@ class AutoCompleteTextBox:
                     else:
                         if event.value == "PRESS":
                             self.selected_index = index
-                    return True
-        if self.operator_box_rectangle.contains(event.mouse_region_x, event.mouse_region_y):
-            if event.type == "WHEELUPMOUSE":
-                self.selected_index -= 1
-                return True
-            if event.type == "WHEELDOWNMOUSE":
-                self.selected_index += 1
-                return True
-        return False
+                    raise BlockEvent()
         
     def execute_selected_operator(self):
         try:
