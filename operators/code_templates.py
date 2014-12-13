@@ -1,8 +1,6 @@
 def get_templates():
     return templates
-    
-    
-    
+     
 templates = {}
 
 templates["New Panel"] = ("class \w*\(.*Panel\):", '''

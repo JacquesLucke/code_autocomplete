@@ -2,6 +2,7 @@ import bpy, re, keyword
 from bgl import glBegin, glVertex2f, glEnd, GL_POLYGON
 from script_auto_complete.graphics import *
 from script_auto_complete.text_editor_utils import *
+from script_auto_complete.text_operators import *
 from script_auto_complete.utils import *
 from script_auto_complete.operators.operator_hub import *
 from script_auto_complete.operators.extend_word_operators import *
@@ -22,7 +23,7 @@ class ModalHandler:
         bpy.types.SpaceTextEditor.draw_handler_remove(self._handle, "WINDOW")
         
     def update(self, event):
-        update_functions = [self.auto_complete_box.update]
+        update_functions = [self.simplify_work_operators, self.auto_complete_box.update]
         try:
             for update_function in update_functions:
                 update_function(event)
@@ -32,6 +33,11 @@ class ModalHandler:
     def draw(self):    
         self.auto_complete_box.draw()
         
+    def simplify_work_operators(self, event):
+        if event.ctrl and event.type == "Y" and event.value == "PRESS":
+            select_string_definition()
+            raise BlockEvent()
+      
         
 class AutoCompleteTextBox:
     def __init__(self):

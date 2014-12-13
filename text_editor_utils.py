@@ -80,28 +80,9 @@ def get_last_word():
 variable_chars = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789")
 def is_variable_char(char):
     return char.upper() in variable_chars
-    
-def delete_last_characters(amount):
-    for i in range(amount):
-        bpy.ops.text.delete(type = "PREVIOUS_CHARACTER")
         
 def active_text_block_exists():
     return getattr(bpy.context.space_data, "text", None) is not None
-    
-def set_text_cursor_position(line_index, character_index):
-    current_line_index = bpy.context.space_data.text.current_line_index
-    line_changes = abs(current_line_index - line_index)
-    
-    if current_line_index > line_index: move_direction = "PREVIOUS_LINE"
-    else: move_direction = "NEXT_LINE"
-    
-    for i in range(line_changes):
-        bpy.ops.text.move(type = move_direction)
-        
-    bpy.ops.text.move(type = "LINE_BEGIN")
-    for i in range(character_index):
-        bpy.ops.text.move(type = "NEXT_CHARACTER")
-        if bpy.context.space_data.text.current_character >= character_index: break
     
 def get_existing_words():
     existing_words = []

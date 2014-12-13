@@ -1,6 +1,6 @@
 import bpy, re
 from script_auto_complete.operators.code_templates import *
-from script_auto_complete.operators.text_operators import *
+from script_auto_complete.text_operators import *
 
 def get_insert_template_operators():
     operators = []

@@ -1,5 +1,5 @@
 import bpy, inspect, re
-from script_auto_complete.operators.text_operators import *
+from script_auto_complete.text_operators import *
 from script_auto_complete.text_editor_utils import *
 from script_auto_complete.documentation import get_documentation
 from operator import attrgetter

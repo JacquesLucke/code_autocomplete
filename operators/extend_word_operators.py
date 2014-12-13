@@ -1,6 +1,6 @@
 import bpy, keyword, inspect
 from script_auto_complete.text_editor_utils import *
-from script_auto_complete.operators.text_operators import *
+from script_auto_complete.text_operators import *
 
 words = []
 
