@@ -260,6 +260,11 @@ class TypeDocumentation:
     def __repr__(self):
         return self.name
         
+class WordDescription:
+    def __init__(self, word, description):
+        self.word = word
+        self.description = description        
+        
         
 documentation = Documentation()
 def get_documentation():

@@ -1,6 +1,7 @@
 import bpy, re
 from script_auto_complete.text_operators import *
 from script_auto_complete.text_editor_utils import *
+from script_auto_complete.documentation import *
 from operator import attrgetter
 
 def get_suggestion_from_text_before():
@@ -18,11 +19,7 @@ def get_suggestion_from_text_before():
                 operators.append(ExtendWordOperator(value))
     operators.sort(key = attrgetter("display_name"))
     return operators
-    
-class WordDescription:
-    def __init__(self, word, description):
-        self.word = word
-        self.description = description
+
     
 suggestions = {}
 
@@ -30,7 +27,8 @@ suggestions[".*bl_space_type.*=.*\""] = [
     "EMPTY", "VIEW_3D", "TIMELINE", "GRAPH_EDITOR", "DOPESHEET", "NLA_EDITOR", "IMAGE_EDITOR", "SEQUENCE_EDITOR", "CLIP_EDITOR",
     "TEXT_EDITOR", "NODE_EDITOR", "LOGIC_EDITOR", "PROPERTIES", "OUTLINER", "USER_PREFERENCES", "INFO", "FILE_BROWSER", "CONSOLE" ]
     
-suggestions[".*bl_region_type.*=.*\""] = ["WINDOW", ("HEADER", "header in each editor"), "CHANNELS", "TEMPORARY", "UI", ("TOOLS", "Left tool box"), "TOOL_PROPS", "PREVIEW"]
+suggestions[".*bl_region_type.*=.*\""] = ["WINDOW", "HEADER", "CHANNELS", "TEMPORARY", "UI",
+    ("TOOLS", "e.g. left sidebar in 3D view"), ("TOOL_PROPS", "e.g. lower part of the left side part in 3D view"), "PREVIEW"]
 
 suggestions["class \w*\("] = ["bpy", "types", "Panel", "Menu", "Operator"]
 suggestions["class \w*\(bpy\."] = ["types"]

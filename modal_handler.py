@@ -235,6 +235,8 @@ class AutoCompleteTextBox:
             self.draw_property_info_box(position, attribute, scale)
         elif isinstance(attribute, FunctionDocumentation):
             self.draw_function_info_box(position, attribute, scale)
+        elif isinstance(attribute, WordDescription):
+            self.draw_description_box(position, attribute, scale)
         
     def draw_property_info_box(self, position, property, scale):
         box_width = 400 * scale
@@ -380,6 +382,35 @@ class AutoCompleteTextBox:
         description_position = [
             owner_position[0],
             return_position[1] - line_height * 1.5 ]
+        description_label.draw(description_position)
+        
+        draw_rectangle_border(outer_rectangle, thickness = 1, color = self.info_border_color)
+        
+    def draw_description_box(self, position, word_description, scale):
+        text_size = 100 * scale
+        padding = 8 * scale
+        line_height = 25 * scale
+        box_width = 350 * scale
+        
+        description_label = Label()
+        description_label.text = word_description.description
+        description_label.color = self.text_color
+        description_label.text_size = text_size
+        description_label.max_lines = 15
+        description_label.font_id = 0
+        description_label.line_height = line_height
+        description_label.width = box_width
+        description_line_amount = len(description_label.get_draw_lines())
+        description_dimensions = description_label.get_draw_dimensions()
+        
+        box_width = 2 * padding + description_dimensions[0]
+        box_height = 2 * padding + description_dimensions[1]
+        outer_rectangle = Rectangle(position[0], position[1], box_width, box_height)
+        draw_rectangle(outer_rectangle, color = self.info_background_color)
+        
+        description_position = [
+            outer_rectangle.left + padding,
+            outer_rectangle.top - padding - line_height / 4 * 3 ]
         description_label.draw(description_position)
         
         draw_rectangle_border(outer_rectangle, thickness = 1, color = self.info_border_color)
