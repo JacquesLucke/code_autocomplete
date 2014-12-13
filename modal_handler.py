@@ -148,11 +148,10 @@ class AutoCompleteTextBox:
         padding_rectangle = outer_rectangle.get_inset_rectangle(padding)
         
         self.operator_line_rectangles = []
-        for i, operator in enumerate(operators):
-            if not self.top_index <= i <= self.bottom_index: continue
-            draw_index = i - self.top_index
+        for draw_index, operator in enumerate(operators[self.top_index:self.bottom_index+1]):
+            operator_index = self.top_index + draw_index
             line_rectangle = self.get_operator_line_rectangle(outer_rectangle, padding_rectangle, element_height, draw_index)
-            if i == self.selected_index:
+            if operator_index == self.selected_index:
                 draw_rectangle(line_rectangle, color = self.selection_color)
                 draw_rectangle_border(line_rectangle, thickness = 1, color = self.selection_border_color)
             text_draw_rectangle = self.get_text_draw_rectangle(padding_rectangle, element_height, draw_index)
