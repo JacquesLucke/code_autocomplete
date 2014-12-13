@@ -13,7 +13,7 @@ class BlockEvent(Exception):
 show_event_types = ["PERIOD"] + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 hide_event_types = ["RET", "LEFTMOUSE", "LEFT_ARROW", "RIGHT_ARROW"]
 
-class AutoCompletionManager:
+class ModalHandler:
     def __init__(self):
         self._handle = bpy.types.SpaceTextEditor.draw_handler_add(self.draw, (), "WINDOW", "POST_PIXEL")
         self.auto_complete_box = AutoCompleteTextBox()
