@@ -107,15 +107,14 @@ class AutoCompleteTextBox:
         operators = get_text_operators()
         self.correct_index(len(operators))
         if len(operators) == 0: return
+        active_operator = self.get_active_operator(operators)
         
         editor_info = TextEditorInfo()
         scale = editor_info.scale
         
         box_position_info = self.get_operator_box_position_info(editor_info)  
         operator_box_rectangle = self.draw_operator_box(box_position_info, operators, scale)
-        
-        
-        active_operator = self.get_active_operator(operators)
+         
         attribute_info_position = (operator_box_rectangle.right + 10 * scale, operator_box_rectangle.top)
         self.draw_attribute_info_box(attribute_info_position, getattr(active_operator, "additional_data", None), scale)
     
@@ -135,9 +134,9 @@ class AutoCompleteTextBox:
         box_width = 300 * scale
         padding = 8 * scale
         x, y, align = position_info
-        element_height = 26 * scale
+        line_height = 26 * scale
         text_size = 100 * scale
-        box_height = min(len(operators), get_line_amount()) * element_height + 2 * padding
+        box_height = min(len(operators), get_line_amount()) * line_height + 2 * padding
     
         if align == "Top":
             outer_rectangle = Rectangle(x, y, box_width, box_height)
@@ -150,32 +149,44 @@ class AutoCompleteTextBox:
         self.operator_line_rectangles = []
         for draw_index, operator in enumerate(operators[self.top_index:self.bottom_index+1]):
             operator_index = self.top_index + draw_index
-            line_rectangle = self.get_operator_line_rectangle(outer_rectangle, padding_rectangle, element_height, draw_index)
+            line_rectangle = self.get_operator_line_rectangle(outer_rectangle, padding_rectangle, line_height, draw_index)
+            self.operator_line_rectangles.append(line_rectangle)
+            
             if operator_index == self.selected_index:
                 draw_rectangle(line_rectangle, color = self.selection_color)
                 draw_rectangle_border(line_rectangle, thickness = 1, color = self.selection_border_color)
-            text_draw_rectangle = self.get_text_draw_rectangle(padding_rectangle, element_height, draw_index)
-            self.draw_operator_in_rectangle(operator, text_draw_rectangle, text_size, self.text_color)
-            self.operator_line_rectangles.append(line_rectangle)
+                
+            operator_label = Label()
+            operator_label.text = operator.display_name
+            operator_label.color = self.text_color
+            operator_label.text_size = text_size
+            operator_label.max_lines = 1
+            operator_label.font_id = 1
+            
+            label_position = [
+                line_rectangle.left + padding,
+                line_rectangle.top - line_height / 4 * 3 ]
+            if operator.align == "CENTER": label_position[0] = line_rectangle.left + (line_rectangle.width - operator_label.get_draw_dimensions()[0]) / 2
+            operator_label.draw(label_position)
             
         draw_rectangle_border(outer_rectangle, color = self.border_color, thickness = 1)
         
         return outer_rectangle
    
-    def get_operator_line_rectangle(self, outer_rectangle, padding_rectangle, element_height, draw_index):
+    def get_operator_line_rectangle(self, outer_rectangle, padding_rectangle, line_height, draw_index):
         line_rectangle = Rectangle(
             x = outer_rectangle.left,
-            y = padding_rectangle.top - draw_index * element_height,
+            y = padding_rectangle.top - draw_index * line_height,
             width = outer_rectangle.width,
-            height = element_height)
+            height = line_height)
         return line_rectangle
         
-    def get_text_draw_rectangle(self, padding_rectangle, element_height, draw_index):
+    def get_text_draw_rectangle(self, padding_rectangle, line_height, draw_index):
         draw_rectangle = Rectangle(
             x = padding_rectangle.left,
-            y = padding_rectangle.top - draw_index * element_height,
+            y = padding_rectangle.top - draw_index * line_height,
             width = padding_rectangle.width,
-            height = element_height)
+            height = line_height)
         return draw_rectangle
         
     def draw_operator_in_rectangle(self, operator, rectangle, text_size, color):
