@@ -81,7 +81,9 @@ variable_chars = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789")
 def is_variable_char(char):
     return char.upper() in variable_chars
     
-    
+def delete_last_characters(amount):
+    for i in range(amount):
+        bpy.ops.text.delete(type = "PREVIOUS_CHARACTER")
         
 def active_text_block_exists():
     return getattr(bpy.context.space_data, "text", None) is not None

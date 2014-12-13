@@ -12,7 +12,8 @@ class ExtendWordOperator:
         
     def execute(self, text_block):        
         word_start = get_word_start()
-        bpy.ops.text.insert(text = self.target_word[len(word_start):])
+        delete_last_characters(len(word_start))
+        bpy.ops.text.insert(text = self.target_word)
 
 
 class InsertTextOperator:

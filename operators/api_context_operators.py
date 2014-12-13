@@ -7,7 +7,7 @@ from operator import attrgetter
 def get_api_context_operators():
     operators = []
     last_word = get_last_word()
-    word_start = get_word_start()
+    word_start = get_word_start().lower()
     
     documentation = get_documentation()
     attributes = documentation.get_possible_subproperties_of_property(last_word)
@@ -15,9 +15,10 @@ def get_api_context_operators():
     
     secondary_operators = []
     for attribute in attributes:
-        if attribute.name.startswith(word_start):
+        attribute_name = attribute.name.lower()
+        if attribute_name.startswith(word_start):
             operators.append(ExtendWordOperator(attribute.name, additional_data = attribute))
-        elif word_start in attribute.name:
+        elif word_start in attribute_name:
             secondary_operators.append(ExtendWordOperator(attribute.name, additional_data = attribute))
             
     operators.extend(secondary_operators)
