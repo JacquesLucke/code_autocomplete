@@ -12,7 +12,7 @@ class BlockEvent(Exception):
     pass
 
 show_event_types = ["BACK_SPACE", "PERIOD", "SPACE", "COMMA", "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE",
-    "DEL", "SEMI_COLON", "MINUS", "RIGHT_BRACKET", "LEFT_BRACKET"] + \
+    "DEL", "SEMI_COLON", "MINUS", "RIGHT_BRACKET", "LEFT_BRACKET", "SLASH"] + \
     list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 hide_event_types = ["RET", "LEFTMOUSE", "LEFT_ARROW", "RIGHT_ARROW"]
 

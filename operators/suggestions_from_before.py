@@ -1,6 +1,7 @@
 import bpy
 from script_auto_complete.text_operators import *
 from script_auto_complete.text_editor_utils import *
+from script_auto_complete.documentation import *
 from operator import attrgetter
 import script_auto_complete.expression_utils as exp
 

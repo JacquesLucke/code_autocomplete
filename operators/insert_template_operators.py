@@ -59,7 +59,7 @@ templates["Addon Info"] = ("bl_info.*=.*", ''' {
     "category": "Object" }
     ''')    
     
-templates["GPL License"] = "'''", """
+templates["License Header"] = "'''", """
 Copyright (C) 2014 YOUR NAME
 YOUR@MAIL.com
 

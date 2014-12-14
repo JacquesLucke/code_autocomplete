@@ -88,7 +88,7 @@ def set_text_cursor_position(line_index, character_index, select = False):
     move_cursor("LINE_BEGIN", select)
     for i in range(character_index):
         move_cursor("NEXT_CHARACTER", select)
-        if bpy.context.space_data.text.current_character >= character_index: break
+        if bpy.context.space_data.text.select_end_character >= character_index: break
         
 def move_cursor(type, select = False):
     if select: bpy.ops.text.move_select(type = type)
