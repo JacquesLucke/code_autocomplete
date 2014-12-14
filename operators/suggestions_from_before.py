@@ -32,6 +32,10 @@ suggestions[".*bl_region_type.*=.*(\"|\')"] = ["WINDOW", "HEADER", "CHANNELS", "
     
 suggestions[".*bl_category.*=.*(\"|\')"] = ["Tools", "Create", "Relations", "Animation", "Physics", "Grease Pencil"]
 
-suggestions["class \w*\("] = ["bpy", "types", "Panel", "Menu", "Operator"]
+suggestions["class \w*\("] = ["bpy", "Panel", "Menu", "Operator"]
 suggestions["class \w*\(bpy\."] = ["types"]
 suggestions["class \w*\(bpy\.types\."] = ["Panel", "Menu", "Operator"]
+
+suggestions["bpy\."] = ["context", "data", "ops", "types", "utils", "path", "app", "props"]
+
+suggestions["bpy\.props\."] = [type_name for type_name in dir(bpy.props) if type_name[0] != "_"]
