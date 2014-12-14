@@ -1,24 +1,27 @@
-import bpy, re
+import bpy
 from script_auto_complete.text_operators import *
 from script_auto_complete.text_editor_utils import *
-from script_auto_complete.documentation import *
 from operator import attrgetter
+import script_auto_complete.expression_utils as exp
 
 def get_suggestion_from_text_before():
     operators = []
     text_before = get_text_before()
-    for key, values in suggestions.items():
-        match = re.match(key, text_before)
-        if match is None: continue
-        word_start = text_before[match.end():].upper()
+    for pattern, values in suggestions.items():
+        word_start = exp.get_text_after_match(pattern, text_before)
+        if word_start is None: continue
+        word_start = word_start.upper()
         for value in values:
-            if isinstance(value, tuple):
-                if value[0].upper().startswith(word_start):
-                    operators.append(ExtendWordOperator(value[0], additional_data = WordDescription(value[0], value[1])))
-            elif value.upper().startswith(word_start):
-                operators.append(ExtendWordOperator(value))
+            create_operator_from_value(operators, word_start, value)
     operators.sort(key = attrgetter("display_name"))
     return operators
+    
+def create_operator_from_value(operators, word_start, value):
+    if isinstance(value, tuple):
+        if value[0].upper().startswith(word_start):
+            operators.append(ExtendWordOperator(value[0], additional_data = WordDescription(value[0], value[1])))
+    elif value.upper().startswith(word_start):
+        operators.append(ExtendWordOperator(value))
    
     
 suggestions = {}
