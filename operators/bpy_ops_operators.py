@@ -9,7 +9,6 @@ def get_bpy_ops_operators():
     operators = []
     text_before = get_text_before()
     parents = exp.get_parent_words(text_before)
-    parents.reverse()
     if len(parents) >= 2:
         if parents[0] == "bpy" and parents[1] == "ops":
             if len(parents) == 2:

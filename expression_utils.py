@@ -7,6 +7,7 @@ def get_parent_words(text):
         if parent == None: break
         text = text[:-len(get_current_word(text))-1]
         parents.append(parent)
+    parents.reverse()
     return parents
     
 def get_text_after_match(pattern, text):
@@ -23,7 +24,7 @@ def get_current_word(text):
     return ""
     
 def get_parent_word(text):
-    match = re.search("\w+\.(?!.*\W)", text)
+    match = re.search("(\w+)\.(?!.*\W)", text)
     if match:
-        return match.group()[:-1]
+        return match.group(1)
     return None
