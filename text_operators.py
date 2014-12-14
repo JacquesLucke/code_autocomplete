@@ -1,5 +1,6 @@
 import bpy
 from script_auto_complete.text_editor_utils import *
+from script_auto_complete.expression_utils import *
         
         
 class ExtendWordOperator:
@@ -9,8 +10,9 @@ class ExtendWordOperator:
         self.additional_data = additional_data
         self.align = "LEFT"
         
-    def execute(self, text_block):        
-        word_start = get_word_start()
+    def execute(self, text_block):   
+        text_before = get_text_before()
+        word_start = get_current_word(text_before)
         delete_last_characters(len(word_start))
         bpy.ops.text.insert(text = self.target_word)
 

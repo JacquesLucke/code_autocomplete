@@ -34,5 +34,5 @@ def get_ops_operators(text_before, container_name):
     ops = documentation.get_operators_in_container(container_name)
     for op in ops:
         if op.name.startswith(word_start):
-            operators.append(ExtendWordOperator(op.name))
+            operators.append(ExtendWordOperator(op.name, additional_data = op))
     return operators
