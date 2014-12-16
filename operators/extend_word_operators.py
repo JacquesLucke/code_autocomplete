@@ -1,12 +1,14 @@
 import bpy, keyword, inspect
 from script_auto_complete.text_editor_utils import *
 from script_auto_complete.text_operators import *
+from script_auto_complete.expression_utils import *
 
 words = []
 
 def get_extend_word_operators():
     operators = []
-    word_start = get_word_start().upper()
+    text_before = get_text_before()
+    word_start = get_current_word(text_before).upper()
     for word in words:
         if word.upper().startswith(word_start):
             operators.append(ExtendWordOperator(word))
