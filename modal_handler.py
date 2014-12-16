@@ -75,8 +75,9 @@ class AutoCompleteTextBox:
             update_word_list()
             
     def update_hide(self, event):  
-        if event.type in hide_event_types:
+        if event.type in hide_event_types or event.alt:
             self.hide = True
+            
         
     def update_operator_selection(self, event):
        self.move_selection_with_arrow_keys(event)
@@ -237,6 +238,8 @@ class AutoCompleteTextBox:
             self.draw_function_info_box(position, attribute, scale)
         elif isinstance(attribute, WordDescription):
             self.draw_description_box(position, attribute, scale)
+        elif isinstance(attribute, OperatorDocumentation):
+            self.draw_operator_info_box(position, attribute, scale)
         
     def draw_property_info_box(self, position, property, scale):
         box_width = 400 * scale
@@ -400,7 +403,6 @@ class AutoCompleteTextBox:
         description_label.font_id = 0
         description_label.line_height = line_height
         description_label.width = box_width
-        description_line_amount = len(description_label.get_draw_lines())
         description_dimensions = description_label.get_draw_dimensions()
         
         box_width = 2 * padding + description_dimensions[0]
@@ -413,6 +415,82 @@ class AutoCompleteTextBox:
             outer_rectangle.top - padding - line_height / 4 * 3 ]
         description_label.draw(description_position)
         
+        draw_rectangle_border(outer_rectangle, thickness = 1, color = self.info_border_color)
+        
+    def draw_operator_info_box(self, position, operator, scale):
+        text_size = 100 * scale
+        padding = 8 * scale
+        line_height = 25 * scale
+        box_width = 350 * scale
+        
+        header_label = Label()
+        header_label.text = operator.name + "()"
+        header_label.color = self.text_color
+        header_label.text_size = text_size
+        header_label.font_id = 1
+        header_width = header_label.get_draw_dimensions()[0]
+        
+        box_width = max(500 * scale, header_width)
+        
+        
+        description_label = Label()
+        description_label.text = operator.description
+        description_label.color = self.text_color
+        description_label.max_lines = 15
+        description_label.text_size = text_size
+        description_label.font_id = 0
+        description_label.line_height = line_height
+        description_label.width = box_width
+        description_dimensions = description_label.get_draw_dimensions()
+        
+        input_labels = []
+        inputs_height = 0
+        for input in operator.inputs:
+            input_name_label = Label()
+            input_name_label.text = input.name + "  -  " + input.type
+            input_name_label.color = self.text_color
+            input_name_label.text_size = text_size * 0.97
+            input_name_label.font_id = 1
+            
+            input_description_label = Label()
+            input_description_label.text = input.description
+            input_description_label.text_size = text_size * 0.92
+            input_description_label.color = self.text_color
+            input_description_label.max_lines = 5
+            input_description_label.line_height = line_height
+            input_description_label.width = box_width - padding
+            input_description_label.font_id = 0
+            input_description_height = input_description_label.get_draw_dimensions()[1]
+            
+            input_labels.append((input_name_label, input_description_label, input_description_height))
+            inputs_height += line_height * 1.3 + input_description_height
+        
+        box_width += 3 * padding
+        box_height = 3 * padding + description_dimensions[1] + inputs_height + line_height
+        
+        outer_rectangle = Rectangle(position[0], position[1], box_width, box_height)
+        draw_rectangle(outer_rectangle, color = self.info_background_color)
+        
+        header_position = [
+            outer_rectangle.left + padding,
+            outer_rectangle.top - padding - line_height / 4 * 3 ]
+        header_label.draw(header_position)
+        
+        description_position = [
+            header_position[0] + padding,
+            header_position[1] - line_height * 1.2 ]
+        description_label.draw(description_position)
+        
+        input_name_position = [ header_position[0], description_position[1] - description_dimensions[1] * 1.2 ]
+        input_description_position = [ description_position[0], input_name_position[1] - line_height ]
+        for input_name_label, input_description_label, input_description_height in input_labels:
+            input_name_label.draw(input_name_position)
+            input_description_label.draw(input_description_position)
+            
+            y_offset = line_height * 1.3 + input_description_height
+            input_name_position[1] -= y_offset
+            input_description_position[1] -= y_offset
+            
         draw_rectangle_border(outer_rectangle, thickness = 1, color = self.info_border_color)
    
     @property
