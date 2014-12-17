@@ -27,6 +27,16 @@ class InsertTextOperator:
         bpy.ops.text.insert(text = self.insert_text)
         
         
+class DynamicSnippetOperator:
+    def __init__(self, name, insert_snippet_function):
+        self.display_name = name
+        self.insert_snippet_function = insert_snippet_function
+        self.align = "CENTER"
+        
+    def execute(self, text_block):
+        self.insert_snippet_function(text_block)
+        
+        
 def delete_last_characters(amount):
     for i in range(amount):
         bpy.ops.text.delete(type = "PREVIOUS_CHARACTER")
