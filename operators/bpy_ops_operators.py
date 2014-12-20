@@ -1,38 +1,42 @@
-import bpy, re
-from script_auto_complete.text_operators import *
-from script_auto_complete.text_editor_utils import *
+from script_auto_complete.text_operators import ExtendWordOperator
 from script_auto_complete.documentation import get_documentation
 from operator import attrgetter
-import script_auto_complete.expression_utils as exp
 
-def get_bpy_ops_operators():
-    operators = []
-    text_before = get_text_before()
-    parents = exp.get_parent_words(text_before)
+def get_bpy_ops_operators(text_block):
+    all_operators = []
+    parents = text_block.parents_of_current_word
     if len(parents) >= 2:
         if parents[0] == "bpy" and parents[1] == "ops":
             if len(parents) == 2:
-                operators.extend(get_container_operators(text_before))
+                all_operators.extend(get_container_operators())
             if len(parents) == 3:
-                operators.extend(get_ops_operators(text_before, parents[2]))
-    return operators
+                all_operators.extend(get_ops_operators(parents[2]))
     
-def get_container_operators(text_before):
+    operators = []
+    secondary_operators = []
+    current_word = text_block.current_word
+    for operator in all_operators:
+        if operator.target_word.startswith(current_word):
+            operators.append(operator)
+        elif current_word in operator.target_word:
+            secondary_operators.append(operator)
+                
+    operators.sort(key = attrgetter("display_name"))
+    secondary_operators.sort(key = attrgetter("display_name"))
+    return operators + secondary_operators
+    
+def get_container_operators():
     operators = []
     documentation = get_documentation()
     container_names = documentation.get_operator_container_names()
-    word_start = exp.get_current_word(text_before)
     for name in container_names:
-        if name.startswith(word_start):
-            operators.append(ExtendWordOperator(name))
+        operators.append(ExtendWordOperator(name))
     return operators
     
-def get_ops_operators(text_before, container_name):
+def get_ops_operators(container_name):
     operators = []
     documentation = get_documentation()
-    word_start = exp.get_current_word(text_before)
     ops = documentation.get_operators_in_container(container_name)
     for op in ops:
-        if op.name.startswith(word_start):
-            operators.append(ExtendWordOperator(op.name, additional_data = op))
+        operators.append(ExtendWordOperator(op.name, additional_data = op))
     return operators
