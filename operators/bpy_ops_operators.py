@@ -1,16 +1,12 @@
 from script_auto_complete.text_operators import ExtendWordOperator
 from script_auto_complete.documentation import get_documentation
 from operator import attrgetter
+import re
 
 def get_bpy_ops_operators(text_block):
     all_operators = []
-    parents = text_block.parents_of_current_word
-    if len(parents) >= 2:
-        if parents[0] == "bpy" and parents[1] == "ops":
-            if len(parents) == 2:
-                all_operators.extend(get_container_operators())
-            if len(parents) == 3:
-                all_operators.extend(get_ops_operators(parents[2]))
+    all_operators.extend(get_operators_with_call_trigger(text_block))
+    all_operators.extend(get_operators_with_ui_trigger(text_block))
     
     operators = []
     secondary_operators = []
@@ -24,6 +20,27 @@ def get_bpy_ops_operators(text_block):
     operators.sort(key = attrgetter("display_name"))
     secondary_operators.sort(key = attrgetter("display_name"))
     return operators + secondary_operators
+    
+def get_operators_with_call_trigger(text_block):
+    operators = []
+    parents = text_block.parents_of_current_word
+    if len(parents) >= 2:
+        if parents[0] == "bpy" and parents[1] == "ops":
+            if len(parents) == 2:
+                operators.extend(get_container_operators())
+            if len(parents) == 3:
+                operators.extend(get_ops_operators(parents[2]))
+    return operators
+                
+def get_operators_with_ui_trigger(text_block):
+    operators = []
+    text = text_block.get_current_text_after_pattern("\.operator\((\"|\')")
+    if text is not None:
+        if "." in text:
+            operators.extend(get_ops_operators(text.split(".")[0]))
+        else:
+            operators.extend(get_container_operators())                
+    return operators
     
 def get_container_operators():
     operators = []
