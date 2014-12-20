@@ -2,6 +2,7 @@ import bpy, re
 
 class TextBlock:
     def __init__(self, text_block):
+        if text_block is None: raise AttributeError()
         self.text_block = text_block
         
     @property
@@ -98,8 +99,12 @@ class TextBlock:
         for match in re.finditer(pattern, text): pass
         return match
         
+    def replace_current_word(self, new_word):
+        self.delete_current_word()
+        self.insert(new_word)
+        
     def delete_current_word(self):
-        match = re.search("\w*\z", self.text_before_cursor)
+        match = re.search("\w*$", self.text_before_cursor)
         if match:
             length = match.end() - match.start()
             for i in range(length):

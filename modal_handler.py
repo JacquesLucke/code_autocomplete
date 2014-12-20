@@ -1,5 +1,6 @@
 import bpy, re, keyword
 from bgl import glBegin, glVertex2f, glEnd, GL_POLYGON
+from script_auto_complete.text_block import TextBlock
 from script_auto_complete.graphics import *
 from script_auto_complete.text_editor_utils import *
 from script_auto_complete.text_operators import *
@@ -127,8 +128,8 @@ class AutoCompleteTextBox:
     def execute_selected_operator(self):
         try:
             operator = self.selected_operator
-            operator.execute(bpy.context.space_data.text)
-        except: pass
+            operator.execute(TextBlock(bpy.context.space_data.text))
+        except: print("error")
         
     @property
     def bottom_index(self):

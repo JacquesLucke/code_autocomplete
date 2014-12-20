@@ -10,11 +10,8 @@ class ExtendWordOperator:
         self.additional_data = additional_data
         self.align = "LEFT"
         
-    def execute(self, text_block):   
-        text_before = get_text_before()
-        word_start = get_current_word(text_before)
-        delete_last_characters(len(word_start))
-        bpy.ops.text.insert(text = self.target_word)
+    def execute(self, text_block):
+        text_block.replace_current_word(self.target_word)
 
 
 class InsertTextOperator:
@@ -24,7 +21,7 @@ class InsertTextOperator:
         self.align = "CENTER"
         
     def execute(self, text_block):
-        bpy.ops.text.insert(text = self.insert_text)
+        text_block.insert(self.insert_text)
         
         
 class DynamicSnippetOperator:
@@ -36,10 +33,6 @@ class DynamicSnippetOperator:
     def execute(self, text_block):
         self.insert_snippet_function(text_block)
         
-        
-def delete_last_characters(amount):
-    for i in range(amount):
-        bpy.ops.text.delete(type = "PREVIOUS_CHARACTER")
         
 def select_string_definition():
     text_block = bpy.context.space_data.text
