@@ -1,8 +1,3 @@
-import bpy
-from script_auto_complete.text_editor_utils import *
-from script_auto_complete.expression_utils import *
-        
-        
 class ExtendWordOperator:
     def __init__(self, target_word, additional_data = None):
         self.target_word = target_word

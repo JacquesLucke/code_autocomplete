@@ -1,8 +1,6 @@
 import bpy, keyword
 from script_auto_complete.text_operators import ExtendWordOperator
 
-words = []
-
 def get_extend_word_operators(text_block):
     operators = []
     current_word = text_block.current_word.upper()
@@ -20,6 +18,7 @@ builtin_functions = (
     
 blender_names = ["register", "unregister", "default", "bl_info"]
 
+words = []
 def update_word_list(text_block):
     global words
     words = []
