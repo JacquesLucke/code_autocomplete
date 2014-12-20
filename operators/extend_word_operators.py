@@ -1,16 +1,13 @@
-import bpy, keyword, inspect
-from script_auto_complete.text_editor_utils import *
-from script_auto_complete.text_operators import *
-from script_auto_complete.expression_utils import *
+import bpy, keyword
+from script_auto_complete.text_operators import ExtendWordOperator
 
 words = []
 
-def get_extend_word_operators():
+def get_extend_word_operators(text_block):
     operators = []
-    text_before = get_text_before()
-    word_start = get_current_word(text_before).upper()
+    current_word = text_block.current_word.upper()
     for word in words:
-        if word.upper().startswith(word_start):
+        if word.upper().startswith(current_word):
             operators.append(ExtendWordOperator(word))
     return operators
     
@@ -23,10 +20,10 @@ builtin_functions = (
     
 blender_names = ["register", "unregister", "default", "bl_info"]
 
-def update_word_list():
+def update_word_list(text_block):
     global words
     words = []
-    words.extend(get_existing_words())
+    words.extend(text_block.get_existing_words())
     words.extend(keyword.kwlist)
     words.extend(blender_names)
     words.extend(builtin_functions)

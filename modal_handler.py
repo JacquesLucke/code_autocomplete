@@ -1,5 +1,4 @@
-import bpy, re, keyword
-from bgl import glBegin, glVertex2f, glEnd, GL_POLYGON
+import bpy
 from script_auto_complete.text_block import TextBlock
 from script_auto_complete.graphics import *
 from script_auto_complete.text_editor_utils import *
@@ -73,7 +72,7 @@ class AutoCompleteTextBox:
         if self.hide and event.type in show_event_types and event.value == "PRESS" and not event.ctrl and is_event_current_region(event):
             self.hide = False
             self.selected_index = 0
-            update_word_list()
+            update_word_list(TextBlock(bpy.context.space_data.text))
             
     def update_hide(self, event):  
         if event.type in hide_event_types or event.alt:
