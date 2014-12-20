@@ -27,6 +27,7 @@ templates["New Operator"] = ("class \w*\(.*Operator\):", '''
     bl_idname = "my.operator"
     bl_label = "label"
     bl_description = ""
+    bl_options = {"Register"}
     
     @classmethod
     def poll(cls, context):
