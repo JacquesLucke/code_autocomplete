@@ -138,7 +138,7 @@ class AutoCompleteTextBox:
     def draw(self):
         if self.hide: return
         
-        operators = get_text_operators()
+        operators = get_text_operators(TextBlock(bpy.context.space_data.text))
         self.correct_index(len(operators))
         if len(operators) == 0: return
         active_operator = self.get_active_operator(operators)
@@ -496,7 +496,7 @@ class AutoCompleteTextBox:
    
     @property
     def selected_operator(self):
-        operators = get_text_operators()
+        operators = get_text_operators(TextBlock(bpy.context.space_data.text))
         return self.get_active_operator(operators)
         
     def get_active_operator(self, operators):

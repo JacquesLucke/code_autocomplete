@@ -2,12 +2,12 @@ import bpy, re
 from script_auto_complete.text_operators import *
 from script_auto_complete.text_editor_utils import *
 
-def get_insert_template_operators():
+def get_insert_template_operators(text_block):
     operators = []
-    text_before = get_text_before()
-    for name, (before, text) in templates.items():
-        if re.match(before, text_before) is not None:
-            operators.append(InsertTextOperator(name, text))
+    text_before = text_block.text_before_cursor
+    for name, (pattern, snippet) in templates.items():
+        if re.match(pattern, text_before) is not None:
+            operators.append(InsertTextOperator(name, snippet))
     return operators
     
     

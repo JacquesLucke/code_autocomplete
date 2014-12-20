@@ -5,9 +5,9 @@ from script_auto_complete.operators.suggestions_from_before import get_suggestio
 from script_auto_complete.operators.bpy_ops_operators import get_bpy_ops_operators
 from script_auto_complete.operators.dynamic_snippets_operators import get_dynamic_snippets_operators
 
-def get_text_operators():
+def get_text_operators(text_block):
     operators = []
-    operators.extend(get_insert_template_operators())
+    operators.extend(get_insert_template_operators(text_block))
     operators.extend(get_dynamic_snippets_operators())
     operators.extend(get_bpy_ops_operators())
     operators.extend(get_suggestion_from_text_before())
