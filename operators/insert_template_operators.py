@@ -1,6 +1,5 @@
-import bpy, re
-from script_auto_complete.text_operators import *
-from script_auto_complete.text_editor_utils import *
+import re
+from script_auto_complete.text_operators import InsertTextOperator
 
 def get_insert_template_operators(text_block):
     operators = []
