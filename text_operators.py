@@ -20,10 +20,11 @@ class InsertTextOperator:
         
         
 class DynamicSnippetOperator:
-    def __init__(self, name, insert_snippet_function):
+    def __init__(self, name, function, additional_data):
         self.display_name = name
-        self.insert_snippet_function = insert_snippet_function
+        self.function = function
+        self.additional_data = additional_data
         self.align = "CENTER"
         
     def execute(self, text_block):
-        self.insert_snippet_function(text_block)       
+        self.function(text_block, self.additional_data)       

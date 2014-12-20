@@ -99,6 +99,9 @@ class TextBlock:
         for match in re.finditer(pattern, text): pass
         return match
         
+    def search_pattern_in_current_line(self, pattern):
+        return re.search(pattern, self.current_line)
+        
     def replace_current_word(self, new_word):
         self.delete_current_word()
         self.insert(new_word)

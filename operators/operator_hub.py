@@ -8,7 +8,7 @@ from script_auto_complete.operators.dynamic_snippets_operators import get_dynami
 def get_text_operators(text_block):
     operators = []
     operators.extend(get_insert_template_operators(text_block))
-    operators.extend(get_dynamic_snippets_operators())
+    operators.extend(get_dynamic_snippets_operators(text_block))
     operators.extend(get_bpy_ops_operators(text_block))
     operators.extend(get_suggestion_from_text_before(text_block))
     operators.extend(get_api_context_operators(text_block))

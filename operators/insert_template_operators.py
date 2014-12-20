@@ -36,6 +36,14 @@ templates["New Operator"] = ("class \w*\(.*Operator\):", '''
     def execute(self, context):
         return {"FINISHED"}
         ''')
+        
+templates["New Menu"] = ("class \w*\(.*Menu\):", '''
+    bl_idname = "view3D.custom_menu"
+    bl_label = "Custom Menu"
+    
+    def draw(self, context):
+        layout = self.layout
+        ''')
 
 templates["Register"] = ("def register\(\):", '''
     bpy.utils.register_module(__name__)

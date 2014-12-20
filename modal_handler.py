@@ -127,7 +127,7 @@ class AutoCompleteTextBox:
         try:
             operator = self.selected_operator
             operator.execute(TextBlock(bpy.context.space_data.text))
-        except: print("error")
+        except Exception as e: print(e)
         
     @property
     def bottom_index(self):
