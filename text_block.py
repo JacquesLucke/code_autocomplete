@@ -109,6 +109,40 @@ class TextBlock:
             length = match.end() - match.start()
             for i in range(length):
                 self.remove_character_before_cursor()
+                
+    def select_current_string(self):        
+        string_letter = self.get_string_definition_type(self.current_line, self.current_character_index)
+        if string_letter is None: return
+        start, end = self.get_range_surrounded_by_letter(self.current_line, string_letter, self.current_character_index)
+        if start != end:
+            self.set_selection_in_line(start, end)
+     
+    def get_string_definition_type(self, text, current_index):
+        string_letter = None
+        for i in range(current_index):
+            letter = text[i]
+            if letter == '"':
+                if string_letter == '"':
+                    string_letter = None
+                elif string_letter is None: 
+                    string_letter = letter
+            if letter == "'":
+                if string_letter == "'":
+                    string_letter = None
+                elif string_letter is None: 
+                    string_letter = letter
+        return string_letter
+
+    def get_range_surrounded_by_letter(self, text, letter, current_index):
+        text_before = text[:current_index]
+        text_after = text[current_index:]
+        
+        start_index = text_before.rfind(letter) + 1
+        end_index = text_after.find(letter) + len(text_before)
+        
+        if 0 < start_index < end_index:
+            return start_index+1, end_index+1
+        return current_index, current_index 
         
     def set_selection_in_line(self, start, end):
         line = self.current_line_index

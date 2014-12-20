@@ -36,7 +36,7 @@ class ModalHandler:
         
     def simplify_work_operators(self, event):
         if event.ctrl and event.type == "Y" and event.value == "PRESS":
-            select_string_definition()
+            get_active_text_block().select_current_string()
             raise BlockEvent()
       
         
@@ -136,7 +136,7 @@ class AutoCompleteTextBox:
     def draw(self):
         if self.hide: return
         
-        operators = get_text_operators(TextBlock(bpy.context.space_data.text))
+        operators = get_text_operators(get_active_text_block())
         self.correct_index(len(operators))
         if len(operators) == 0: return
         active_operator = self.get_active_operator(operators)
@@ -494,7 +494,7 @@ class AutoCompleteTextBox:
    
     @property
     def selected_operator(self):
-        operators = get_text_operators(TextBlock(bpy.context.space_data.text))
+        operators = get_text_operators(get_active_text_block())
         return self.get_active_operator(operators)
         
     def get_active_operator(self, operators):
@@ -519,6 +519,8 @@ def get_addon_preferences():
 def clamp(value, min_value, max_value):
     return min(max(value, min_value), max_value)    
       
+def get_active_text_block():
+    return TextBlock(bpy.context.space_data.text)
     
 def is_event_current_region(event):
     region = bpy.context.region
