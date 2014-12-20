@@ -3,9 +3,8 @@ from script_auto_complete.text_block import TextBlock
 from script_auto_complete.graphics import *
 from script_auto_complete.text_editor_utils import *
 from script_auto_complete.text_operators import *
-from script_auto_complete.utils import *
-from script_auto_complete.operators.operator_hub import *
-from script_auto_complete.operators.extend_word_operators import *
+from script_auto_complete.operators.operator_hub import get_text_operators
+from script_auto_complete.operators.extend_word_operators import update_word_list
 from script_auto_complete.documentation import *
 
 class BlockEvent(Exception):
@@ -516,6 +515,9 @@ def get_addon_preferences():
     addon = bpy.context.user_preferences.addons.get("script_auto_complete")
     if addon is None: return None
     else: return addon.preferences
+    
+def clamp(value, min_value, max_value):
+    return min(max(value, min_value), max_value)    
       
     
 def is_event_current_region(event):
