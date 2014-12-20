@@ -98,6 +98,13 @@ class TextBlock:
         for match in re.finditer(pattern, text): pass
         return match
         
+    def delete_current_word(self):
+        match = re.search("\w*\z", self.text_before_cursor)
+        if match:
+            length = match.end() - match.start()
+            for i in range(length):
+                self.remove_character_before_cursor()
+        
     def set_selection_in_line(self, start, end):
         line = self.current_line_index
         if start > end: start, end = end, start
@@ -154,6 +161,10 @@ class TextBlock:
         self.make_active()
         if select: bpy.ops.text.move_select(type = type)
         else: bpy.ops.text.move(type = type)
+        
+    def remove_character_before_cursor(self):
+        self.make_active()
+        bpy.ops.text.delete(type = "PREVIOUS_CHARACTER")
         
     def make_active(self):
         bpy.context.space_data.text = self.text_block
