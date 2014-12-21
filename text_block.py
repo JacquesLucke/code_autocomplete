@@ -179,6 +179,13 @@ class TextBlock:
             return start_index+1, end_index+1
         return current_index, current_index 
         
+    def select_text_in_current_line(self, text):
+        line = self.current_line
+        start = line.find(text)
+        if start != -1:
+            end = start + len(text)
+            self.set_selection_in_line(start + 1, end + 1)
+        
     def set_selection_in_line(self, start, end):
         line = self.current_line_index
         if start > end: start, end = end, start

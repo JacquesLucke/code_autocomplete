@@ -23,7 +23,11 @@ def replace_match(text_block, match, text):
     
 def create_snippet_objects():
     global snippets
-    snippets = [NewClassSnippet(), NewPropertySnippet(), SetupKeymapsSnippet()]
+    snippets = [
+        NewClassSnippet(),
+        NewPropertySnippet(),
+        SetupKeymapsSnippet(),
+        OperatorKeymapItemSnippet() ]
 
 class NewClassSnippet:
     expression = "=(p|o|m)\|(\w+)"
@@ -46,7 +50,7 @@ class NewClassSnippet:
         if t == "m": return "Menu"
         
 class NewPropertySnippet:
-    expression = "=(\w{3,})\|(\w+)\|(.*)"
+    expression = "=([A-Z]\w+)\|(\w+)\|(.*)"
     
     def insert_snippet(self, text_block, match):
         property_type = self.get_property_type(match)
@@ -98,7 +102,7 @@ def register_keymaps():
     global addon_keymaps
     wm = bpy.context.window_manager
     km = wm.keyconfigs.addon.keymaps.new(name = "3D View", space_type = "VIEW_3D")
-    kmi = km.keymap_items.new("transform.translate", "K", "PRESS")
+    kmi = km.keymap_items.new("transform.translate", type = "K", value = "PRESS")
     
     addon_keymaps.append(km)
     
@@ -132,4 +136,32 @@ def unregister_keymaps():
             if text in line:
                 return i
                 
+class OperatorKeymapItemSnippet:
+    expression = "=key\|(\w+)(\|shift|\|strg)?(\|shift|\|strg)?"
+                
+    def insert_snippet(self, text_block, match):
+        key = self.get_key(match)
+        optional_key_string = self.get_optional_key_string(match)
+        text = "kmi = km.keymap_items.new(\"transform.translate\", type = \"" + key + "\", value = \"PRESS\"" + optional_key_string +")"
+        replace_match(text_block, match, text)
+        text_block.select_text_in_current_line("transform.translate")
+                
+    def get_snippet_name(self, match):
+        return "Define Key for Operator"
+        
+    def get_key(self, match):
+        return match.group(1).upper()
+        
+    def get_optional_key_string(self, match):
+        text = ""
+        if self.use_strg(match): text += ", strg = True"
+        if self.use_shift(match): text += ", shift = True"
+        return text
+        
+    def use_strg(self, match):
+        return "|strg" in (match.group(2), match.group(3))
+        
+    def use_shift(self, match):
+        return "|shift" in (match.group(2), match.group(3))
+        
 create_snippet_objects()  
