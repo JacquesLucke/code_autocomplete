@@ -504,7 +504,7 @@ class AutoCompleteTextBox:
         
     def correct_index(self, amount):
         self.selected_index = clamp(self.selected_index, 0, max(amount - 1, 0))
-        self.top_index = clamp(self.top_index, 0, amount - 1)
+        self.top_index = clamp(self.top_index, 0, max(amount - get_line_amount() - 1, 0))
         self.top_index = clamp(self.top_index, self.selected_index - get_line_amount() + 1, self.selected_index)
       
 def get_line_amount():
