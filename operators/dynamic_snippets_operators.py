@@ -102,7 +102,6 @@ def register_keymaps():
     global addon_keymaps
     wm = bpy.context.window_manager
     km = wm.keyconfigs.addon.keymaps.new(name = "3D View", space_type = "VIEW_3D")
-    kmi = km.keymap_items.new("transform.translate", type = "K", value = "PRESS")
     
     addon_keymaps.append(km)
     
@@ -137,7 +136,7 @@ def unregister_keymaps():
                 return i
                 
 class OperatorKeymapItemSnippet:
-    expression = "=key\|(\w+)(\|shift|\|strg)?(\|shift|\|strg)?"
+    expression = "=key\|(\w+)((\|shift|\|(strg|ctrl)|\|alt)*)"
                 
     def insert_snippet(self, text_block, match):
         key = self.get_key(match)
@@ -154,14 +153,18 @@ class OperatorKeymapItemSnippet:
         
     def get_optional_key_string(self, match):
         text = ""
-        if self.use_strg(match): text += ", strg = True"
+        if self.use_strg(match): text += ", ctrl = True"
         if self.use_shift(match): text += ", shift = True"
+        if self.use_alt(match): text += ", alt = True"
         return text
         
     def use_strg(self, match):
-        return "|strg" in (match.group(2), match.group(3))
+        return "|strg" in match.group(2) or "|ctrl" in match.group(2)
         
     def use_shift(self, match):
-        return "|shift" in (match.group(2), match.group(3))
+        return "|shift" in match.group(2)
+        
+    def use_alt(self, match):
+        return "|alt" in match.group(2)
         
 create_snippet_objects()  
