@@ -27,7 +27,7 @@ def create_snippet_objects():
         NewClassSnippet(),
         NewPropertySnippet(),
         SetupKeymapsSnippet(),
-        OperatorKeymapItemSnippet() ]
+        KeymapItemSnippet() ]
 
 class NewClassSnippet:
     expression = "=(p|o|m)\|(\w+)"
@@ -135,21 +135,27 @@ def unregister_keymaps():
             if text in line:
                 return i
                 
-class OperatorKeymapItemSnippet:
-    expression = "=key\|(\w+)((\|shift|\|(strg|ctrl)|\|alt)*)"
+class KeymapItemSnippet:
+    expression = "=key(\|[mp])?\|(\w+)((\|shift|\|(strg|ctrl)|\|alt)*)"
                 
     def insert_snippet(self, text_block, match):
+        item_type = self.get_item_type(match)
+        operator_name = self.get_default_operator_name(match, item_type)
         key = self.get_key(match)
         optional_key_string = self.get_optional_key_string(match)
-        text = "kmi = km.keymap_items.new(\"transform.translate\", type = \"" + key + "\", value = \"PRESS\"" + optional_key_string +")"
+        property_set_string = self.get_property_set_string(match, item_type)
+        text = "kmi = km.keymap_items.new(\""+operator_name+"\", type = \""+key+"\", value = \"PRESS\""+optional_key_string+")"
         replace_match(text_block, match, text)
-        text_block.select_text_in_current_line("transform.translate")
+        text_block.line_break()
+        text_block.insert(property_set_string)
+        if item_type == "Normal":
+            text_block.select_text_in_current_line("transform.translate")
                 
     def get_snippet_name(self, match):
         return "Define Key for Operator"
         
     def get_key(self, match):
-        return match.group(1).upper()
+        return match.group(2).upper()
         
     def get_optional_key_string(self, match):
         text = ""
@@ -158,13 +164,28 @@ class OperatorKeymapItemSnippet:
         if self.use_alt(match): text += ", alt = True"
         return text
         
+    def get_default_operator_name(self, match, t):
+        if t == "Menu": return "wm.call_menu"
+        if t == "Pie": return "wm.call_menu_pie"   
+        return "transform.translate"
+        
+    def get_property_set_string(self, match, t):
+        if t in ["Menu", "Pie"]: return "kmi.properties.name = "
+        return ""
+        
+    def get_item_type(self, match):
+        t = match.group(1)
+        if t == "|m": return "Menu"
+        if t == "|p": return "Pie"
+        return "Normal"
+        
     def use_strg(self, match):
-        return "|strg" in match.group(2) or "|ctrl" in match.group(2)
+        return "|strg" in match.group(3) or "|ctrl" in match.group(3)
         
     def use_shift(self, match):
-        return "|shift" in match.group(2)
+        return "|shift" in match.group(3)
         
     def use_alt(self, match):
-        return "|alt" in match.group(2)
+        return "|alt" in match.group(3)
         
 create_snippet_objects()  

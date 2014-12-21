@@ -48,4 +48,4 @@ suggestions[".*bpy\."] = ["context", "data", "ops", "types", "utils", "path", "a
 
 suggestions[".*bpy\.props\."] = [type_name for type_name in dir(bpy.props) if type_name[0] != "_"]
 
-suggestions["keymap_items.new\((\"|\')wm\.call_menu.*\)\.properties\.name\s*=\s*(\"|\')"] = get_documentation().get_menu_names()
+suggestions["kmi\.properties\.name\s*=\s*(\"|\')"] = get_documentation().get_menu_names()

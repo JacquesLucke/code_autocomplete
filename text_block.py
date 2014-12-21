@@ -247,6 +247,10 @@ class TextBlock:
         self.make_active()
         bpy.ops.text.delete(type = "PREVIOUS_CHARACTER")
         
+    def line_break(self):
+        self.make_active()
+        bpy.ops.text.line_break()
+        
     def make_active(self):
         bpy.context.space_data.text = self.text_block
         
