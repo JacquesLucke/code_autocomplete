@@ -15,8 +15,7 @@ def get_dynamic_snippets_operators(text_block):
 def insert_dynamic_snippet(text_block, snippet):
     match = text_block.search_pattern_in_current_line(snippet.expression)
     if match:
-        text = snippet.get_snippet_text(match)
-        replace_match(text_block, match, text)
+        snippet.insert_snippet(text_block, match)
     
 def replace_match(text_block, match, text):
     text_block.set_selection_in_line(match.start() + 1, match.end() + 1)
@@ -28,6 +27,9 @@ def create_snippet_objects():
 
 class NewClassSnippet:
     expression = "=(p|o|m)\|(\w+)"
+    
+    def insert_snippet(self, text_block, match):
+        replace_match(text_block, match, self.get_snippet_text(match))
     
     def get_snippet_name(self, match):
         return "New " + self.get_type(match) + " '" + self.get_name(match) + "'"
@@ -42,6 +44,8 @@ class NewClassSnippet:
         if t == "p": return "Panel"
         if t == "o": return "Operator"
         if t == "m": return "Menu"
+        
+
         
         
 create_snippet_objects()  
