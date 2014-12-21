@@ -38,6 +38,7 @@ def get_operators_with_ui_trigger(text_block):
     for pattern in possible_patterns:
         text = text_block.get_current_text_after_pattern(pattern)
         if text is not None:
+            if not re.fullmatch("[\w\.]*", text): continue
             if "." in text:
                 operators.extend(get_ops_operators(text.split(".")[0]))
             else:

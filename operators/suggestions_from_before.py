@@ -1,6 +1,6 @@
 import bpy
 from script_auto_complete.text_operators import ExtendWordOperator
-from script_auto_complete.documentation import WordDescription
+from script_auto_complete.documentation import WordDescription, get_documentation
 from operator import attrgetter
 
 def get_suggestion_from_text_before(text_block):
@@ -47,3 +47,5 @@ suggestions["class \w*\(bpy\.types\."] = ["Panel", "Menu", "Operator"]
 suggestions[".*bpy\."] = ["context", "data", "ops", "types", "utils", "path", "app", "props"]
 
 suggestions[".*bpy\.props\."] = [type_name for type_name in dir(bpy.props) if type_name[0] != "_"]
+
+suggestions["keymap_items.new\((\"|\')wm\.call_menu.*\)\.properties\.name\s*=\s*(\"|\')"] = get_documentation().get_menu_names()

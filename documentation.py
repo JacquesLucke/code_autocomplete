@@ -1,9 +1,10 @@
-import bpy, inspect
+import bpy, inspect, re
 from collections import defaultdict
 
 class Documentation:
     def __init__(self):
         self.is_build = False
+        self.reset()
         
     def build_if_necessary(self):
         if not self.is_build:
@@ -16,6 +17,7 @@ class Documentation:
         self.build_attribute_documentation(all_bpy_types)
         self.build_operator_documentation()
         self.add_custom_properties() 
+        self.find_registered_menu_names()
         self.categorize_data()
         self.is_build = True
         
@@ -30,6 +32,7 @@ class Documentation:
         self.operators = []
         self.operators_by_container = defaultdict(list)
         self.operators_by_full_name = {}
+        self.menu_names = []
         self.is_build = False
         
     def build_type_documentation(self, bpy_types):
@@ -191,6 +194,16 @@ class Documentation:
         props.append(PropertyDocumentation("event", type = "Event", is_readonly = True))
         for element in ("row", "col", "box", "subrow", "subcol", "subbox", "pie"):
             props.append(PropertyDocumentation(element, type = "UILayout"))
+            
+    def find_registered_menu_names(self):
+        classes = bpy.types.Menu.__subclasses__()
+        for cl in classes:
+            self.menu_names.append(self.get_name_of_menu_class(cl))
+            
+    def get_name_of_menu_class(self, menu_class):
+        text = str(menu_class)
+        match = re.search("\.(?!.*\.)(\w*)", text)
+        return match.group(1)
     
     def categorize_data(self):
         for property in self.properties:
@@ -264,6 +277,12 @@ class Documentation:
         
     def get_operator_by_full_name(self, full_name):
         return self.operators_by_full_name.get(full_name, None)
+        
+    # menu methods
+    def get_menu_names(self):
+        if len(self.menu_names) == 0:
+            self.find_registered_menu_names()
+        return self.menu_names
               
         
 class PropertyDocumentation:
