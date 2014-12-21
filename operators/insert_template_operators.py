@@ -4,15 +4,15 @@ from script_auto_complete.text_operators import InsertTextOperator
 def get_insert_template_operators(text_block):
     operators = []
     text_before = text_block.text_before_cursor
-    for name, (pattern, snippet) in templates.items():
+    for name, pattern, snippet in templates:
         if re.match(pattern, text_before) is not None:
             operators.append(InsertTextOperator(name, snippet))
     return operators
     
     
-templates = {}
+templates = []
 
-templates["New Panel"] = ("class \w*\(.*Panel\):", '''
+templates.append(("New Panel", "class \w*\(.*Panel\):", '''
     bl_idname = "name"
     bl_label = "label"
     bl_space_type = "VIEW_3D"
@@ -21,9 +21,9 @@ templates["New Panel"] = ("class \w*\(.*Panel\):", '''
     
     def draw(self, context):
         layout = self.layout
-        ''')
+        '''))
         
-templates["New Operator"] = ("class \w*\(.*Operator\):", '''
+templates.append(("New Operator", "class \w*\(.*Operator\):", '''
     bl_idname = "my.operator"
     bl_label = "label"
     bl_description = ""
@@ -35,17 +35,75 @@ templates["New Operator"] = ("class \w*\(.*Operator\):", '''
     
     def execute(self, context):
         return {"FINISHED"}
-        ''')
+        '''))
         
-templates["New Menu"] = ("class \w*\(.*Menu\):", '''
+templates.append(("New Modal Operator", "class \w*\(.*Operator\):", '''
+    bl_idname = "my.modal_operator"
+    bl_label = "label"
+    bl_description = ""
+    bl_options = {"REGISTER"}
+    
+    @classmethod
+    def poll(cls, context):
+        return True
+        
+    def modal(self, context, event):
+    
+        if event.type == "LEFTMOUSE":
+            return {"FINISHED"}
+    
+        if event.type in {"RIGHTMOUSE", "ESC"}:
+            return {"CANCELLED"}
+            
+        return {"RUNNING_MODAL"}
+    
+    def invoke(self, context, event):
+        context.window_manager.modal_handler_add(self)
+        return {"RUNNING_MODAL"}
+        '''))
+
+templates.append(("New Modal Operator Draw", "class \w*\(.*Operator\):", '''
+    bl_idname = "my.modal_operator"
+    bl_label = "label"
+    bl_description = ""
+    bl_options = {"REGISTER"}
+    
+    @classmethod
+    def poll(cls, context):
+        return True
+        
+    def modal(self, context, event):
+        context.area.tag_redraw()
+        
+        if event.type == "LEFTMOUSE":
+            bpy.types.SpaceView3D.draw_handler_remove(self._handle, "WINDOW")
+            return {"FINISHED"}
+            
+        if event.type in {"RIGHTMOUSE", "ESC"}:
+            bpy.types.SpaceView3D.draw_handler_remove(self._handle, "WINDOW")
+            return {"CANCELLED"}
+            
+        return {"RUNNING_MODAL"}
+    
+    def invoke(self, context, event):
+        args = (self, context)
+        self._handle = bpy.types.SpaceView3D.draw_handler_add(draw_callback_px, args, "WINDOW", "POST_PIXEL")
+        context.window_manager.modal_handler_add(self)
+        return {"RUNNING_MODAL"}
+        
+def draw_callback_px(self, context):
+    pass
+    '''))          
+        
+templates.append(("New Menu", "class \w*\(.*Menu\):", '''
     bl_idname = "view3D.custom_menu"
     bl_label = "Custom Menu"
     
     def draw(self, context):
         layout = self.layout
-        ''')
+        '''))
 
-templates["Register"] = ("def register\(\):", '''
+templates.append(("Register", "def register\(\):", '''
     bpy.utils.register_module(__name__)
 
 def unregister():
@@ -53,9 +111,9 @@ def unregister():
     
 if __name__ == "__main__":
     register()
-    ''')
+    '''))
     
-templates["Addon Info"] = ("bl_info.*=.*", ''' {
+templates.append(("Addon Info", "bl_info.*=.*", ''' {
     "name": "My Addon Name",
     "description": "Single Line Explanation",
     "author": "Your Name",
@@ -65,9 +123,9 @@ templates["Addon Info"] = ("bl_info.*=.*", ''' {
     "warning": "This is an unstable version",
     "wiki_url": "",
     "category": "Object" }
-    ''')    
+    '''))    
     
-templates["License Header"] = "'''", """
+templates.append(("License Header", "'''", """
 Copyright (C) 2014 YOUR NAME
 YOUR@MAIL.com
 
@@ -86,4 +144,4 @@ Created by YOUR NAME
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-"""    
+"""))
