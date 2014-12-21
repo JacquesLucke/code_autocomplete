@@ -23,7 +23,7 @@ def replace_match(text_block, match, text):
     
 def create_snippet_objects():
     global snippets
-    snippets = [NewClassSnippet()]
+    snippets = [NewClassSnippet(), NewPropertySnippet()]
 
 class NewClassSnippet:
     expression = "=(p|o|m)\|(\w+)"
@@ -45,7 +45,49 @@ class NewClassSnippet:
         if t == "o": return "Operator"
         if t == "m": return "Menu"
         
-
+class NewPropertySnippet:
+    expression = "=(\w{3,})\|(\w+)\|(.*)"
+    
+    def insert_snippet(self, text_block, match):
+        property_type = self.get_property_type(match)
+        if property_type is None: return
+        property_definition = self.get_property_definition(match)
+        replace_match(text_block, match, property_definition)
+    
+    def get_snippet_name(self, match):
+        property_type = self.get_property_type(match)
+        if property_type is not None:
+            return "New " + property_type
+        return "Property Definition ..."
+        
+    def get_property_definition(self, match):
+        bpy_type = self.get_bpy_type(match)
+        name = self.get_property_name(match)
+        property_type = self.get_property_type(match)
+        default = self.get_default(match)
+        
+        return "bpy.types." + bpy_type + "." + name + " = bpy.props." + property_type + "(name = \"" + name + "\", default = " + default + ")"
+    
+    def get_property_type(self, match):
+        default = self.get_default(match)
+        tests = [
+            ("[0-9]+\.[0-9]+", "FloatProperty"),
+            ("[0-9]+", "IntProperty"),
+            ("(\"|\').*(\"|\')", "StringProperty") ]
+            
+        for exp, property_type in tests:
+            if re.match(exp, default):
+                return property_type
+        return None
+    
+    def get_bpy_type(self, match):
+        return match.group(1)
+        
+    def get_property_name(self, match):
+        return match.group(2)
+        
+    def get_default(self, match):
+        return match.group(3)
         
         
 create_snippet_objects()  
