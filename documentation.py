@@ -189,7 +189,7 @@ class Documentation:
         props.append(PropertyDocumentation("active_operator", type = "Operator", owner = "Context"))
         
         props.append(PropertyDocumentation("event", type = "Event", is_readonly = True))
-        for element in ("row", "col", "box", "subrow", "subcol", "subbox"):
+        for element in ("row", "col", "box", "subrow", "subcol", "subbox", "pie"):
             props.append(PropertyDocumentation(element, type = "UILayout"))
     
     def categorize_data(self):

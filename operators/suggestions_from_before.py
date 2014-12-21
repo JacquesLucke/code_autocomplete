@@ -25,12 +25,14 @@ def create_operator_from_suggestion(operators, word_start, suggestion):
     
 suggestions = {}
 
-suggestions["\s*bl_space_type *= *(\"|\')"] = [
+space_types = [
     "EMPTY", "VIEW_3D", "TIMELINE", "GRAPH_EDITOR", "DOPESHEET", "NLA_EDITOR", "IMAGE_EDITOR", "SEQUENCE_EDITOR", "CLIP_EDITOR",
     "TEXT_EDITOR", "NODE_EDITOR", "LOGIC_EDITOR", "PROPERTIES", "OUTLINER", "USER_PREFERENCES", "INFO", "FILE_BROWSER", "CONSOLE" ]
-    
-suggestions["\s*bl_region_type *= *(\"|\')"] = ["WINDOW", "HEADER", "CHANNELS", "TEMPORARY", "UI",
+suggestions["space_type *= *(\"|\')"] = space_types
+ 
+region_types = ["WINDOW", "HEADER", "CHANNELS", "TEMPORARY", "UI",
     ("TOOLS", "e.g. left sidebar in 3D view"), ("TOOL_PROPS", "e.g. lower part of the left side part in 3D view"), "PREVIEW"]
+suggestions["region_type *= *(\"|\')"] = region_types
     
 suggestions["\s*bl_category *= *(\"|\')"] = ["Tools", "Create", "Relations", "Animation", "Physics", "Grease Pencil"]
 
