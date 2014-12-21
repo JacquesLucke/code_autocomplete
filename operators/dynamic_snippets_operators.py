@@ -90,7 +90,7 @@ class NewPropertySnippet:
         return match.group(3)
         
 class SetupKeymapsSnippet:
-    expression = "=keys"
+    expression = "=keymaps"
     
     function_lines = '''
 addon_keymaps = []
@@ -122,7 +122,7 @@ def unregister_keymaps():
         unregister_index = self.find_index(lines, "bpy.utils.unregister_module(__name__)") + 1
         lines.insert(unregister_index, "    unregister_keymaps()")
         text_block.lines = lines
-        text_block.set_selection(functions_index + 1, 0, functions_index + len(self.function_lines) - 2, 100)
+        text_block.set_selection(functions_index + 1, 0, functions_index + len(self.function_lines) - 3, 100)
     
     def get_snippet_name(self, match):
         return "Setup Keymap Registration"

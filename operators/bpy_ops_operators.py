@@ -35,6 +35,8 @@ def get_operators_with_call_trigger(text_block):
 def get_operators_with_ui_trigger(text_block):
     operators = []
     text = text_block.get_current_text_after_pattern("\.operator\((\"|\')")
+    if text is None:
+        text = text_block.get_current_text_after_pattern("\.keymap_items\.new\((\"|\')")
     if text is not None:
         if "." in text:
             operators.extend(get_ops_operators(text.split(".")[0]))

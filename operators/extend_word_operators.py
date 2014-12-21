@@ -16,7 +16,7 @@ builtin_functions = (
     "min", "next", "object", "oct", "open", "ord", "pow", "print", "property", "range", "repr", "reversed", "round", "set",
     "setattr", "slice", "sorted", "staticmethod", "str", "sum", "super", "tuple", "type", "vars", "zip", "__import__")  
     
-blender_names = ["register", "unregister", "default", "bl_info"]
+blender_names = ["register", "unregister", "default", "bl_info", "keymap"]
 
 words = []
 def update_word_list(text_block):
