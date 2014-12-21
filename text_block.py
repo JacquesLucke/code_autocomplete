@@ -11,6 +11,14 @@ class TextBlock:
     @current_line.setter
     def current_line(self, text):
         self.text_block.current_line.body = text
+        
+    @property
+    def cursor_position(self):
+        return self.current_line_index, self.current_character_index
+    @cursor_position.setter
+    def cursor_position(self, position):
+        self.current_line_index = position[0]
+        self.current_character_index = position[1]
        
     @property
     def current_character_index(self):
@@ -37,6 +45,22 @@ class TextBlock:
     @property
     def current_word(self):
         return self.get_last_word(self.text_before_cursor)
+        
+    @property
+    def lines(self):
+        return self.get_all_lines()     
+    @lines.setter
+    def lines(self, lines):
+        cursor_position = self.cursor_position
+        text = "\n".join(lines)
+        self.text_block.from_string(text)
+        self.cursor_position = cursor_position
+        
+    def get_all_lines(self):
+        lines = []
+        for line in self.text_block.lines:
+            lines.append(line.body)
+        return lines
     
     # 'bpy.context.sce' -> 'sce'
     def get_last_word(self, text):
@@ -112,6 +136,14 @@ class TextBlock:
             length = match.end() - match.start()
             for i in range(length):
                 self.remove_character_before_cursor()
+                
+    def select_match_in_current_line(self, match):
+        if match:
+            self.set_selection_in_line(match.start() + 1, match.end() + 1)
+                
+    def delete_selection(self):
+        self.insert(" ")
+        self.remove_character_before_cursor()
                 
     def select_current_string(self):        
         string_letter = self.get_string_definition_type(self.current_line, self.current_character_index)
