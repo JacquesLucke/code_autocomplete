@@ -276,6 +276,8 @@ class Documentation:
         return self.operators_by_container[container_name]
         
     def get_operator_by_full_name(self, full_name):
+        if "bpy.ops." in full_name:
+            full_name = full_name[8:]
         return self.operators_by_full_name.get(full_name, None)
         
     # menu methods
