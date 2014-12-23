@@ -3,6 +3,14 @@ from script_auto_complete.modal_handler import ModalHandler
 from script_auto_complete.text_editor_utils import *
 from script_auto_complete.documentation import get_documentation
 
+running = False
+def start():
+    global running
+    running = True
+def stop():
+    global running
+    running = False
+
 class AutoCompleteSettingsPanel(bpy.types.Panel):
     bl_idname = "script_auto_complete.settings_panel"
     bl_label = "Auto Complete"
@@ -11,25 +19,31 @@ class AutoCompleteSettingsPanel(bpy.types.Panel):
         
     def draw(self, context):
         layout = self.layout
-        layout.operator("script_auto_complete.start_auto_completion")
+        if running: layout.operator("script_auto_complete.stop_auto_completion", icon = "PANEL_CLOSE")
+        else: layout.operator("script_auto_complete.start_auto_completion", icon = "LIBRARY_DATA_DIRECT")
         if get_documentation().is_build:
             layout.operator("script_auto_complete.rebuild_documentation")
         
 
 class StartAutoCompletion(bpy.types.Operator):
     bl_idname = "script_auto_complete.start_auto_completion"
-    bl_label = "Start Auto Completion"
+    bl_label = "Start"
+    
+    @classmethod
+    def poll(cls, context):
+        return not running
     
     def modal(self, context, event):
+        if not running:
+            self.modal_handler.free()
+            return { "FINISHED" }
+    
         block_event = False
         if active_text_block_exists():
             context.area.tag_redraw()
             block_event = self.modal_handler.update(event)
             
         if not block_event:
-            if event.type in {'ESC'}:
-                self.modal_handler.free()
-                return { "FINISHED" }
             return { "PASS_THROUGH" }
         return { "RUNNING_MODAL" }
 
@@ -37,6 +51,7 @@ class StartAutoCompletion(bpy.types.Operator):
         get_documentation().build_if_necessary()
         self.modal_handler = ModalHandler()
         context.window_manager.modal_handler_add(self)
+        start()
         return { "RUNNING_MODAL" }
         
         
@@ -52,3 +67,15 @@ class RebuildDocumentation(bpy.types.Operator):
         get_documentation().build()
         return { "FINISHED" }
         
+        
+class StopAutoCompletion(bpy.types.Operator):
+    bl_idname = "script_auto_complete.stop_auto_completion"
+    bl_label = "Stop"
+    
+    @classmethod
+    def poll(cls, context):
+        return running
+    
+    def execute(self, context):
+        stop()
+        return { "FINISHED" }        
