@@ -199,6 +199,7 @@ class AutoCompleteTextBox:
                 line_rectangle.left + padding,
                 line_rectangle.top - line_height / 4 * 3 ]
             if operator.align == "CENTER": label_position[0] = line_rectangle.left + (line_rectangle.width - operator_label.get_draw_dimensions()[0]) / 2
+            if operator.align == "INSET": label_position[0] = label_position[0] + padding
             operator_label.draw(label_position)
             
         draw_rectangle_border(outer_rectangle, color = self.border_color, thickness = 1)

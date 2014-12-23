@@ -1,9 +1,9 @@
 class ExtendWordOperator:
-    def __init__(self, target_word, additional_data = None):
+    def __init__(self, target_word, additional_data = None, align = "LEFT"):
         self.target_word = target_word
         self.display_name = target_word
         self.additional_data = additional_data
-        self.align = "LEFT"
+        self.align = align
         
     def execute(self, text_block):
         text_block.replace_current_word(self.target_word)
