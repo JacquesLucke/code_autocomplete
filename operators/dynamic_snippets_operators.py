@@ -140,17 +140,22 @@ class KeymapItemSnippet:
                 
     def insert_snippet(self, text_block, match):
         item_type = self.get_item_type(match)
-        operator_name = self.get_default_operator_name(match, item_type)
-        key = self.get_key(match)
-        optional_key_string = self.get_optional_key_string(match)
-        property_set_string = self.get_property_set_string(match, item_type)
-        text = "kmi = km.keymap_items.new(\""+operator_name+"\", type = \""+key+"\", value = \"PRESS\""+optional_key_string+")"
+        
+        text = "kmi = " + self.get_new_item_string(match, item_type)
         replace_match(text_block, match, text)
-        text_block.line_break()
-        text_block.insert(property_set_string)
+        
         if item_type == "Normal":
             text_block.select_text_in_current_line("transform.translate")
-                
+        elif item_type in ["Menu", "Pie"]:
+            text_block.line_break()
+            text_block.insert(self.get_property_set_string(match, item_type))
+            
+    def get_new_item_string(self, match, t):
+        operator_name = self.get_default_operator_name(match, t)
+        key = self.get_key(match)
+        extra_keys = self.get_optional_key_string(match)
+        return "km.keymap_items.new(\""+operator_name+"\", type = \""+key+"\", value = \"PRESS\""+extra_keys+")"
+          
     def get_snippet_name(self, match):
         return "Define Key for Operator"
         
