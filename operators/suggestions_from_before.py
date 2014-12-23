@@ -13,6 +13,22 @@ def get_suggestion_from_text_before(text_block):
         for suggestion in suggested_words:
             create_operator_from_suggestion(operators, word_start, suggestion)
     operators.sort(key = attrgetter("display_name"))
+    
+    doc = get_documentation()
+    f = text_block.get_current_function_path()
+    if f is not None:
+        if "bpy.ops." in f:
+            f = f[8:]
+            op = doc.get_operator_by_full_name(f)
+            for input in op.inputs:
+                if input.type == "Enum":
+                    pattern = input.name+"\s*=\s*(\"|\')"
+                    word_start = text_block.get_current_text_after_pattern(pattern)
+                    if word_start is None: continue
+                    word_start = word_start.upper()
+                    for suggestion in input.enum_items:
+                        create_operator_from_suggestion(operators, word_start, suggestion)
+    
     return operators
     
 def create_operator_from_suggestion(operators, word_start, suggestion):

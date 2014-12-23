@@ -136,6 +136,29 @@ class TextBlock:
             length = match.end() - match.start()
             for i in range(length):
                 self.remove_character_before_cursor()
+    
+    # "this.is.a.test(type = 'myt" -> "this.is.a.test"
+    def get_current_function_path(self):
+        text = self.text_before_cursor
+        open_bracket_index = self.get_current_open_bracket_index(text)
+        if open_bracket_index == -1: return None
+        text_before = text[:open_bracket_index-1]
+        match = re.search(r"(\w[\w\.]+\w)$", text_before)
+        if match:
+            return match.group(1)
+        
+    def get_current_open_bracket_index(self, text):
+        close_bracket_counter = 0
+        current_open_bracket_index = -1
+        
+        for i, c in enumerate(reversed(text)):
+            if c == ")": close_bracket_counter += 1
+            elif c == "(":
+                if close_bracket_counter > 0: close_bracket_counter -= 1
+                else: 
+                    current_open_bracket_index = len(text) - i
+                    break   
+        return current_open_bracket_index  
                 
     def select_match_in_current_line(self, match):
         if match:
