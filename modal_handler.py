@@ -24,6 +24,9 @@ class ModalHandler:
         bpy.types.SpaceTextEditor.draw_handler_remove(self._handle, "WINDOW")
         
     def update(self, event):
+        region = get_region_under_mouse(event)
+        if region is None: return
+        
         update_functions = [self.simplify_work_operators, self.auto_complete_box.update]
         try:
             for update_function in update_functions:
@@ -62,13 +65,13 @@ class AutoCompleteTextBox:
         
     def update(self, event):
         self.update_show(event)
-        if self.hide or not is_event_current_region(event): return
+        if self.hide or not is_event_in_text_editor(event): return
         self.update_operator_selection(event)
         self.update_operator_execution(event)
         self.update_hide(event)
         
     def update_show(self, event):
-        if self.hide and event.type in show_event_types and event.value == "PRESS" and not event.ctrl and is_event_current_region(event):
+        if self.hide and event.type in show_event_types and event.value == "PRESS" and not event.ctrl and is_event_in_text_editor(event):
             self.hide = False
             self.selected_index = 0
             update_word_list(TextBlock(bpy.context.space_data.text))
@@ -523,7 +526,26 @@ def clamp(value, min_value, max_value):
 def get_active_text_block():
     return TextBlock(bpy.context.space_data.text)
     
-def is_event_current_region(event):
-    region = bpy.context.region
-    viewport = Rectangle(0, region.height, region.width, region.height)
-    return viewport.contains(event.mouse_region_x, event.mouse_region_y)
+def is_event_in_text_editor(event):
+    area = get_area_under_mouse(event)
+    if area is None: return False
+    return area.type == "TEXT_EDITOR"
+    
+def get_region_under_mouse(event):
+    x = event.mouse_prev_x
+    y = event.mouse_prev_y
+    for region in iterate_regions():
+        if region.x < x < region.x + region.width and region.y < y < region.y + region.height:
+            return region
+    
+def iterate_regions():
+    for area in bpy.context.screen.areas:
+        for region in area.regions:
+            yield region  
+
+def get_area_under_mouse(event):
+    x = event.mouse_prev_x
+    y = event.mouse_prev_y
+    for area in bpy.context.screen.areas:
+        if area.x < x < area.x + area.width and area.y < y < area.y + area.height:
+            return area                        

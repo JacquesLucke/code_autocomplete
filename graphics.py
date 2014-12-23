@@ -98,6 +98,9 @@ class Rectangle:
         
     def get_inset_rectangle(self, border):
         return Rectangle(self.left + border, self.top - border, self.width - 2*border, self.height - 2*border)
+        
+    def __repr__(self):
+        return "(Left: "+str(self.left)+", Right: "+str(self.right)+", Top: "+str(self.top)+", Bottom: "+str(self.bottom)+")"
     
 class Label:
     def __init__(self):
