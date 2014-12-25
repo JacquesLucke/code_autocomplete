@@ -147,6 +147,7 @@ class TextBlock:
         if match:
             return match.group(1)
             
+    # "test = this.is.anoth" -> "this.is" | "test = this.is.anoth." -> "this.is.anoth"     
     def get_current_parent_path(self):
         path = self.get_current_path()
         if self.text_before_cursor.endswith("."): return path
