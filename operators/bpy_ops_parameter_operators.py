@@ -23,7 +23,7 @@ def get_parameter_name_operators(text_block, op):
     word_start = word_start.upper()
     for input in op.inputs:
         if input.name.upper().startswith(word_start):
-            operators.append(ExtendWordOperator(input.name, align = "INSET", additional_data = input))
+            operators.append(ExtendWordOperator(input.name + " = ", align = "INSET", additional_data = input))
     return operators
 
 # bpy.ops.text.move(type = "#NEXT_CHARACTER#") 
