@@ -153,6 +153,7 @@ class Documentation:
     def add_custom_properties(self):
         props = self.properties
         
+        props.append(PropertyDocumentation("data", type = "BlendData", is_readonly = True, owner = None))
         props.append(PropertyDocumentation("context", type = "Context", is_readonly = True, owner = None))
         
         # Screen Context
