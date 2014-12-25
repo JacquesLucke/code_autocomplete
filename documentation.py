@@ -224,6 +224,18 @@ class Documentation:
         attributes.extend(self.get_possible_subproperties_of_property(property_name))
         attributes.extend(self.get_possible_subfunctions_of_property(property_name))
         return attributes
+        
+    def get_best_matching_subattributes_of_path(self, path):
+        types = self.get_best_matching_types_of_path(path)
+        print("Types: ", types)
+        attributes = []
+        for type in types:
+            attributes.extend(self.get_attributes_of_type(type))
+        return attributes
+        
+    def get_best_matching_types_of_path(self, path):
+        attributes = self.get_best_matching_attributes_of_path(path)
+        return list(set([attribute.type for attribute in attributes]))
     
     # "context.active_object.modifiers" -> Object.modifiers (instead of SequenceModifiers, etc.)    
     def get_best_matching_attributes_of_path(self, path):
