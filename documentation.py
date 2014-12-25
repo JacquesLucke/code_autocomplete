@@ -225,6 +225,42 @@ class Documentation:
         attributes.extend(self.get_possible_subfunctions_of_property(property_name))
         return attributes
     
+    # "context.active_object.modifiers" -> Object.modifiers (instead of SequenceModifiers, etc.)    
+    def get_best_matching_attributes_of_path(self, path):
+        attribute_names = path.split(".")
+        best_attributes = set(self.get_properties_by_name(attribute_names[-1]))
+        for i in range(len(attribute_names)):
+            first_name = attribute_names[i]
+            attributes_behind = attribute_names[i+1:]
+            attributes = set()
+            for attribute in self.get_attributes_by_name(first_name):
+                attributes.update(self.get_matching_attributes_for_child(attribute, attributes_behind))
+            if len(attributes) > 0:
+                best_attributes = attributes
+                break
+        return best_attributes
+    # this is recursive        
+    def get_matching_attributes_for_child(self, attribute, attribute_names_behind):
+        if len(attribute_names_behind) == 0:
+            return [attribute]
+        else:
+            if isinstance(attribute, FunctionDocumentation): return []
+            attributes = []
+            property = attribute
+            type = property.type
+            first_name = attribute_names_behind[0]
+            attributes_behind = attribute_names_behind[1:]
+            for attr in self.get_attributes_of_type(type):
+                if attr.name == first_name:
+                    attributes.extend(self.get_matching_attributes_for_child(attr, attributes_behind))
+            return attributes
+        
+    def get_attributes_by_name(self, attribute_name):
+        return self.get_properties_by_name(attribute_name) + self.get_functions_by_name(attribute_name)
+    
+    def get_attributes_of_type(self, attribute_name):
+        return self.get_properties_of_type(attribute_name) + self.get_functions_of_type(attribute_name)
+    
     # property methods
     def get_possible_subproperty_names_of_property(self, property_name):
         return list(set([property.name for property in self.get_subproperties_of_property(property_name)]))   
@@ -324,7 +360,9 @@ class FunctionDocumentation:
     def __repr__(self):
         output_names = ", ".join(self.get_output_names())
         if output_names != "": output_names = " -> " + output_names
-        return self.name + "(" + ", ".join(self.get_input_names()) + ")" + output_names
+        function_string = self.name + "(" + ", ".join(self.get_input_names()) + ")" + output_names
+        if self.owner is None: return function_string
+        else: return self.owner + "." + function_string
         
         
 class TypeDocumentation:
