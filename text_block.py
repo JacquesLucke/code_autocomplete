@@ -146,6 +146,32 @@ class TextBlock:
         match = re.search(r"(\w[\w\.]+\w)$", text_before)
         if match:
             return match.group(1)
+    
+    
+    def get_current_path(self):
+        text_before = self.text_before_cursor
+        return self.get_path(text_before)
+        
+    
+        
+    def split_attribute_path(self, path):
+        if path is None: return []
+        #return self.
+        
+        # "test = this.is.anoth" -> ["this", "is", "anoth"]    
+    def get_path(self, text):
+        split_parts = re.split("(\W+)", text)
+        words = split_parts[::2]
+        separators = split_parts[1::2]        
+        index = -1
+        for i, separator in enumerate(reversed(separators)):
+            if separator != ".":
+                index = i
+                break
+        if index >= 0:
+            words = words[-index-1:]
+        if words[0] == "": return []
+        return words
         
     def get_current_open_bracket_index(self, text):
         close_bracket_counter = 0
