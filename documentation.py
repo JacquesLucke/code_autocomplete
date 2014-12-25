@@ -217,6 +217,13 @@ class Documentation:
         for operator in self.operators:
             self.operators_by_container[operator.container_name].append(operator)
             self.operators_by_full_name[operator.container_name + "." + operator.name] = operator
+            
+    # attribute methods
+    def get_possible_subattributes_of_property(self, property_name):
+        attributes = []
+        attributes.extend(self.get_possible_subproperties_of_property(property_name))
+        attributes.extend(self.get_possible_subfunctions_of_property(property_name))
+        return attributes
     
     # property methods
     def get_possible_subproperty_names_of_property(self, property_name):
