@@ -227,7 +227,6 @@ class Documentation:
         
     def get_best_matching_subattributes_of_path(self, path):
         types = self.get_best_matching_types_of_path(path)
-        print("Types: ", types)
         attributes = []
         for type in types:
             attributes.extend(self.get_attributes_of_type(type))

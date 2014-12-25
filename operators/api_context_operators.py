@@ -4,9 +4,8 @@ from operator import attrgetter
 
 def get_api_context_operators(text_block):
     documentation = get_documentation()
-    parent_word = text_block.parent_of_current_word
-    attributes = documentation.get_possible_subattributes_of_property(parent_word)
-    documentation.get_best_matching_subattributes_of_path(text_block.get_current_path())
+    parent_path = text_block.get_current_parent_path()
+    attributes = documentation.get_best_matching_subattributes_of_path(parent_path)
     
     current_word = text_block.current_word.lower()
     operators = []

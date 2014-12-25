@@ -146,6 +146,14 @@ class TextBlock:
         match = re.search(r"(\w[\w\.]+\w)$", text_before)
         if match:
             return match.group(1)
+            
+    def get_current_parent_path(self):
+        path = self.get_current_path()
+        if self.text_before_cursor.endswith("."): return path
+        match = re.search(r"([\w\.]+)\.(?!.*\.)", path)
+        if match:
+            return match.group(1)
+        return ""
     
     # "test = this.is.anoth" -> "this.is.anoth"
     def get_current_path(self):
