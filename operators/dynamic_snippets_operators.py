@@ -9,13 +9,15 @@ def get_dynamic_snippets_operators(text_block):
     for snippet in snippets:
         match = text_block.search_pattern_in_current_line(snippet.expression)
         if match:
-            operators.append(DynamicSnippetOperator(snippet.get_snippet_name(match), insert_dynamic_snippet, snippet))
+            for name in snippet.get_snippet_names(match):
+                operators.append(DynamicSnippetOperator(name, insert_dynamic_snippet, (snippet, name)))
     return operators
     
-def insert_dynamic_snippet(text_block, snippet):
+def insert_dynamic_snippet(text_block, snippet_and_name):
+    snippet, name = snippet_and_name
     match = text_block.search_pattern_in_current_line(snippet.expression)
     if match:
-        snippet.insert_snippet(text_block, match)
+        snippet.insert_snippet(text_block, match, name)
     
 def replace_match(text_block, match, text):
     text_block.select_match_in_current_line(match)
@@ -32,11 +34,11 @@ def create_snippet_objects():
 class NewClassSnippet:
     expression = "=(p|o|m)\|(\w+)"
     
-    def insert_snippet(self, text_block, match):
+    def insert_snippet(self, text_block, match, name):
         replace_match(text_block, match, self.get_snippet_text(match))
     
-    def get_snippet_name(self, match):
-        return "New " + self.get_type(match) + " '" + self.get_name(match) + "'"
+    def get_snippet_names(self, match):
+        return ["New " + self.get_type(match) + " '" + self.get_name(match) + "'"]
         
     def get_snippet_text(self, match):
         return "class " + self.get_name(match) + "(bpy.types." + self.get_type(match) + ")"
@@ -52,17 +54,17 @@ class NewClassSnippet:
 class NewPropertySnippet:
     expression = "=([A-Z]\w+)\|(\w+)\|(.*)"
     
-    def insert_snippet(self, text_block, match):
+    def insert_snippet(self, text_block, match, name):
         property_type = self.get_property_type(match)
         if property_type is None: return
         property_definition = self.get_property_definition(match)
         replace_match(text_block, match, property_definition)
     
-    def get_snippet_name(self, match):
+    def get_snippet_names(self, match):
         property_type = self.get_property_type(match)
         if property_type is not None:
-            return "New " + property_type
-        return "Property Definition ..."
+            return ["New " + property_type]
+        return ["Property Definition ..."]
         
     def get_property_definition(self, match):
         bpy_type = self.get_bpy_type(match)
@@ -114,7 +116,7 @@ def unregister_keymaps():
     
 '''.split("\n")
     
-    def insert_snippet(self, text_block, match):
+    def insert_snippet(self, text_block, match, name):
         try:
             text_block.select_match_in_current_line(match)
             text_block.delete_selection()
@@ -133,8 +135,8 @@ def unregister_keymaps():
         except:
             print("create the register functions first")
     
-    def get_snippet_name(self, match):
-        return "Setup Keymap Registration"
+    def get_snippet_names(self, match):
+        return ["Setup Keymap Registration"]
         
     def find_index_or_raise_exception(self, lines, text):
         for i, line in enumerate(lines):
@@ -145,7 +147,7 @@ def unregister_keymaps():
 class KeymapItemSnippet:
     expression = "=key(\|[mp])?\|(\w+)((\|shift|\|(strg|ctrl)|\|alt)*)"
                 
-    def insert_snippet(self, text_block, match):
+    def insert_snippet(self, text_block, match, name):
         item_type = self.get_item_type(match)
         
         text = "kmi = " + self.get_new_item_string(match, item_type)
@@ -163,8 +165,8 @@ class KeymapItemSnippet:
         extra_keys = self.get_optional_key_string(match)
         return "km.keymap_items.new(\""+operator_name+"\", type = \""+key+"\", value = \"PRESS\""+extra_keys+")"
           
-    def get_snippet_name(self, match):
-        return "Define Key for Operator"
+    def get_snippet_names(self, match):
+        return ["Define Key for Operator"]
         
     def get_key(self, match):
         return match.group(2).upper()
