@@ -250,7 +250,7 @@ class Documentation:
             if len(attributes) > 0:
                 best_attributes = attributes
                 break
-        return best_attributes
+        return list(best_attributes)
     # this is recursive        
     def get_matching_attributes_for_child(self, attribute, attribute_names_behind):
         if len(attribute_names_behind) == 0:
