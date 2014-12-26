@@ -102,6 +102,14 @@ templates.append(("New Menu", "class \w*\(.*Menu\):", '''
     def draw(self, context):
         layout = self.layout
         '''))
+        
+templates.append(("New Pie Menu", "class \w*\(.*Menu\):", '''
+    bl_idname = "view3D.custom_menu"
+    bl_label = "Custom Menu"
+    
+    def draw(self, context):
+        pie = self.layout.menu_pie()
+        '''))        
 
 templates.append(("Register", "def register\(\):", '''
     bpy.utils.register_module(__name__)
