@@ -71,15 +71,23 @@ class AutoCompleteTextBox:
         self.update_hide(event)
         
     def update_show(self, event):
-        if self.hide and event.type in show_event_types and event.value == "PRESS" and not event.ctrl and is_event_in_text_editor(event):
-            self.hide = False
-            self.selected_index = 0
-            update_word_list(TextBlock(bpy.context.space_data.text))
+        if self.hide and event.value == "PRESS" and not event.ctrl and is_event_in_text_editor(event):
+            if event.type in show_event_types:
+                self.show_reset()
+            if event.type in ["LEFT_ALT", "RIGHT_ALT"]:
+                self.show_reset()
+                raise BlockEvent()
+            
+    def show_reset(self):
+        self.hide = False
+        self.selected_index = 0
+        update_word_list(TextBlock(bpy.context.space_data.text))
             
     def update_hide(self, event):  
-        if event.type in hide_event_types or event.alt:
+        if event.type in hide_event_types:
             self.hide = True
-            
+        if event.type in ["LEFT_ALT", "RIGHT_ALT"] and event.value == "PRESS":
+            self.hide = True
         
     def update_operator_selection(self, event):
        self.move_selection_with_arrow_keys(event)
