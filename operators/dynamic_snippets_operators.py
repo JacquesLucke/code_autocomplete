@@ -145,10 +145,14 @@ def unregister_keymaps():
         raise Exception()
                 
 class KeymapItemSnippet:
-    expression = "=key(\|[mp])?\|(\w+)((\|shift|\|(strg|ctrl)|\|alt)*)"
+    expression = "=key\|(\w+)((\|shift|\|(strg|ctrl)|\|alt)*)"
+    
+    # keep order
+    types = ["Normal", "Menu", "Pie"]
+    type_names = ["Key for Operator", "Key for Menu", "Key for Pie Menu"]
                 
     def insert_snippet(self, text_block, match, name):
-        item_type = self.get_item_type(match)
+        item_type = self.get_type(name)
         
         text = "kmi = " + self.get_new_item_string(match, item_type)
         replace_match(text_block, match, text)
@@ -166,10 +170,10 @@ class KeymapItemSnippet:
         return "km.keymap_items.new(\""+operator_name+"\", type = \""+key+"\", value = \"PRESS\""+extra_keys+")"
           
     def get_snippet_names(self, match):
-        return ["Define Key for Operator"]
+        return self.type_names
         
     def get_key(self, match):
-        return match.group(2).upper()
+        return match.group(1).upper()
         
     def get_optional_key_string(self, match):
         text = ""
@@ -187,19 +191,16 @@ class KeymapItemSnippet:
         if t in ["Menu", "Pie"]: return "kmi.properties.name = "
         return ""
         
-    def get_item_type(self, match):
-        t = match.group(1)
-        if t == "|m": return "Menu"
-        if t == "|p": return "Pie"
-        return "Normal"
+    def get_type(self, name):
+        return self.types[self.type_names.index(name)]
         
     def use_strg(self, match):
-        return "|strg" in match.group(3) or "|ctrl" in match.group(3)
+        return "|strg" in match.group(2) or "|ctrl" in match.group(2)
         
     def use_shift(self, match):
-        return "|shift" in match.group(3)
+        return "|shift" in match.group(2)
         
     def use_alt(self, match):
-        return "|alt" in match.group(3)
+        return "|alt" in match.group(2)
         
 create_snippet_objects()  

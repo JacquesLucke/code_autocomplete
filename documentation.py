@@ -154,6 +154,7 @@ class Documentation:
         props = self.properties
         
         props.append(PropertyDocumentation("data", type = "BlendData", is_readonly = True, owner = None))
+        props.append(PropertyDocumentation("kmi", type = "KeyMapItem", owner = None))
         props.append(PropertyDocumentation("context", type = "Context", is_readonly = True, owner = None))
         
         # Screen Context
