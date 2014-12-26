@@ -24,13 +24,13 @@ from fnmatch import fnmatch
 
 bl_info = {
     "name":        "Script Auto Complete",
-    "description": "Auto Completion",
+    "description": "Autocomplete - Unleash the Power of Scripting",
     "author":      "Jacques Lucke",
     "version":     (0, 0, 1),
-    "blender":     (2, 7, 2),
+    "blender":     (2, 7, 3),
     "location":    "Text Editor",
     "category":    "Development",
-    "warning":     "alpha"
+    "warning":     "not widely tested"
     }
     
 # import all modules in same/subdirectories
