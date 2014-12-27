@@ -26,7 +26,6 @@ Here is a list with the currently available patterns with call templates:
 
     class YourClassName(bpy.types.Operator):
     class YourClassName(Operator):
-
 1. normal operator
 2. modal operator
 3. modal operator with draw  
@@ -35,4 +34,15 @@ Here is a list with the currently available patterns with call templates:
 
     class YourClassName(bpy.types.Menu):
     class YourClassName(Menu):
+1. normal menu
+2. pie menu
 
+**Register**::
+
+    def register():
+
+**Addon Info**::
+    bl_info = 
+    
+**License Header**::
+    '''
