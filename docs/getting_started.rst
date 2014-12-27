@@ -56,7 +56,7 @@ Dynamic Snippets
 These snippets are also triggered by specific patterns you write.
 
 **Class Header**
-``=p|myClass`` -> ``class myClass(bpy.types.Panel)``
-``=p|panel`` -> ``class panel(bpy.types.Panel)``
-``=m|myMenu`` -> ``class myMeny(bpy.types.Menu)``
-``=o|Test`` -> ``class Text(bpy.types.Operator)``
+| ``=p|myClass`` -> ``class myClass(bpy.types.Panel)``
+| ``=p|panel`` -> ``class panel(bpy.types.Panel)``
+| ``=m|myMenu`` -> ``class myMeny(bpy.types.Menu)``
+| ``=o|Test`` -> ``class Text(bpy.types.Operator)``
