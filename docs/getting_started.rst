@@ -17,8 +17,20 @@ Templates
 The addon comes with a few static templates which are shown if you typed specific patterns.
 Here is a list with all currently available templates with example patterns to call them:
 
-1. **New Panel**
+New Panel
+=========
 
-   ``class YourClassName(bpy.types.Panel):``
+``class YourClassName(bpy.types.Panel):``
+
+``class YourClassName(Panel):``
+
+bl_idname = "name"
+bl_label = "label"
+bl_space_type = "VIEW_3D"
+bl_region_type = "TOOLS"
+bl_category = "category"
+
+def draw(self, context):
+    layout = self.layout ```
    
-   ``class YourClassName(Panel):``
+2. 
