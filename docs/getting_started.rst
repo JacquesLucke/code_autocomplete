@@ -22,7 +22,10 @@ Here is a list with the currently available patterns with call templates:
     ``class YourClassName(bpy.types.Panel):``
     ``class YourClassName(Panel):``
 
-**New Operators**::
+**New Operator**::
 
     ``class YourClassName(bpy.types.Operator):``
     ``class YourClassName(Operator):``
+Here you get the option to decide between a normal operator, a modal operator or a
+modal operator that can draw using opengl.    
+
