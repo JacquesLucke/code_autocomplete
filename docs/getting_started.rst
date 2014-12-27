@@ -74,3 +74,9 @@ If you write somewhere in your script ``=keymaps``, you generate a basic setup f
 | ``=key|k|alt|shift|ctrl`` -> ``kmi = km.keymap_items.new("transform.translate", type = "K", value = "PRESS", ctrl = True, shift = True, alt = True)``
 
 You can also choose between calling a operator, menu or pie menu from the autocomplete-box.
+
+
+Other things
+************
+
+By pressing ``ctrl Y`` you can select a whole string. I found that useful when replacing descriptions. Just put the cursor inside, press both keys and start typing.
