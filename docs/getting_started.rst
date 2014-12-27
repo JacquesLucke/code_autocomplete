@@ -25,6 +25,7 @@ Example patterns:
 ``class YourClassName(Panel):``
 
 Text::
+
     bl_idname = "name"
     bl_label = "label"
     bl_space_type = "VIEW_3D"
