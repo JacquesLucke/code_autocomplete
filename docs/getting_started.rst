@@ -42,7 +42,9 @@ Here is a list with the currently available patterns with call templates:
     def register():
 
 **Addon Info**::
+
     bl_info = 
     
 **License Header**::
+
     '''
