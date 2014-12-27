@@ -166,12 +166,19 @@ class TextBlock:
         return ""
     
     # "    event.type = 't" -> "event.type"
-    def get_current_assign_variable_path(self):
+    def get_current_line_assign_variable_path(self):
         text_before = self.text_before_cursor
         match = re.fullmatch("\s*([\w\.]+)\s*=.*", text_before)
         if match:
             return match.group(1)
         return None
+        
+    def get_current_compare_variable_path(self):
+        text_before = self.text_before_cursor
+        match = re.search("([\w\.]+)\s*(==|<|>|!=)(?!.*=)", text_before)
+        if match:
+            return match.group(1), match.group(2)
+        return None, None
         
     def get_current_open_bracket_index(self, text):
         close_bracket_counter = 0

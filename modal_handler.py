@@ -435,7 +435,7 @@ class AutoCompleteTextBox:
         box_width = 350 * scale
         
         header_label = Label()
-        header_label.text = operator.name + "()"
+        header_label.text = operator.name + "(...)"
         header_label.color = self.text_color
         header_label.text_size = text_size
         header_label.font_id = 1
