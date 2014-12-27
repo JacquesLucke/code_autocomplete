@@ -65,3 +65,12 @@ These snippets are also triggered by specific patterns you write.
 **Setup Keymap**
 
 If you write somewhere in your script ``=keymaps``, you generate a basic setup for creating custom keybindings. Be sure that you already have a register function. This dynamic snippet searches for ``bpy.utils.register_module(__name__)`` and ``bpy.utils.unregister_module(__name__)``.
+
+**New Keybinding**
+
+| ``=key|h`` -> ``kmi = km.keymap_items.new("transform.translate", type = "H", value = "PRESS")`` 
+| ``=key|m`` -> ``kmi = km.keymap_items.new("transform.translate", type = "M", value = "PRESS")``
+| ``=key|n|shift`` -> ``kmi = km.keymap_items.new("transform.translate", type = "N", value = "PRESS", shift = True)``
+| ``=key|k|alt|shift|ctrl`` -> ``kmi = km.keymap_items.new("transform.translate", type = "K", value = "PRESS", ctrl = True, shift = True, alt = True)``
+
+You can also choose between calling a operator, menu or pie menu from the autocomplete-box.
