@@ -15,46 +15,14 @@ Templates
 *********
 
 The addon comes with a few static templates which are shown if you typed specific patterns.
-Here is a list with all currently available templates:
+Here is a list with the currently available patterns with call templates:
 
-New Panel
-=========
-
-**Patterns**::
+**New Panel**::
 
     ``class YourClassName(bpy.types.Panel):``
     ``class YourClassName(Panel):``
 
-**Text**::
-
-    bl_idname = "name"
-    bl_label = "label"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "TOOLS"
-    bl_category = "category"
-
-    def draw(self, context):
-        layout = self.layout
-   
-
-New Operators
-=============
-
-**Patterns**::
+**New Operators**::
 
     ``class YourClassName(bpy.types.Operator):``
     ``class YourClassName(Operator):``
-
-**Text**::
-
-    bl_idname = "my.operator"
-    bl_label = "label"
-    bl_description = ""
-    bl_options = {"REGISTER"}
-    
-    @classmethod
-    def poll(cls, context):
-        return True
-    
-    def execute(self, context):
-        return {"FINISHED"}
