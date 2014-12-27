@@ -20,9 +20,8 @@ Here is a list with all currently available templates with example patterns to c
 New Panel
 =========
 
-``class YourClassName(bpy.types.Panel):``
-
-``class YourClassName(Panel):``::
+| ``class YourClassName(bpy.types.Panel):``
+| ``class YourClassName(Panel):``
 
     bl_idname = "name"
     bl_label = "label"
@@ -33,4 +32,6 @@ New Panel
     def draw(self, context):
         layout = self.layout ```
    
-2. 
+
+New Operators
+=============
