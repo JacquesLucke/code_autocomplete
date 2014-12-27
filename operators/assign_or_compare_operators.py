@@ -3,7 +3,7 @@ from script_auto_complete.text_operators import ExtendWordOperator
 from script_auto_complete.documentation import get_documentation, PropertyDocumentation
 from operator import attrgetter
 
-def get_assign_value_operators(text_block):
+def get_assign_or_compare_operators(text_block):
     operators = []
     
     assign_in_line_path = text_block.get_current_line_assign_variable_path()
