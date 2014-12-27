@@ -19,13 +19,21 @@ Here is a list with the currently available patterns with call templates:
 
 **New Panel**::
 
-    ``class YourClassName(bpy.types.Panel):``
-    ``class YourClassName(Panel):``
+    class YourClassName(bpy.types.Panel):
+    class YourClassName(Panel):
 
 **New Operator**::
 
-    ``class YourClassName(bpy.types.Operator):``
-    ``class YourClassName(Operator):``
-Here you get the option to decide between a normal operator, a modal operator or a
-modal operator that can draw using opengl.    
+    class YourClassName(bpy.types.Operator):
+    class YourClassName(Operator):
+
+Options
+* normal operator
+* modal operator
+* modal operator with draw  
+
+**New Menu**::
+
+    class YourClassName(bpy.types.Menu):
+    class YourClassName(Menu):
 
