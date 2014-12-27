@@ -27,10 +27,9 @@ Here is a list with the currently available patterns with call templates:
     class YourClassName(bpy.types.Operator):
     class YourClassName(Operator):
 
-Options
-* normal operator
-* modal operator
-* modal operator with draw  
+1. normal operator
+2. modal operator
+3. modal operator with draw  
 
 **New Menu**::
 
