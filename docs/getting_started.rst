@@ -30,7 +30,7 @@ New Panel
     bl_category = "category"
 
     def draw(self, context):
-        layout = self.layout ```
+        layout = self.layout
    
 
 New Operators
