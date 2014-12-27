@@ -20,11 +20,12 @@ Here is a list with all currently available templates:
 New Panel
 =========
 
-Example patterns:
-| ``class YourClassName(bpy.types.Panel):``
-``class YourClassName(Panel):``
+**Patterns**::
 
-Text::
+    ``class YourClassName(bpy.types.Panel):``
+    ``class YourClassName(Panel):``
+
+**Text**::
 
     bl_idname = "name"
     bl_label = "label"
