@@ -13,12 +13,15 @@ def get_assign_value_operators(text_block):
         pattern = function_path + "\s*=\s*(\"|\')"
         word_start = text_block.get_current_text_after_pattern(pattern)
         if word_start is not None:
-            word_start = word_start.upper()
+            items = set()
             for attribute in attributes:
                 if isinstance(attribute, PropertyDocumentation):
-                    for suggestion in attribute.enum_items:
-                        if suggestion.upper().startswith(word_start):
-                            operators.append(ExtendWordOperator(suggestion))
+                    items.update(attribute.enum_items)
+                    
+            word_start = word_start.upper()
+            for item in items:
+                if item.upper().startswith(word_start):
+                    operators.append(ExtendWordOperator(item))
             
     operators.sort(key = attrgetter("display_name"))
     return operators
