@@ -22,15 +22,15 @@ New Panel
 
 ``class YourClassName(bpy.types.Panel):``
 
-``class YourClassName(Panel):``
+``class YourClassName(Panel):``::
 
-bl_idname = "name"
-bl_label = "label"
-bl_space_type = "VIEW_3D"
-bl_region_type = "TOOLS"
-bl_category = "category"
+    bl_idname = "name"
+    bl_label = "label"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "TOOLS"
+    bl_category = "category"
 
-def draw(self, context):
-    layout = self.layout ```
+    def draw(self, context):
+        layout = self.layout ```
    
 2. 
