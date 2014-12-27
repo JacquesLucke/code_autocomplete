@@ -39,3 +39,22 @@ New Panel
 
 New Operators
 =============
+
+**Patterns**::
+
+    ``class YourClassName(bpy.types.Operator):``
+    ``class YourClassName(Operator):``
+
+**Text**::
+
+    bl_idname = "my.operator"
+    bl_label = "label"
+    bl_description = ""
+    bl_options = {"REGISTER"}
+    
+    @classmethod
+    def poll(cls, context):
+        return True
+    
+    def execute(self, context):
+        return {"FINISHED"}
