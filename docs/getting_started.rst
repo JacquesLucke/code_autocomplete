@@ -61,3 +61,7 @@ These snippets are also triggered by specific patterns you write.
 | ``=p|panel`` -> ``class panel(bpy.types.Panel)``
 | ``=m|myMenu`` -> ``class myMeny(bpy.types.Menu)``
 | ``=o|Test`` -> ``class Text(bpy.types.Operator)``
+
+**Setup Keymap**
+
+If you write somewhere in your script ``=keymaps``, you generate a basic setup for creating custom keybindings. Be sure that you already have a register function. This dynamic snippet searches for ``bpy.utils.register_module(__name__)`` and ``bpy.utils.unregister_module(__name__)``.
