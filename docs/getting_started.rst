@@ -21,8 +21,8 @@ New Panel
 =========
 
 | ``class YourClassName(bpy.types.Panel):``
-| ``class YourClassName(Panel):``
- ::
+| ``class YourClassName(Panel):``:
+
     bl_idname = "name"
     bl_label = "label"
     bl_space_type = "VIEW_3D"
