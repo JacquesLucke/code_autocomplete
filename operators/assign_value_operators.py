@@ -1,4 +1,4 @@
-import bpy
+import bpy, re
 from script_auto_complete.text_operators import ExtendWordOperator
 from script_auto_complete.documentation import get_documentation, PropertyDocumentation
 from operator import attrgetter
@@ -20,9 +20,8 @@ def get_assign_value_operators(text_block):
     elif compare_path is not None:
         attributes = doc.get_best_matching_attributes_of_path(compare_path)
         enum_items = get_enum_items_from_attributes(attributes)
-        pattern = compare_path + "\s*(==|<|>|!=)\s*(\"|\')"
+        pattern = compare_path + "\s*(==|<|>|!=|(not )?in \[)\s*(\"|\')"
         word_start = text_block.get_current_text_after_pattern(pattern)
-        print(compare_path, "###", word_start)
         operators = get_operators_from_enum_items(enum_items, word_start)
   
     return operators
@@ -35,6 +34,10 @@ def get_enum_items_from_attributes(attributes):
     
 def get_operators_from_enum_items(enum_items, word_start):
     if word_start is None: return []
+    if "]" not in word_start:
+        split = re.split(",\s*(\"|\')", word_start)[::2]
+        word_start = split[-1]
+    
     word_start = word_start.upper()
     operators = []
     secondary_operators = []

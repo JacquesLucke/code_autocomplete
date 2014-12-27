@@ -176,7 +176,7 @@ class TextBlock:
     # "if event.type == "A" and event.value != 'RE" -> "event.value"
     def get_current_compare_variable_path(self):
         text_before = self.text_before_cursor
-        match = self.get_last_match("([\w\.]+)\s*(==|<|>|!=)", text_before)
+        match = self.get_last_match("([\w\.]+)\s*(==|<|>|!=|(not )?in \[)", text_before)
         if match:
             return match.group(1)
         return None
