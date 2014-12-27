@@ -146,6 +146,7 @@ class TextBlock:
         match = re.search(r"(\w[\w\.]+\w)$", text_before)
         if match:
             return match.group(1)
+        return None
             
     # "test = this.is.anoth" -> "this.is" | "test = this.is.anoth." -> "this.is.anoth"     
     def get_current_parent_path(self):
@@ -163,6 +164,14 @@ class TextBlock:
         if match:
             return match.group(1)
         return ""
+    
+    # "    event.type = 't" -> "event.type"
+    def get_current_assign_variable_path(self):
+        text_before = self.text_before_cursor
+        match = re.fullmatch("\s*([\w\.]+)\s*=.*", text_before)
+        if match:
+            return match.group(1)
+        return None
         
     def get_current_open_bracket_index(self, text):
         close_bracket_counter = 0
@@ -175,7 +184,7 @@ class TextBlock:
                 else: 
                     current_open_bracket_index = len(text) - i
                     break   
-        return current_open_bracket_index  
+        return current_open_bracket_index
                 
     def select_match_in_current_line(self, match):
         if match:

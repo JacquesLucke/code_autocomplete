@@ -19,9 +19,12 @@ def get_parameter_operators(text_block):
     
 def get_functions_from_path(path):
     documentation = get_documentation()
-    attributes = documentation.get_best_matching_attributes_of_path(path)
+    
     op = documentation.get_operator_by_full_name(path)
-    if op is not None: attributes.append(op)
+    if op is None: 
+        attributes = documentation.get_best_matching_attributes_of_path(path)
+    else:
+        attributes = [op]
     
     functions = []
     for attribute in attributes:
