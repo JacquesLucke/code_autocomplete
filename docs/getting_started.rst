@@ -17,9 +17,11 @@ Templates
 The addon comes with a few static templates which are shown if you typed specific patterns.
 Here is a list with all currently available templates with example patterns to call them:
 
- 1. **New Panel**
-    ``class YourClassName(bpy.types.Panel):``
-    ``class YourClassName(Panel):``
+1. **New Panel**
+
+   ``class YourClassName(bpy.types.Panel):``
+   
+   ``class YourClassName(Panel):``
    
     .. code-block:: python
         :linenos:
