@@ -18,6 +18,7 @@ class Documentation:
         self.build_operator_documentation()
         self.add_custom_properties() 
         self.find_registered_menu_names()
+        self.load_modules()
         self.categorize_data()
         self.is_build = True
         
@@ -147,7 +148,27 @@ class Documentation:
         if type == "FLOAT": return "Float"
         if type == "BOOLEAN": return "Boolean"
         if type == "STRING": return "String"
+        
+    def load_modules(self):
+        for name in ["bgl", "blf", "re", "bmesh", "mathutils"]:
+            self.load_module(name)
 
+    def load_module(self, module_name):
+        names = self.get_attribute_names_in_module(module_name)
+        for name in names:
+            self.properties.append(PropertyDocumentation(name, type = "", owner = module_name))
+        self.properties.append(PropertyDocumentation(module_name, type = module_name, owner = None))
+        
+    def get_attribute_names_in_module(self, module_name):
+        code = "import " + module_name + "\n"
+        code += "names = dir(" + module_name + ")"
+        names = []
+        try:
+            dic = {}
+            exec(code, dic)
+            names = [name for name in dic["names"] if not name.startswith("_")]
+        except: pass
+        return names
     
     # have to do this manually, because these properties aren't available everywhere
     def add_custom_properties(self):
