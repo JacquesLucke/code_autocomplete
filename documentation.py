@@ -150,7 +150,7 @@ class Documentation:
         if type == "STRING": return "String"
         
     def load_modules(self):
-        for name in ["bgl", "blf", "re", "bmesh", "mathutils"]:
+        for name in ["bgl", "blf", "re", "bmesh", "mathutils", "random"]:
             self.load_module(name)
 
     def load_module(self, module_name):
