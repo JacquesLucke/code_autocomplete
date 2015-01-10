@@ -3,6 +3,7 @@ from script_auto_complete.text_operators import ExtendWordOperator
 from script_auto_complete.documentation import get_documentation, WordDescription, OperatorDocumentation, FunctionDocumentation
 from operator import attrgetter
 
+# bpy.ops.text.move(#type# = "#NEXT_CHARACTER#")
 def get_parameter_operators(text_block):
     operators = []
     

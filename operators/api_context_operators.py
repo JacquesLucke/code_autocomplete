@@ -2,6 +2,7 @@ from script_auto_complete.text_operators import ExtendWordOperator
 from script_auto_complete.documentation import get_documentation
 from operator import attrgetter
 
+# bpy.context.#active_object#
 def get_api_context_operators(text_block):
     documentation = get_documentation()
     parent_path = text_block.get_current_parent_path()

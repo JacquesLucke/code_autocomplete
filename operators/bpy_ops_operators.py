@@ -3,6 +3,7 @@ from script_auto_complete.documentation import get_documentation
 from operator import attrgetter
 import re
 
+# bpy.ops.#text#.#move#
 def get_bpy_ops_operators(text_block):
     all_operators = []
     all_operators.extend(get_operators_with_call_trigger(text_block))
