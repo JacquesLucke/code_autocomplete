@@ -3,11 +3,14 @@ from script_auto_complete.text_operators import ExtendWordOperator
 
 def get_extend_word_operators(text_block):
     operators = []
+    secondary_operators = []
     current_word = text_block.current_word.upper()
     for word in words:
         if word.upper().startswith(current_word):
             operators.append(ExtendWordOperator(word))
-    return operators
+        elif current_word in word.upper():
+            secondary_operators.append(ExtendWordOperator(word))
+    return operators + secondary_operators
     
 builtin_functions = (
     "abs", "all", "any", "ascii", "bin", "bool", "bytearray", "bytes", "callable", "chr", "classmethod", "compile", "complex", "delattr",
