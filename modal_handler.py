@@ -1,4 +1,4 @@
-import bpy
+import bpy, os
 from script_auto_complete.text_block import TextBlock
 from script_auto_complete.graphics import *
 from script_auto_complete.text_editor_utils import *
@@ -524,7 +524,7 @@ def get_line_amount():
     if preferences is None: return 8
     else: return preferences.line_amount
 def get_addon_preferences():
-    addon = bpy.context.user_preferences.addons.get("script_auto_complete")
+    addon = bpy.context.user_preferences.addons.get(get_addon_name())
     if addon is None: return None
     else: return addon.preferences
     
@@ -556,4 +556,7 @@ def get_area_under_mouse(event):
     y = event.mouse_prev_y
     for area in bpy.context.screen.areas:
         if area.x < x < area.x + area.width and area.y < y < area.y + area.height:
-            return area                        
+            return area
+
+def get_addon_name():
+    return os.path.basename(os.path.dirname(__file__))            
