@@ -178,41 +178,81 @@ class Documentation:
         props.append(PropertyDocumentation("kmi", type = "KeyMapItem", owner = None))
         props.append(PropertyDocumentation("context", type = "Context", is_readonly = True, owner = None))
         
-        # Screen Context
-        props.append(PropertyDocumentation("visible_objects", type = "Object Sequence", is_readonly = True, owner = "Context"))
-        props.append(PropertyDocumentation("visible_bases", type = "ObjectBase Sequence", is_readonly = True, owner = "Context"))
-        props.append(PropertyDocumentation("selectable_objects", type = "Object Sequence", is_readonly = True, owner = "Context"))
-        props.append(PropertyDocumentation("selectable_bases", type = "ObjectBase Sequence", is_readonly = True, owner = "Context"))
-        props.append(PropertyDocumentation("selected_objects", type = "Object Sequence", is_readonly = True, owner = "Context"))
-        props.append(PropertyDocumentation("selected_bases", type = "ObjectBase Sequence", is_readonly = True, owner = "Context"))
-        props.append(PropertyDocumentation("selected_editable_objects", type = "Object Sequence", is_readonly = True, owner = "Context"))
-        props.append(PropertyDocumentation("selected_editable_bases", type = "ObjectBase Sequence", is_readonly = True, owner = "Context"))
-        
-        props.append(PropertyDocumentation("visible_bones", type = "EditBone Sequence", is_readonly = True, owner = "Context"))
-        props.append(PropertyDocumentation("editable_bones", type = "EditBone Sequence", is_readonly = True, owner = "Context"))
-        props.append(PropertyDocumentation("selected_bones", type = "EditBone Sequence", is_readonly = True, owner = "Context"))
-        props.append(PropertyDocumentation("selected_editable_bones", type = "EditBone Sequence", is_readonly = True, owner = "Context"))
-        props.append(PropertyDocumentation("visible_pose_bones", type = "PoseBone Sequence", is_readonly = True, owner = "Context"))
-        props.append(PropertyDocumentation("selected_pose_bones", type = "PoseBone Sequence", is_readonly = True, owner = "Context"))
-        
-        props.append(PropertyDocumentation("active_bone", type = "EditBone", is_readonly = True, owner = "Context"))
-        props.append(PropertyDocumentation("active_pose_bone", type = "PoseBone", is_readonly = True, owner = "Context"))
-      
-        props.append(PropertyDocumentation("active_base", type = "ObjectBase", owner = "Context"))
-        props.append(PropertyDocumentation("active_object", type = "Object", owner = "Context"))
-        props.append(PropertyDocumentation("object", type = "Object", owner = "Context"))
-        props.append(PropertyDocumentation("edit_object", type = "Object", owner = "Context"))
-        props.append(PropertyDocumentation("sculpt_object", type = "Object", owner = "Context"))
-        props.append(PropertyDocumentation("vertex_paint_object", type = "Object", owner = "Context"))
-        props.append(PropertyDocumentation("weight_paint_object", type = "Object", owner = "Context"))
-        props.append(PropertyDocumentation("image_paint_object", type = "Object", owner = "Context"))
-        props.append(PropertyDocumentation("particle_edit_object", type = "Object", owner = "Context"))
-        
-        props.append(PropertyDocumentation("sequences", type = "Sequence Sequence", owner = "Context"))
-        props.append(PropertyDocumentation("selected_sequences", type = "Sequence Sequence", owner = "Context"))
-        props.append(PropertyDocumentation("selected_editable_sequences", type = "Sequence Sequence", owner = "Context"))
-        
-        props.append(PropertyDocumentation("active_operator", type = "Operator", owner = "Context"))
+        context_prop_data = [
+            ("visible_objects", "Object Sequence"),
+            ("visible_bases", "ObjectBase Sequence"),
+            ("selectable_objects", "Object Sequence"),
+            ("selectable_bases", "ObjectBase Sequence"),
+            ("selected_objects", "Object Sequence"),
+            ("selected_editable_objects", "Object Sequence"),
+            ("selected_editable_bases", "ObjectBase Sequence"),
+            ("visible_bones", "EditBone Sequence"),
+            ("editable_bones", "EditBone Sequence"),
+            ("selected_bones", "EditBone Sequence"),
+            ("selected_editable_bones", "EditBone Sequence"),
+            ("visible_pose_bones", "PoseBone Sequence"),
+            ("selected_pose_bones", "PoseBone Sequence"),
+            ("active_bone", "EditBone"),
+            ("active_pose_bone", "PoseBone"),
+            ("active_base", "ObjectBase"),
+            ("active_object", "Object"),
+            ("object", "Object"),
+            ("edit_object", "Object"),
+            ("sculpt_object", "Object"),
+            ("vertex_paint_object", "Object"),
+            ("weight_paint_object", "Object"),
+            ("image_paint_object", "Object"),
+            ("particle_edit_object", "Object"),
+            ("sequences", "Sequence Sequence"),
+            ("selected_sequences", "Sequence Sequence"),
+            ("selected_editable_sequences", "Sequence Sequence"),
+            ("gpencil_data", "GreasePencil"),
+            ("gpencil_data_owner", "ID"),
+            ("visible_gpencil_layers", "GPencilLayer Sequence"),
+            ("editable_gpencil_layers", "GPencilLayer Sequence"),
+            ("editable_gpencil_strokes", "GPencilStroke Sequence"),
+            ("active_gpencil_layer", "GPencilLayer Sequence"),
+            ("active_gpencil_frame", "GPencilLayer Sequence"),
+            ("active_operator", "Operator"),
+            ("texture_slot", "MaterialTextureSlot"),
+            ("world", "World"),
+            ("mesh", "Mesh"),
+            ("armature", "Armature"),
+            ("lattice", "Lattice"),
+            ("curve", "Curve"),
+            ("meta_ball", "MetaBall"),
+            ("lamp", "Lamp"),
+            ("speaker", "Speaker"),
+            ("camera", "Camera"),
+            ("material", "Material"),
+            ("material_slot", "MaterialSlot"),
+            ("texture", "Texture"),
+            ("texture_user", "ID"),
+            ("texture_user_property", "Property"),
+            ("bone", "Bone"),
+            ("edit_bone", "EditBone"),
+            ("pose_bone", "Posebone"),
+            ("particle_system", "ParticleSystem"),
+            ("particle_system_editable", "ParticleSystem"),
+            ("particle_settings", "ParticleSettings"),
+            ("cloth", "ClothModifier"),
+            ("soft_body", "SoftBodyModifier"),
+            ("fluid", "FluidSimulationModifier"),
+            ("smoke", "SmokeModifier"),
+            ("collision", "CollisionModifier"),
+            ("brush", "Brush"),
+            ("dynamic_paint", "DynamicPaintModifier"),
+            ("line_style", "FreestyleLineStyle"),
+            ("edit_image", "Image"),
+            ("edit_mask", "Mask"),
+            ("selected_nodes", "Node Sequence"),
+            ("active_node", "Node"),
+            ("edit_text", "Text"),
+            ("edit_movie_clip", "MovieClip"),
+            ("edit_mask", "Mask") ]
+            
+        for prop_name, prop_type in context_prop_data:
+            props.append(PropertyDocumentation(prop_name, type = prop_type, owner = "Context", is_readonly = True))
         
         props.append(PropertyDocumentation("event", type = "Event", is_readonly = True))
         for element in ("row", "col", "box", "subrow", "subcol", "subbox", "pie"):
