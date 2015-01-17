@@ -254,6 +254,11 @@ class Documentation:
         for prop_name, prop_type in context_prop_data:
             props.append(PropertyDocumentation(prop_name, type = prop_type, owner = "Context", is_readonly = True))
         
+        space_subclass_names = [subclass.__name__ for subclass in bpy.types.Space.__subclasses__()]
+        for space_name in space_subclass_names:
+            props.append(PropertyDocumentation("space", type = space_name))
+            props.append(PropertyDocumentation("space_data", type = space_name))
+        
         props.append(PropertyDocumentation("event", type = "Event", is_readonly = True))
         for element in ("row", "col", "box", "subrow", "subcol", "subbox", "pie"):
             props.append(PropertyDocumentation(element, type = "UILayout"))
