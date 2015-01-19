@@ -19,6 +19,8 @@ def get_parameter_operators(text_block):
     return operators
     
 def get_functions_from_path(path):
+    if "." not in path: return []
+    
     documentation = get_documentation()
     
     op = documentation.get_operator_by_full_name(path)

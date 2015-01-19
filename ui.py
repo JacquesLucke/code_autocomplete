@@ -89,7 +89,7 @@ class SolveWhitespaceInconsistency(bpy.types.Operator):
     
     def execute(self, context):
         if context.edit_text.use_tabs_as_spaces:
-            bpy.ops.text.convert_whitespace(type = "TABS")
-        else:
             bpy.ops.text.convert_whitespace(type = "SPACES")
+        else:
+            bpy.ops.text.convert_whitespace(type = "TABS")
         return { "FINISHED" } 
