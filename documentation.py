@@ -424,6 +424,7 @@ class PropertyDocumentation:
         
         
 class FunctionDocumentation:
+    type = "Function"
     def __init__(self, name = "", description = "", owner = None, inputs = [], outputs = []):
         self.name = name
         self.description = description
