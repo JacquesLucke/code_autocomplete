@@ -13,7 +13,7 @@ def stop():
 
 class AutoCompleteSettingsPanel(bpy.types.Panel):
     bl_idname = "script_auto_complete.settings_panel"
-    bl_label = "Auto Complete"
+    bl_label = "Autocomplete"
     bl_space_type = "TEXT_EDITOR"
     bl_region_type = "UI"
         
