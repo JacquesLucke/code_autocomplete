@@ -59,7 +59,7 @@ class StartAutoCompletion(bpy.types.Operator):
         
 class RebuildDocumentation(bpy.types.Operator):
     bl_idname = "script_auto_complete.rebuild_documentation"
-    bl_label = "Rebuild Documentation"
+    bl_label = "Reload API"
     
     @classmethod
     def poll(cls, context):
