@@ -126,7 +126,7 @@ templates.append(("Addon Info", "bl_info.*=.*", ''' {
     "description": "Single Line Explanation",
     "author": "Your Name",
     "version": (0, 0, 1),
-    "blender": (2, 72, 0),
+    "blender": (2, 74, 0),
     "location": "View3D",
     "warning": "This is an unstable version",
     "wiki_url": "",

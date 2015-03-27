@@ -23,14 +23,13 @@ import importlib, sys, os
 from fnmatch import fnmatch
 
 bl_info = {
-    "name":        "Script Auto Complete",
-    "description": "Autocomplete - Unleash the Power of Scripting",
+    "name":        "Code Autocomplete",
+    "description": "Improve the scripting experience in Blenders text editor.",
     "author":      "Jacques Lucke",
-    "version":     (0, 0, 1),
-    "blender":     (2, 7, 3),
+    "version":     (1,0, 0),
+    "blender":     (2, 7, 4),
     "location":    "Text Editor",
-    "category":    "Development",
-    "warning":     "not widely tested"
+    "category":    "Development"
     }
     
 # import all modules in same/subdirectories
