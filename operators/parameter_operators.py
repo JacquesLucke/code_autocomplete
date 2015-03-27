@@ -43,7 +43,7 @@ def get_parameter_name_operators(text_block, function):
     operators = []
     word_start = word_start.upper()
     for input in function.inputs:
-        if input.name.upper().startswith(word_start):
+        if word_start in input.name.upper():
             operators.append(ExtendWordOperator(input.name + " = ", align = "INSET", additional_data = input))
     return operators
 
@@ -52,11 +52,11 @@ def get_enum_items_operators(text_block, function):
     operators = []
     for input in function.inputs:
         pattern = input.name + "\s*=\s*(\"|\')"
-        word_start =text_block.get_current_text_after_pattern(pattern)
+        word_start = text_block.get_current_text_after_pattern(pattern)
         if word_start is None: continue
         word_start = word_start.upper()
         for enum_item in input.enum_items:
-            if enum_item.upper().startswith(word_start):
+            if word_start in enum_item.upper():
                 operators.append(ExtendWordOperator(enum_item))
     return operators
     
