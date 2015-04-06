@@ -152,7 +152,7 @@ class Label:
             
     def get_text_to_line_end(self, text):
         index = 1
-        fitting_index = 0
+        fitting_index = 30
         while index > 0:
             index = text.find(" ", index + 1)
             if self.fits_in_line(text[:index]):
