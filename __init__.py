@@ -80,6 +80,7 @@ class AddonPreferences(bpy.types.AddonPreferences):
         layout = self.layout
         row = layout.row(align = False)
         row.prop(self, "line_amount")
+        
                
     
 # register
@@ -88,6 +89,8 @@ class AddonPreferences(bpy.types.AddonPreferences):
 def register():
     try: bpy.utils.register_module(module_name)
     except: pass
+    from script_auto_complete.addon_development_manager import AddonDevelopmentSceneProperties
+    bpy.types.Scene.addon_development = bpy.props.PointerProperty(name = "Addon Development", type = AddonDevelopmentSceneProperties)  
     print("Loaded Script Auto Completion with {} modules".format(len(auto_complete_modules)))
 
 def unregister():
