@@ -7,6 +7,7 @@ from bpy.props import *
 from os import listdir
 from os.path import isfile, isdir, join, dirname
 from collections import defaultdict
+from bpy.app.handlers import persistent
 
 is_setting = False
 
@@ -64,10 +65,14 @@ class AddonDeveloperPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         setting = get_settings()
-        layout.prop(setting, "addon_name", text = "Name")
+        row = layout.row(align = True)
+        row.prop(setting, "addon_name", text = "Name")
+        row.operator("script_auto_complete.find_existing_addon", icon = "EYEDROPPER", text = "")
+        
         layout.operator("script_auto_complete.new_addon", icon = "NEW")
-        layout.operator("script_auto_complete.run_addon")
+        layout.operator("script_auto_complete.run_addon", icon = "OUTLINER_DATA_POSE")
         layout.operator("script_auto_complete.export_addon", icon = "EXPORT")
+        layout.operator("script_auto_complete.restart_blender", icon = "BLENDER")
         
         
 class AddonFilesPanel(bpy.types.Panel):
@@ -120,7 +125,36 @@ ignore_names = ["__pycache__", ".git", ".gitignore"]
 def get_directory_names(directory):
     return [file_name for file_name in listdir(directory) if not isfile(join(directory, file_name)) and file_name not in ignore_names]         
 def get_file_names(directory):
-    return [file_name for file_name in listdir(directory) if isfile(join(directory, file_name)) and file_name not in ignore_names]     
+    return [file_name for file_name in listdir(directory) if isfile(join(directory, file_name)) and file_name not in ignore_names] 
+
+
+
+class FindExistingAddon(bpy.types.Operator):
+    bl_idname = "script_auto_complete.find_existing_addon"
+    bl_label = "Find Existing Addon"
+    bl_description = ""
+    bl_options = {"REGISTER"}
+    bl_property = "item"
+    
+    def get_items(self, context):
+        items = []
+        directories = get_directory_names(addons_path)
+        for addon in directories:
+            if addon == correct_file_name(addon, is_directory = True):
+                items.append((addon, addon, ""))
+        return items
+        
+    item = bpy.props.EnumProperty(items = get_items)
+        
+    def invoke(self, context, event):
+        context.window_manager.invoke_search_popup(self)
+        return {"CANCELLED"}
+        
+    def execute(self, context):
+        get_settings().addon_name = self.item
+        context.area.tag_redraw()
+        return {"FINISHED"}
+    
 
 class CreateNewAddon(bpy.types.Operator):
     bl_idname = "script_auto_complete.new_addon"
@@ -232,7 +266,7 @@ class ToogleDirectoryVisibility(bpy.types.Operator):
             
 class OpenFile(bpy.types.Operator):
     bl_idname = "script_auto_complete.open_file"
-    bl_label = "label"
+    bl_label = "Open File"
     bl_description = "Opens the file in the text editor (hold ctrl to copy the path)"
     bl_options = {"REGISTER"}
     
@@ -246,15 +280,20 @@ class OpenFile(bpy.types.Operator):
         if event.ctrl:
             context.window_manager.clipboard = dirname(self.path)
         else:
-            text = None
-            for text_block in bpy.data.texts:
-                if text_block.filepath == self.path:
-                    text = text_block
-                    break
-            if not text:
-                text = bpy.data.texts.load(self.path, internal = False)
-            context.space_data.text = text
+            self.execute(context)
         return {"FINISHED"}
+        
+    def execute(self, context):
+        text = None
+        for text_block in bpy.data.texts:
+            if text_block.filepath == self.path:
+                text = text_block
+                break
+        if not text:
+            text = bpy.data.texts.load(self.path, internal = False)
+        
+        context.space_data.text = text
+          
     
     
 class SaveFiles(bpy.types.Operator):
@@ -312,8 +351,67 @@ class RunAddon(bpy.types.Operator):
         loader = importlib.machinery.SourceFileLoader(get_addon_name(), path)
         module = loader.load_module()
         module.register()
-        return {"FINISHED"}            
-   
+        return {"FINISHED"}        
+
+
+class RestartBlender(bpy.types.Operator):
+    bl_idname = "script_auto_complete.restart_blender"
+    bl_label = "Restart Blender"
+    bl_description = "Close and open a new Blender instance to test the Addon on the startup file."
+    bl_options = {"REGISTER"}
+    
+    @classmethod
+    def poll(cls, context):
+        return current_addon_exists()
+    
+    def execute(self, context):
+        bpy.ops.script_auto_complete.save_files()
+        save_status()
+        start_another_blender_instance()
+        bpy.ops.wm.quit_blender()
+        return {"FINISHED"}         
+        
+
+restart_data_path = dirname(__file__) + "\\restart_data.txt"   
+
+id_addon_name = "ADDON_NAME: "
+id_current_path = "CURRENT_PATH: "  
+id_visiblie_path = "VISIBLE_PATH: "
+def save_status():
+    file = open(restart_data_path, "w")
+    file.write(id_addon_name + get_addon_name() + "\n")
+    text_block = bpy.context.space_data.text
+    if text_block:
+        file.write(id_current_path + text_block.filepath + "\n")
+    for path, is_open in directory_visibility.items():
+        if is_open:
+            file.write(id_visiblie_path + path + "\n")
+            
+    file.close()
+ 
+@persistent 
+def open_status(scene):
+    global directory_visibility
+    if os.path.exists(restart_data_path):
+        file = open(restart_data_path)
+        lines = file.readlines()
+        file.close()
+        os.remove(restart_data_path)
+        
+        for line in lines:
+            if line.startswith(id_addon_name):
+                get_settings().addon_name = line[len(id_addon_name):].strip()
+            if line.startswith(id_current_path):
+                path = line[len(id_current_path):].strip()
+                text_block = bpy.data.texts.load(path, internal = False)
+                for screen in bpy.data.screens:
+                    for area in screen.areas:
+                        for space in area.spaces:
+                            if space.type == "TEXT_EDITOR":
+                                space.text = text_block
+            if line.startswith(id_visiblie_path):
+                path = line[len(id_visiblie_path):].strip()
+                directory_visibility[path] = True        
     
 def current_addon_exists():
     return os.path.exists(get_current_addon_path()) and get_settings().addon_name != ""
@@ -349,4 +447,7 @@ def zip_directory(source_path, output_path):
     except: print("Could not zip the directory")
     
 def start_another_blender_instance():
-    os.startfile(bpy.app.binary_path)            
+    os.startfile(bpy.app.binary_path)  
+    
+    
+bpy.app.handlers.load_post.append(open_status)  
