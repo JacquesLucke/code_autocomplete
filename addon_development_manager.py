@@ -1,6 +1,8 @@
 import bpy 
 import os
+import sys
 import zipfile
+import importlib
 from bpy.props import *
 from os import listdir
 from os.path import isfile, isdir, join, dirname
@@ -64,7 +66,7 @@ class AddonDeveloperPanel(bpy.types.Panel):
         setting = get_settings()
         layout.prop(setting, "addon_name", text = "Name")
         layout.operator("script_auto_complete.new_addon", icon = "NEW")
-        
+        layout.operator("script_auto_complete.run_addon")
         layout.operator("script_auto_complete.export_addon", icon = "EXPORT")
         
         
@@ -128,7 +130,7 @@ class CreateNewAddon(bpy.types.Operator):
     
     @classmethod
     def poll(cls, context):
-        return True
+        return not current_addon_exists()
     
     def execute(self, context):
         self.create_addon_directory()
@@ -292,14 +294,35 @@ class ExportAddon(bpy.types.Operator):
         output_path = self.filepath
         zip_directory(source_path, output_path)
         return {"FINISHED"}
+   
             
+class RunAddon(bpy.types.Operator):
+    bl_idname = "script_auto_complete.run_addon"
+    bl_label = "Run Addon"
+    bl_description = "Run the __init__.py file and call the register function"
+    bl_options = {"REGISTER"}
+    
+    @classmethod
+    def poll(cls, context):
+        return current_addon_exists()
+    
+    def execute(self, context):
+        bpy.ops.script_auto_complete.save_files()
+        path = get_current_addon_path() + "__init__.py"
+        loader = importlib.machinery.SourceFileLoader(get_addon_name(), path)
+        module = loader.load_module()
+        module.register()
+        return {"FINISHED"}            
    
     
 def current_addon_exists():
     return os.path.exists(get_current_addon_path()) and get_settings().addon_name != ""
     
 def get_current_addon_path():
-    return "{}\\{}\\".format(addons_path, get_settings().addon_name)  
+    return "{}\\{}\\".format(addons_path, get_addon_name())  
+    
+def get_addon_name():
+    return get_settings().addon_name
 
 def get_settings():
     return bpy.context.scene.addon_development
