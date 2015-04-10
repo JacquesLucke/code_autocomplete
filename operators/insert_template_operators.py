@@ -134,7 +134,7 @@ templates.append(("Addon Info", "bl_info.*=.*", ''' {
     '''))    
     
 templates.append(("License Header", "'''", """
-Copyright (C) 2014 YOUR NAME
+Copyright (C) 2015 YOUR NAME
 YOUR@MAIL.com
 
 Created by YOUR NAME

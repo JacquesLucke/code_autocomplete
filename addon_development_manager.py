@@ -152,6 +152,7 @@ class FindExistingAddon(bpy.types.Operator):
         
     def execute(self, context):
         get_settings().addon_name = self.item
+        make_directory_visible(get_current_addon_path()) 
         context.area.tag_redraw()
         return {"FINISHED"}
     
@@ -391,7 +392,6 @@ def save_status():
  
 @persistent 
 def open_status(scene):
-    global directory_visibility
     if os.path.exists(restart_data_path):
         file = open(restart_data_path)
         lines = file.readlines()
@@ -411,7 +411,11 @@ def open_status(scene):
                                 space.text = text_block
             if line.startswith(id_visiblie_path):
                 path = line[len(id_visiblie_path):].strip()
-                directory_visibility[path] = True        
+                make_directory_visible(path)   
+
+def make_directory_visible(path):
+    global directory_visibility
+    directory_visibility[path] = True   
     
 def current_addon_exists():
     return os.path.exists(get_current_addon_path()) and get_settings().addon_name != ""
