@@ -8,6 +8,7 @@ from os import listdir
 from os.path import isfile, isdir, join, dirname
 from collections import defaultdict
 from bpy.app.handlers import persistent
+from script_auto_complete.text_block import TextBlock
 
 is_setting = False
 
@@ -165,20 +166,33 @@ class CreateNewAddon(bpy.types.Operator):
     
     @classmethod
     def poll(cls, context):
-        return not current_addon_exists()
+        return not current_addon_exists() and get_addon_name() != ""
     
     def execute(self, context):
         self.create_addon_directory()
         self.create_init_file()
+        addon_path = get_current_addon_path()
+        bpy.ops.script_auto_complete.open_file(path = addon_path + "__init__.py")
+        make_directory_visible(addon_path)
+        
+        text_block = TextBlock(context.space_data.text)
+        text_block.set_selection(68, 0, 68, 100)
+        
         return {"FINISHED"}
     
     def create_addon_directory(self):
-        if not current_addon_exists():
-            os.makedirs(get_current_addon_path())
+        os.makedirs(get_current_addon_path())
             
     def create_init_file(self):
-        new_addon_file("__init__.py")
-        
+        code = self.get_new_addon_template()
+        new_addon_file("__init__.py", code)
+    
+    def get_new_addon_template(self):
+        path = join(dirname(__file__), "new_addon_template.txt")
+        file = open(path)
+        text = file.read()
+        file.close()
+        return text
 
             
 class NewFile(bpy.types.Operator):
@@ -233,14 +247,16 @@ class NewDirectory(bpy.types.Operator):
         return {"FINISHED"}    
     
   
-def new_addon_file(path):
-    new_file(get_current_addon_path() + path) 
+def new_addon_file(path, default = ""):
+    new_file(get_current_addon_path() + path, default) 
        
-def new_file(path):
+def new_file(path, default = ""):
     dirname = os.path.dirname(path)
     new_directory(dirname)
     if not os.path.exists(path):
-        open(path, "a").close()
+        file = open(path, "a")
+        file.write(default)
+        file.close()
         
 def new_directory(path):
     if not os.path.exists(path):
@@ -294,7 +310,7 @@ class OpenFile(bpy.types.Operator):
             text = bpy.data.texts.load(self.path, internal = False)
         
         context.space_data.text = text
-          
+        return {"FINISHED"}
     
     
 class SaveFiles(bpy.types.Operator):
