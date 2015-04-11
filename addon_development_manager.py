@@ -35,7 +35,7 @@ def get_file_name_handler(self):
     except: return ""
 
 class AddonDevelopmentSceneProperties(bpy.types.PropertyGroup):
-    addon_name = StringProperty(name = "Addon Name", default = "my_addon", set = set_directory_name_handler, get = get_directory_name_handler)    
+    addon_name = StringProperty(name = "Addon Name", default = "my_addon")    
         
 def correct_file_name(name, is_directory = False):
     new_name = ""
@@ -71,10 +71,12 @@ class AddonDeveloperPanel(bpy.types.Panel):
         row.operator("script_auto_complete.find_existing_addon", icon = "EYEDROPPER", text = "")
         
         if not current_addon_exists():
-            layout.operator("script_auto_complete.new_addon", icon = "NEW", text = "New")
+            if not is_addon_name_valid():
+                layout.operator("script_auto_complete.make_addon_name_valid", icon = "ERROR", text = "Correct Addon Name")
+            layout.operator("script_auto_complete.new_addon", icon = "NEW", text = "New Addon")
         else:
-            layout.operator("script_auto_complete.run_addon", icon = "OUTLINER_DATA_POSE", text = "Run")
-            layout.operator("script_auto_complete.export_addon", icon = "EXPORT", text = "Export")
+            layout.operator("script_auto_complete.run_addon", icon = "OUTLINER_DATA_POSE", text = "Run Addon")
+            layout.operator("script_auto_complete.export_addon", icon = "EXPORT", text = "Export as Zip")
         layout.operator("script_auto_complete.restart_blender", icon = "BLENDER")
         
         
@@ -143,8 +145,7 @@ class FindExistingAddon(bpy.types.Operator):
         items = []
         directories = get_directory_names(addons_path)
         for addon in directories:
-            if addon == correct_file_name(addon, is_directory = True):
-                items.append((addon, addon, ""))
+            items.append((addon, addon, ""))
         return items
         
     item = bpy.props.EnumProperty(items = get_items)
@@ -158,6 +159,22 @@ class FindExistingAddon(bpy.types.Operator):
         make_directory_visible(get_current_addon_path()) 
         context.area.tag_redraw()
         return {"FINISHED"}
+        
+        
+class MakeAddonNameValid(bpy.types.Operator):
+    bl_idname = "script_auto_complete.make_addon_name_valid"
+    bl_label = "Make Name Valid"
+    bl_description = "Make the addon name a valid module name"
+    bl_options = {"REGISTER"}
+    
+    @classmethod
+    def poll(cls, context):
+        return not current_addon_exists() and not is_addon_name_valid()
+    
+    def execute(self, context):
+        name = get_addon_name()
+        get_settings().addon_name = correct_file_name(name, is_directory = True)
+        return {"FINISHED"}     
     
 
 class CreateNewAddon(bpy.types.Operator):
@@ -168,7 +185,7 @@ class CreateNewAddon(bpy.types.Operator):
     
     @classmethod
     def poll(cls, context):
-        return not current_addon_exists() and get_addon_name() != ""
+        return not current_addon_exists() and is_addon_name_valid()
     
     def execute(self, context):
         self.create_addon_directory()
@@ -348,9 +365,12 @@ class ExportAddon(bpy.types.Operator):
         return {"RUNNING_MODAL"}
     
     def execute(self, context):
+        subdirectory_name = get_addon_name() + "\\"
         source_path = get_current_addon_path()
         output_path = self.filepath
-        zip_directory(source_path, output_path)
+        if not output_path.lower().endswith(".zip"):
+            output_path += ".zip"
+        zip_directory(source_path, output_path, additional_path = subdirectory_name)
         return {"FINISHED"}
    
             
@@ -381,7 +401,7 @@ class RestartBlender(bpy.types.Operator):
     
     @classmethod
     def poll(cls, context):
-        return current_addon_exists()
+        return True
     
     def invoke(self, context, event):
         return context.window_manager.invoke_confirm(self, event)
@@ -442,7 +462,11 @@ def current_addon_exists():
     return os.path.exists(get_current_addon_path()) and get_settings().addon_name != ""
     
 def get_current_addon_path():
-    return "{}\\{}\\".format(addons_path, get_addon_name())  
+    return "{}\\{}\\".format(addons_path, get_addon_name()) 
+
+def is_addon_name_valid():
+    name = get_addon_name()
+    return name == correct_file_name(name, is_directory = True) and name != ""
     
 def get_addon_name():
     return get_settings().addon_name
@@ -458,7 +482,7 @@ def save_text_block(text_block):
     file.write(text_block.as_string())
     file.close()
     
-def zip_directory(source_path, output_path):
+def zip_directory(source_path, output_path, additional_path = ""):
     try:
         parent_folder = dirname(source_path)
         content = os.walk(source_path)  
@@ -466,7 +490,7 @@ def zip_directory(source_path, output_path):
         for root, folders, files in content:
             for data in folders + files:
                 absolute_path = join(root, data)
-                relative_path = absolute_path[len(parent_folder+"\\"):]
+                relative_path = additional_path + absolute_path[len(parent_folder+"\\"):]
                 zip_file.write(absolute_path, relative_path)
         zip_file.close()
     except: print("Could not zip the directory")
