@@ -75,7 +75,9 @@ class AddonDeveloperPanel(bpy.types.Panel):
                 layout.operator("script_auto_complete.make_addon_name_valid", icon = "ERROR", text = "Correct Addon Name")
             layout.operator("script_auto_complete.new_addon", icon = "NEW", text = "New Addon")
         else:
-            layout.operator("script_auto_complete.run_addon", icon = "OUTLINER_DATA_POSE", text = "Run Addon")
+            row = layout.row()
+            row.scale_y = 1.5
+            row.operator("script_auto_complete.run_addon", icon = "OUTLINER_DATA_POSE", text = "Run Addon")
             layout.operator("script_auto_complete.export_addon", icon = "EXPORT", text = "Export as Zip")
         layout.operator("script_auto_complete.restart_blender", icon = "BLENDER")
         
