@@ -242,7 +242,9 @@ class NewFile(bpy.types.Operator):
     
     def execute(self, context):
         if self.name != "":
+            path = self.directory + self.name
             new_file(self.directory + self.name)
+            bpy.ops.script_auto_complete.open_file(path = path)
         return {"FINISHED"}
     
     
