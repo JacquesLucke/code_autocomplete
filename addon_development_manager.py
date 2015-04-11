@@ -107,16 +107,20 @@ class AddonFilesPanel(bpy.types.Panel):
         operator.directory = directory
         
         if self.is_directory_visible(directory):
+            col = box.column(align = True)
             directory_names = get_directory_names(directory)
             for directory_name in directory_names:
-                self.draw_directory(box, directory + directory_name + "\\")
+                row = col.row()
+                self.draw_directory(row, directory + directory_name + "\\")
             
-            col = box.column(align = True)    
             file_names = get_file_names(directory)
+            col = box.column(align = True) 
             for file_name in file_names:
                 row = col.row()
                 operator = row.operator("script_auto_complete.open_file", text = "", emboss = True, icon = "FILE")
                 operator.path = directory + file_name
+                if operator.path == get_current_filepath():
+                    row.label("", icon = "RIGHTARROW_THIN")
                 row.label(file_name)
             
             row = box.row(align = True)    
@@ -459,6 +463,10 @@ def open_status(scene):
 def make_directory_visible(path):
     global directory_visibility
     directory_visibility[path] = True   
+    
+def get_current_filepath():
+    try: return bpy.context.space_data.text.filepath
+    except: return ""
     
 def current_addon_exists():
     return os.path.exists(get_current_addon_path()) and get_settings().addon_name != ""
