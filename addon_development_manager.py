@@ -70,9 +70,11 @@ class AddonDeveloperPanel(bpy.types.Panel):
         row.prop(setting, "addon_name", text = "Name")
         row.operator("script_auto_complete.find_existing_addon", icon = "EYEDROPPER", text = "")
         
-        layout.operator("script_auto_complete.new_addon", icon = "NEW")
-        layout.operator("script_auto_complete.run_addon", icon = "OUTLINER_DATA_POSE")
-        layout.operator("script_auto_complete.export_addon", icon = "EXPORT")
+        if not current_addon_exists():
+            layout.operator("script_auto_complete.new_addon", icon = "NEW", text = "New")
+        else:
+            layout.operator("script_auto_complete.run_addon", icon = "OUTLINER_DATA_POSE", text = "Run")
+            layout.operator("script_auto_complete.export_addon", icon = "EXPORT", text = "Export")
         layout.operator("script_auto_complete.restart_blender", icon = "BLENDER")
         
         
@@ -380,6 +382,9 @@ class RestartBlender(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         return current_addon_exists()
+    
+    def invoke(self, context, event):
+        return context.window_manager.invoke_confirm(self, event)
     
     def execute(self, context):
         bpy.ops.script_auto_complete.save_files()
