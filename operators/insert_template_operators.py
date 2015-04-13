@@ -153,3 +153,6 @@ Created by YOUR NAME
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 """))
+
+templates.append(("Invoke Operator Function", "\s*def invoke\(", """self, context, event):
+        return {"FINISHED"}"""))
