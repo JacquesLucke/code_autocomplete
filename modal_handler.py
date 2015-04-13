@@ -137,7 +137,8 @@ class AutoCompleteTextBox:
     def execute_selected_operator(self):
         try:
             operator = self.selected_operator
-            operator.execute(TextBlock(bpy.context.space_data.text))
+            if operator:
+                operator.execute(TextBlock(bpy.context.space_data.text))
         except Exception as e: print(e)
         
     @property
