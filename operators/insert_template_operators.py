@@ -154,5 +154,10 @@ Created by YOUR NAME
 '''
 """))
 
-templates.append(("Invoke Operator Function", "\s*def invoke\(", """self, context, event):
+templates.append(("Invoke Function", "\s*def invoke\(", """self, context, event):
+        
         return {"FINISHED"}"""))
+        
+templates.append(("Modal Function", "\s*def modal\(", """self, context, event):
+        
+        return {"RUNNING_MODAL"}"""))        
