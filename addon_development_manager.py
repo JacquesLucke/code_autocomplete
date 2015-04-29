@@ -73,7 +73,9 @@ class AddonDeveloperPanel(bpy.types.Panel):
         if not current_addon_exists():
             if not is_addon_name_valid():
                 layout.operator("script_auto_complete.make_addon_name_valid", icon = "ERROR", text = "Correct Addon Name")
-            layout.operator("script_auto_complete.new_addon", icon = "NEW", text = "New Addon")
+            row = layout.row()
+            row.scale_y = 1.2
+            row.operator_menu_enum("script_auto_complete.new_addon", "new_addon_type", icon = "NEW", text = "New Addon")
         else:
             row = layout.row()
             row.scale_y = 1.5
@@ -181,13 +183,19 @@ class MakeAddonNameValid(bpy.types.Operator):
         name = get_addon_name()
         get_settings().addon_name = correct_file_name(name, is_directory = True)
         return {"FINISHED"}     
-    
+
+        
+new_addon_type_items = [
+    ("BASIC", "Basic", "bla"),
+    ("MULTIFILE", "Multifile", "") ]        
 
 class CreateNewAddon(bpy.types.Operator):
     bl_idname = "script_auto_complete.new_addon"
     bl_label = "New Addon"
     bl_description = "Create a folder in the addon directory and setup a basic code base"
     bl_options = {"REGISTER"}
+    
+    new_addon_type = EnumProperty(default = "BASIC", items = new_addon_type_items)
     
     @classmethod
     def poll(cls, context):
@@ -199,21 +207,19 @@ class CreateNewAddon(bpy.types.Operator):
         addon_path = get_current_addon_path()
         bpy.ops.script_auto_complete.open_file(path = addon_path + "__init__.py")
         make_directory_visible(addon_path)
-        
-        text_block = TextBlock(context.space_data.text)
-        text_block.set_selection(68, 0, 68, 100)
-        
         return {"FINISHED"}
     
     def create_addon_directory(self):
         os.makedirs(get_current_addon_path())
             
     def create_init_file(self):
-        code = self.get_new_addon_template()
+        t = self.new_addon_type
+        if t == "BASIC": code = code = self.read_template_file("basic.txt")
+        if t == "MULTIFILE": code = self.read_template_file("multifile.txt")
         new_addon_file("__init__.py", code)
     
-    def get_new_addon_template(self):
-        path = join(dirname(__file__), "new_addon_template.txt")
+    def read_template_file(self, path):
+        path = join(dirname(__file__), "addon_templates\\" + path)
         file = open(path)
         text = file.read()
         file.close()
