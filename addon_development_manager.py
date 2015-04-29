@@ -446,21 +446,23 @@ def open_status(scene):
         lines = file.readlines()
         file.close()
         os.remove(restart_data_path)
+        parse_startup_file_lines(lines)
         
-        for line in lines:
-            if line.startswith(id_addon_name):
-                get_settings().addon_name = line[len(id_addon_name):].strip()
-            if line.startswith(id_current_path):
-                path = line[len(id_current_path):].strip()
-                text_block = bpy.data.texts.load(path, internal = False)
-                for screen in bpy.data.screens:
-                    for area in screen.areas:
-                        for space in area.spaces:
-                            if space.type == "TEXT_EDITOR":
-                                space.text = text_block
-            if line.startswith(id_visiblie_path):
-                path = line[len(id_visiblie_path):].strip()
-                make_directory_visible(path)   
+def parse_startup_file_lines(lines):		
+    for line in lines:
+        if line.startswith(id_addon_name):
+            get_settings().addon_name = line[len(id_addon_name):].strip()
+        if line.startswith(id_current_path):
+            path = line[len(id_current_path):].strip()
+            text_block = bpy.data.texts.load(path, internal = False)
+            for screen in bpy.data.screens:
+                for area in screen.areas:
+                    for space in area.spaces:
+                        if space.type == "TEXT_EDITOR":
+                            space.text = text_block
+        if line.startswith(id_visiblie_path):
+            path = line[len(id_visiblie_path):].strip()
+            make_directory_visible(path)   
 
 def make_directory_visible(path):
     global directory_visibility
