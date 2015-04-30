@@ -360,7 +360,8 @@ class SaveFiles(bpy.types.Operator):
     def execute(self, context):
         for text in bpy.data.texts:
             save_text_block(text)
-        bpy.ops.text.resolve_conflict(resolution = "IGNORE")
+        try: bpy.ops.text.resolve_conflict(resolution = "IGNORE")
+        except: pass
         return {"FINISHED"}
             
                     
