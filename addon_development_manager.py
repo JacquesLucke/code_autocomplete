@@ -73,9 +73,10 @@ class AddonDeveloperPanel(bpy.types.Panel):
         if not current_addon_exists():
             if not is_addon_name_valid():
                 layout.operator("script_auto_complete.make_addon_name_valid", icon = "ERROR", text = "Correct Addon Name")
-            row = layout.row()
-            row.scale_y = 1.2
-            row.operator_menu_enum("script_auto_complete.new_addon", "new_addon_type", icon = "NEW", text = "New Addon")
+            else:
+                row = layout.row()
+                row.scale_y = 1.2
+                row.operator_menu_enum("script_auto_complete.new_addon", "new_addon_type", icon = "NEW", text = "New Addon")
         else:
             row = layout.row()
             row.scale_y = 1.5
@@ -359,6 +360,7 @@ class SaveFiles(bpy.types.Operator):
     def execute(self, context):
         for text in bpy.data.texts:
             save_text_block(text)
+        bpy.ops.text.resolve_conflict(resolution = "IGNORE")
         return {"FINISHED"}
             
                     
@@ -496,7 +498,7 @@ def get_settings():
 
 def save_text_block(text_block):
     if not text_block: return
-    if text_block.filepath == "": return
+    if not os.path.exists(text_block.filepath): return
 
     file = open(text_block.filepath, mode = "w")
     file.write(text_block.as_string())
