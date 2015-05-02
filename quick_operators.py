@@ -25,12 +25,12 @@ class SelectWholeString(bpy.types.Operator):
     
         text_block = TextBlock(text)
         
-        line = text_block.current_line_index
+        line_text = text_block.current_line
         character_index = text_block.current_character_index
         
-        string_letter = text_block.get_string_definition_type(line, character_index)
+        string_letter = text_block.get_string_definition_type(line_text, character_index)
         if string_letter is None: return {"CANCELLED"}
-        start, end = text_block.get_range_surrounded_by_letter(line, string_letter, character_index)
+        start, end = text_block.get_range_surrounded_by_letter(line_text, string_letter, character_index)
         if start != end:
             text_block.set_selection_in_line(start, end)
             
