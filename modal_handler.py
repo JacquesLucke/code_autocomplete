@@ -122,16 +122,12 @@ class AutoCompleteTextBox:
             raise BlockEvent()
             
     def execute_on_mouse_click(self, event):
-        if event.type in ["LEFTMOUSE", "MOUSEMOVE"] and event.value in ["PRESS", "RELEASE"]:
+        if event.type == "LEFTMOUSE" and event.value == "PRESS":
             for i, line_rectangle in enumerate(self.operator_line_rectangles):
                 if line_rectangle.contains(event.mouse_region_x, event.mouse_region_y):
-                    index = self.top_index + i
-                    if self.selected_index == index and event.type == "LEFTMOUSE" and event.value == "RELEASE":
-                        self.execute_selected_operator()
-                        self.hide = True
-                    else:
-                        if event.value == "PRESS":
-                            self.selected_index = index
+                    self.selected_index = self.top_index + i
+                    self.execute_selected_operator()
+                    self.hide = True
                     raise BlockEvent()
         
     def execute_selected_operator(self):
