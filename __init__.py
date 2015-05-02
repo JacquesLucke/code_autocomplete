@@ -26,7 +26,7 @@ bl_info = {
     "name":        "Code Autocomplete",
     "description": "Improve the scripting experience in Blenders text editor.",
     "author":      "Jacques Lucke",
-    "version":     (1,0, 0),
+    "version":     (1, 5, 0),
     "blender":     (2, 7, 4),
     "location":    "Text Editor",
     "category":    "Development"
