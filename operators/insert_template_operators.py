@@ -1,5 +1,5 @@
 import re
-from script_auto_complete.text_operators import InsertTextOperator
+from .. text_operators import InsertTextOperator
 
 def get_insert_template_operators(text_block):
     operators = []

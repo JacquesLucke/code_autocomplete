@@ -1,7 +1,7 @@
 import bpy
-from script_auto_complete.modal_handler import ModalHandler
-from script_auto_complete.text_editor_utils import *
-from script_auto_complete.documentation import get_documentation
+from . modal_handler import ModalHandler
+from . text_editor_utils import *
+from . documentation import get_documentation
 
 running = False
 def start():

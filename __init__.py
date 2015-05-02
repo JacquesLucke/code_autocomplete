@@ -31,48 +31,14 @@ bl_info = {
     "location":    "Text Editor",
     "category":    "Development"
     }
-    
-# import all modules in same/subdirectories
-###########################################
-currentPath = os.path.dirname(__file__)
-module_name = "script_auto_complete"
-sys.modules[module_name] = sys.modules[__name__]
-
-def getAllImportFiles():
-    def get_path(base):
-        b, t = os.path.split(base)
-        if __name__ == t:
-            return [module_name]
-        else:
-            return get_path(b) + [t]
-
-    for root, dirs, files in os.walk(currentPath):
-        path = ".".join(get_path(root))
-        for f in filter(lambda f:f.endswith(".py"), files):
-            name = f[:-3]
-            if not name == "__init__":
-                yield path + "." + name
-
-auto_complete_modules = []
-
-for name in getAllImportFiles():
-    mod = importlib.import_module(name)
-    auto_complete_modules.append(mod)
-
-reload_event = "bpy" in locals()
 
 import bpy
-
-#  Reload
-#  makes F8 reload actually reload the code
-
-if reload_event:
-    for module in auto_complete_modules:
-        importlib.reload(module)
-        
+from . import quick_operators
+from . import ui
+from . addon_development_manager import AddonDevelopmentSceneProperties
         
 class AddonPreferences(bpy.types.AddonPreferences):
-    bl_idname = module_name
+    bl_idname = "script_auto_complete"
     
     line_amount = bpy.props.IntProperty(default = 8, min = 1, max = 20, name = "Lines")
     
@@ -104,17 +70,14 @@ def unregister_keymaps():
     
 
 def register():
-    try: bpy.utils.register_module(module_name)
-    except: pass
+    bpy.utils.register_module(__name__)
+    
     register_keymaps()
-    from script_auto_complete.addon_development_manager import AddonDevelopmentSceneProperties
-    bpy.types.Scene.addon_development = bpy.props.PointerProperty(name = "Addon Development", type = AddonDevelopmentSceneProperties)  
-    print("Loaded Script Auto Completion with {} modules".format(len(auto_complete_modules)))
+    bpy.types.Scene.addon_development = bpy.props.PointerProperty(name = "Addon Development", type = AddonDevelopmentSceneProperties)
 
 def unregister():
     unregister_keymaps()
-    try: bpy.utils.unregister_module(module_name)
-    except: pass
+    bpy.utils.unregister_module(__name__)
         
 if __name__ == "__main__":
     register()

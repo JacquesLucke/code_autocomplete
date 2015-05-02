@@ -1,7 +1,7 @@
 import bpy
-from script_auto_complete.text_operators import ExtendWordOperator
-from script_auto_complete.documentation import WordDescription, get_documentation
 from operator import attrgetter
+from .. text_operators import ExtendWordOperator
+from .. documentation import WordDescription, get_documentation
 
 def get_suggestion_from_text_before(text_block):
     operators = []

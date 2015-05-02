@@ -1,8 +1,8 @@
 import bpy, re
 from operator import attrgetter
-import script_auto_complete.expression_utils as exp
-from script_auto_complete.text_operators import *
-from script_auto_complete.text_editor_utils import *
+from .. import expression_utils as exp
+from .. text_operators import *
+from .. text_editor_utils import *
 
 def get_dynamic_snippets_operators(text_block):
     operators = []

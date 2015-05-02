@@ -1,11 +1,11 @@
 import bpy, os
-from script_auto_complete.text_block import TextBlock
-from script_auto_complete.graphics import *
-from script_auto_complete.text_editor_utils import *
-from script_auto_complete.text_operators import *
-from script_auto_complete.operators.operator_hub import get_text_operators
-from script_auto_complete.operators.extend_word_operators import update_word_list
-from script_auto_complete.documentation import *
+from . text_block import TextBlock
+from . graphics import *
+from . text_editor_utils import *
+from . text_operators import *
+from . operators.operator_hub import get_text_operators
+from . operators.extend_word_operators import update_word_list
+from . documentation import *
 
 class BlockEvent(Exception):
     pass

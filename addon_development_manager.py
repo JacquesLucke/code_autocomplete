@@ -8,7 +8,7 @@ from os import listdir
 from os.path import isfile, isdir, join, dirname
 from collections import defaultdict
 from bpy.app.handlers import persistent
-from script_auto_complete.text_block import TextBlock
+from . text_block import TextBlock
 
 is_setting = False
 
