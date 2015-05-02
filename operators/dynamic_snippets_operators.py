@@ -147,17 +147,17 @@ class NewOperatorSnippet:
         context.area.tag_redraw()
         
         if event.type == "LEFTMOUSE":
-            bpy.types.SpaceView3D.draw_handler_remove(self._handle, "WINDOW")
+            self.cancel(context)
             return {"FINISHED"}
             
         if event.type in {"RIGHTMOUSE", "ESC"}:
-            bpy.types.SpaceView3D.draw_handler_remove(self._handle, "WINDOW")
+            self.cancel(context)
             return {"CANCELLED"}
             
         return {"RUNNING_MODAL"}
         
-    def cancel(self):
-        
+    def cancel(self, context):
+        bpy.types.SpaceView3D.draw_handler_remove(self._handle, "WINDOW")
     
     def draw_callback_px(tmp, self, context):
         pass
