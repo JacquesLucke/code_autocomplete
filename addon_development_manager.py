@@ -35,7 +35,7 @@ def get_file_name_handler(self):
     except: return ""
 
 class AddonDevelopmentSceneProperties(bpy.types.PropertyGroup):
-    addon_name = StringProperty(name = "Addon Name", default = "my_addon")    
+    addon_name = StringProperty(name = "Addon Name", default = "my_addon", description = "Name of the currently selected addon")    
         
 def correct_file_name(name, is_directory = False):
     new_name = ""
@@ -146,7 +146,7 @@ def get_file_names(directory):
 class FindExistingAddon(bpy.types.Operator):
     bl_idname = "script_auto_complete.find_existing_addon"
     bl_label = "Find Existing Addon"
-    bl_description = ""
+    bl_description = "Pick an existing addon"
     bl_options = {"REGISTER"}
     bl_property = "item"
     
