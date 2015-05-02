@@ -49,3 +49,6 @@ suggestions[".*bpy\."] = ["context", "data", "ops", "types", "utils", "path", "a
 suggestions[".*bpy\.props\."] = [type_name for type_name in dir(bpy.props) if type_name[0] != "_"]
 
 suggestions["kmi\.properties\.name\s*=\s*(\"|\')"] = get_documentation().get_menu_names()
+
+suggestions["t\.ac"] = ["active_object"]
+suggestions["t\.sel"] = ["selected_objects"]
