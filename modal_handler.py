@@ -27,7 +27,7 @@ class ModalHandler:
         region = get_region_under_mouse(event)
         if region is None: return
         
-        update_functions = [self.simplify_work_operators, self.auto_complete_box.update]
+        update_functions = [self.auto_complete_box.update]
         try:
             for update_function in update_functions:
                 update_function(event)
@@ -36,11 +36,6 @@ class ModalHandler:
         
     def draw(self):    
         self.auto_complete_box.draw()
-        
-    def simplify_work_operators(self, event):
-        if event.ctrl and event.type == "Y" and event.value == "PRESS":
-            get_active_text_block().select_current_string()
-            raise BlockEvent()
       
         
 class AutoCompleteTextBox:

@@ -62,6 +62,9 @@ class TextBlock:
             lines.append(line.body)
         return lines
     
+    def set_line_text(self, line_index, text):
+        self.text_block.lines[line_index].body = text
+    
     # 'bpy.context.sce' -> 'sce'
     def get_last_word(self, text):
         match = re.search("(?!\w*\W).*", text)
@@ -201,13 +204,6 @@ class TextBlock:
     def delete_selection(self):
         self.insert(" ")
         self.remove_character_before_cursor()
-                
-    def select_current_string(self):        
-        string_letter = self.get_string_definition_type(self.current_line, self.current_character_index)
-        if string_letter is None: return
-        start, end = self.get_range_surrounded_by_letter(self.current_line, string_letter, self.current_character_index)
-        if start != end:
-            self.set_selection_in_line(start, end)
      
     def get_string_definition_type(self, text, current_index):
         string_letter = None
