@@ -404,20 +404,9 @@ class RunAddon(bpy.types.Operator):
     def execute(self, context):
         bpy.ops.script_auto_complete.save_files()
         path = get_current_addon_path() + "__init__.py"
-        addon_name = get_addon_name()
-        
-        module = sys.modules.get(addon_name, None)
-        
-        if module:
-            try: module.unregister()
-            except: pass
-            module = importlib.reload(module)
-        else:
-            loader = importlib.machinery.SourceFileLoader(addon_name, path)
-            module = loader.load_module()
-            
+        loader = importlib.machinery.SourceFileLoader(get_addon_name(), path)
+        module = loader.load_module()
         module.register()
-        
         return {"FINISHED"}        
 
 
