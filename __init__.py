@@ -86,7 +86,24 @@ class AddonPreferences(bpy.types.AddonPreferences):
 # register
 ##################################
 
+addon_keymaps = []
+def register_keymaps():
+    global addon_keymaps
+    wm = bpy.context.window_manager
+    km = wm.keyconfigs.addon.keymaps.new(name = "Text", space_type = "TEXT_EDITOR")
+    kmi = km.keymap_items.new("script_auto_complete.select_whole_string", type = "Y", value = "PRESS", ctrl = True)
+    addon_keymaps.append(km)
+    
+def unregister_keymaps():
+    global addon_keymaps
+    wm = bpy.context.window_manager
+    for km in addon_keymaps:
+        wm.keyconfigs.addon.keymaps.remove(km)
+    addon_keymaps.clear()
+    
+
 def register():
+    register_keymaps()
     try: bpy.utils.register_module(module_name)
     except: pass
     from script_auto_complete.addon_development_manager import AddonDevelopmentSceneProperties
@@ -94,6 +111,7 @@ def register():
     print("Loaded Script Auto Completion with {} modules".format(len(auto_complete_modules)))
 
 def unregister():
+    unregister_keymaps()
     try: bpy.utils.unregister_module(module_name)
     except: pass
         
