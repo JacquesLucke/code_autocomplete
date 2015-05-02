@@ -413,7 +413,7 @@ class RunAddon(bpy.types.Operator):
             except: pass
             module = importlib.reload(module)
         else:
-            loader = importlib.machinery.SourceFileLoader(get_addon_name(), path)
+            loader = importlib.machinery.SourceFileLoader(addon_name, path)
             module = loader.load_module()
             
         module.register()
