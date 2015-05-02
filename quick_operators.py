@@ -45,3 +45,12 @@ class SwitchLines(bpy.types.Operator):
         text_block.set_line_text(line_index - 1, line_text)
         
         return {"FINISHED"}
+               
+               
+def right_click_menu_extension(self, context):
+    layout = self.layout
+    layout.separator()
+    layout.operator("text.comment")
+    layout.operator("text.uncomment")
+    
+bpy.types.TEXT_MT_toolbox.append(right_click_menu_extension)                   
