@@ -1,6 +1,18 @@
 import bpy
 from . text_block import TextBlock
 
+class SolveWhitespaceInconsistency(bpy.types.Operator):
+    bl_idname = "script_auto_complete.correct_whitespaces"
+    bl_label = "Correct Whitespaces"
+    bl_description = "Convert whitespaces to spaces or tabs"
+    
+    def execute(self, context):
+        if context.edit_text.use_tabs_as_spaces:
+            bpy.ops.text.convert_whitespace(type = "SPACES")
+        else:
+            bpy.ops.text.convert_whitespace(type = "TABS")
+        return { "FINISHED" } 
+
 class SelectWholeString(bpy.types.Operator):
     bl_idname = "script_auto_complete.select_whole_string"
     bl_label = "Select Whole String"

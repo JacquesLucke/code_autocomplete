@@ -104,9 +104,9 @@ def unregister_keymaps():
     
 
 def register():
-    register_keymaps()
     try: bpy.utils.register_module(module_name)
     except: pass
+    register_keymaps()
     from script_auto_complete.addon_development_manager import AddonDevelopmentSceneProperties
     bpy.types.Scene.addon_development = bpy.props.PointerProperty(name = "Addon Development", type = AddonDevelopmentSceneProperties)  
     print("Loaded Script Auto Completion with {} modules".format(len(auto_complete_modules)))
