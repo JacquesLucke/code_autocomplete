@@ -318,7 +318,7 @@ class ToogleDirectoryVisibility(bpy.types.Operator):
 class OpenFile(bpy.types.Operator):
     bl_idname = "script_auto_complete.open_file"
     bl_label = "Open File"
-    bl_description = "Opens the file in the text editor (hold ctrl to copy the path)"
+    bl_description = "Load the file (hold ctrl to open an external file browser)"
     bl_options = {"REGISTER"}
     
     path = StringProperty(name = "Path", default = "")
@@ -329,7 +329,7 @@ class OpenFile(bpy.types.Operator):
     
     def invoke(self, context, event):
         if event.ctrl:
-            context.window_manager.clipboard = dirname(self.path)
+            bpy.ops.wm.path_open(filepath = dirname(self.path))
         else:
             self.execute(context)
         return {"FINISHED"}
