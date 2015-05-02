@@ -95,11 +95,11 @@ class NewPropertySnippet:
     def get_default(self, match):
         return match.group(3)
         
+        
 class SetupKeymapsSnippet:
     expression = "=keymaps"
     
-    function_lines = '''
-addon_keymaps = []
+    keymap_registration_code = '''addon_keymaps = []
 def register_keymaps():
     global addon_keymaps
     wm = bpy.context.window_manager
@@ -114,35 +114,16 @@ def unregister_keymaps():
         wm.keyconfigs.addon.keymaps.remove(km)
     addon_keymaps.clear()
     
-'''.split("\n")
+'''
     
     def insert_snippet(self, text_block, match, name):
-        try:
-            text_block.select_match_in_current_line(match)
-            text_block.delete_selection()
-            lines = text_block.lines
-            
-            functions_index = self.find_index_or_raise_exception(lines, "def register()")    
-            
-            lines = lines[:functions_index] + self.function_lines + lines[functions_index:]
-            register_index = self.find_index_or_raise_exception(lines, "bpy.utils.register_module(__name__)") + 1
-            lines.insert(register_index, "    register_keymaps()")
-            
-            unregister_index = self.find_index_or_raise_exception(lines, "bpy.utils.unregister_module(__name__)") + 1
-            lines.insert(unregister_index, "    unregister_keymaps()")
-            text_block.lines = lines
-            text_block.set_selection(functions_index + 1, 0, functions_index + len(self.function_lines) - 3, 100)
-        except:
-            print("create the register functions first")
+        text_block.select_match_in_current_line(match)
+        text_block.delete_selection()
+        text_block.insert(self.keymap_registration_code)
     
     def get_snippet_names(self, match):
         return ["Setup Keymap Registration"]
         
-    def find_index_or_raise_exception(self, lines, text):
-        for i, line in enumerate(lines):
-            if text in line:
-                return i
-        raise Exception()
                 
 class KeymapItemSnippet:
     expression = "=key\|(\w+)((\|shift|\|(strg|ctrl)|\|alt)*)"
