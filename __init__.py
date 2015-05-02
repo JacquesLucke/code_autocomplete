@@ -92,6 +92,7 @@ def register_keymaps():
     wm = bpy.context.window_manager
     km = wm.keyconfigs.addon.keymaps.new(name = "Text", space_type = "TEXT_EDITOR")
     kmi = km.keymap_items.new("script_auto_complete.select_whole_string", type = "Y", value = "PRESS", ctrl = True)
+    kmi = km.keymap_items.new("script_auto_complete.switch_lines", type = "R", value = "PRESS", ctrl = True)
     addon_keymaps.append(km)
     
 def unregister_keymaps():
