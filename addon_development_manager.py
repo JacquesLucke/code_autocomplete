@@ -402,11 +402,16 @@ class RunAddon(bpy.types.Operator):
         return current_addon_exists()
     
     def execute(self, context):
+        from bpy_restrict_state import RestrictBlend
+        
         bpy.ops.script_auto_complete.save_files()
         path = get_current_addon_path() + "__init__.py"
-        loader = importlib.machinery.SourceFileLoader(get_addon_name(), path)
-        module = loader.load_module()
-        module.register()
+        addon_name = get_addon_name()
+        
+        with RestrictBlend():
+            loader = importlib.machinery.SourceFileLoader(addon_name, path)
+            module = loader.load_module()
+            module.register()
         return {"FINISHED"}        
 
 
@@ -457,7 +462,7 @@ def open_status(scene):
         os.remove(restart_data_path)
         parse_startup_file_lines(lines)
         
-def parse_startup_file_lines(lines):		
+def parse_startup_file_lines(lines):        
     for line in lines:
         if line.startswith(id_addon_name):
             get_settings().addon_name = line[len(id_addon_name):].strip()
