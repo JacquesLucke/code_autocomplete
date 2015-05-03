@@ -40,6 +40,11 @@ suggestions[r"\s*bl_options *=.*\W(\"|\')"] = ["REGISTER", "UNDO", "BLOCKING", "
 
 suggestions["\s*return *\{ *(\"|\')"] = ["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH"]
 
+suggestions["bpy\.app\."] = ["handlers", "translations"]
+handlers = ["frame_change_post", "frame_change_post", "frame_change_pre", "game_host", "game_pre", "load_post", "load_pre", "render_cancel",
+	"render_complete", "render_init", "render_post", "render_pre", "render_stats", "render_write", "save_post", "save_pre", "scene_update_post", "scene_update_pre", "version_update"]
+suggestions["bpy\.app\.handlers\."] = handlers
+
 suggestions["class \w*\("] = ["bpy", "Panel", "Menu", "Operator"]
 suggestions["class \w*\(bpy\."] = ["types"]
 suggestions["class \w*\(bpy\.types\."] = ["Panel", "Menu", "Operator"]
