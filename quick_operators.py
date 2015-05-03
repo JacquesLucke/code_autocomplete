@@ -1,4 +1,6 @@
 import bpy
+import os
+from bpy.props import *
 from . text_block import TextBlock
 
 class SolveWhitespaceInconsistency(bpy.types.Operator):
@@ -57,6 +59,43 @@ class SwitchLines(bpy.types.Operator):
         text_block.set_line_text(line_index - 1, line_text)
         
         return {"FINISHED"}
+         
+        
+class ConvertFileIndentation(bpy.types.Operator):
+    bl_idname = "script_auto_complete.convert_file_indentation"
+    bl_label = "Convert File Indentation"
+    bl_description = ""
+    bl_options = {"REGISTER"}
+    
+    path = StringProperty()
+    
+    @classmethod
+    def poll(cls, context):
+        return True
+        
+    def execute(self, context):
+        if not os.path.exists(self.path): return {"CANCELLED"}
+        
+        old = "\t"
+        new = "    "
+        
+        file = open(self.path, "r")
+        lines = file.readlines()
+        file.close()
+        
+        new_lines = []
+        for line in lines:
+            new_line = ""
+            while line.startswith(old):
+                new_line += new
+                line = line[len(old):]
+            new_line += line.rstrip()
+            new_lines.append(new_line)
+            
+        file = open(self.path, "w")
+        file.write("\n".join(new_lines))
+        file.close()
+        return {"FINISHED"}      
                
                
 def right_click_menu_extension(self, context):
@@ -65,4 +104,11 @@ def right_click_menu_extension(self, context):
     layout.operator("text.comment")
     layout.operator("text.uncomment")
     
-bpy.types.TEXT_MT_toolbox.append(right_click_menu_extension)                   
+bpy.types.TEXT_MT_toolbox.append(right_click_menu_extension) 
+
+
+def format_menu_extension(self, context):
+    layout = self.layout
+    layout.operator("script_auto_complete.convert_addon_indentation")
+    
+bpy.types.TEXT_MT_format.append(format_menu_extension)                  

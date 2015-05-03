@@ -363,6 +363,31 @@ class SaveFiles(bpy.types.Operator):
         try: bpy.ops.text.resolve_conflict(resolution = "IGNORE")
         except: pass
         return {"FINISHED"}
+        
+        
+class ConvertAddonIndentation(bpy.types.Operator):
+    bl_idname = "script_auto_complete.convert_addon_indentation"
+    bl_label = "Convert Addon Indentation"
+    bl_description = ""
+    bl_options = {"REGISTER"}
+    
+    @classmethod
+    def poll(cls, context):
+        return current_addon_exists()
+        
+    def execute(self, context):
+        paths = self.get_addon_files()
+        for path in paths:
+            bpy.ops.script_auto_complete.convert_file_indentation(path = path)
+        return {"FINISHED"}
+        
+    def get_addon_files(self):
+        paths = []
+        for root, dirs, files in os.walk(get_current_addon_path()):
+            for file in files:
+                if file.endswith(".py"):
+                    paths.append("{}\\{}".format(root, file))
+        return paths
             
                     
 class ExportAddon(bpy.types.Operator):
