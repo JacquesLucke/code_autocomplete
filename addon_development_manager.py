@@ -3,6 +3,7 @@ import os
 import sys
 import zipfile
 import importlib
+import addon_utils
 from bpy.props import *
 from os import listdir
 from os.path import isfile, isdir, join, dirname
@@ -419,7 +420,7 @@ class ExportAddon(bpy.types.Operator):
 class RunAddon(bpy.types.Operator):
     bl_idname = "script_auto_complete.run_addon"
     bl_label = "Run Addon"
-    bl_description = "Run the __init__.py file and call the register function"
+    bl_description = "Unregister, reload and register it again."
     bl_options = {"REGISTER"}
     
     @classmethod
@@ -427,16 +428,14 @@ class RunAddon(bpy.types.Operator):
         return current_addon_exists()
     
     def execute(self, context):
-        from bpy_restrict_state import RestrictBlend
-        
         bpy.ops.script_auto_complete.save_files()
-        path = get_current_addon_path() + "__init__.py"
-        addon_name = get_addon_name()
         
-        with RestrictBlend():
-            loader = importlib.machinery.SourceFileLoader(addon_name, path)
-            module = loader.load_module()
-            module.register()
+        addon_name = get_addon_name()
+        module = sys.modules.get(addon_name)
+        if module:  
+            addon_utils.disable(addon_name)
+            importlib.reload(module)
+        addon_utils.enable(addon_name)
         return {"FINISHED"}        
 
 
