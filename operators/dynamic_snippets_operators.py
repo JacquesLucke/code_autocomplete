@@ -232,6 +232,8 @@ def unregister_keymaps():
     global addon_keymaps
     wm = bpy.context.window_manager
     for km in addon_keymaps:
+        for kmi in km.keymap_items:
+            km.keymap_items.remove(kmi)
         wm.keyconfigs.addon.keymaps.remove(km)
     addon_keymaps.clear()
 '''

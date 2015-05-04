@@ -22,6 +22,7 @@ Created by Jacques Lucke
 import importlib, sys, os
 from fnmatch import fnmatch
 
+
 bl_info = {
     "name":        "Code Autocomplete",
     "description": "Improve the scripting experience in Blenders text editor.",
@@ -31,6 +32,22 @@ bl_info = {
     "location":    "Text Editor",
     "category":    "Development"
     }
+    
+    
+    
+# load and reload submodules
+##################################    
+
+import sys
+sys.modules["script_auto_complete"] = sys.modules[__name__]
+    
+from . import developer_utils
+modules = developer_utils.setup_addon_modules(__path__, __name__)
+
+
+
+# properties
+################################## 
 
 import bpy
 from . import quick_operators
@@ -62,22 +79,23 @@ def register_keymaps():
     addon_keymaps.append(km)
     
 def unregister_keymaps():
-    global addon_keymaps
     wm = bpy.context.window_manager
     for km in addon_keymaps:
+        for kmi in km.keymap_items:
+            km.keymap_items.remove(kmi)
         wm.keyconfigs.addon.keymaps.remove(km)
     addon_keymaps.clear()
     
 
 def register():
     bpy.utils.register_module(__name__)
-    
     register_keymaps()
     bpy.types.Scene.addon_development = bpy.props.PointerProperty(name = "Addon Development", type = AddonDevelopmentSceneProperties)
+    
+    print("Registered Code Autocomplete with {} modules.".format(len(modules)))
 
 def unregister():
-    unregister_keymaps()
     bpy.utils.unregister_module(__name__)
-        
-if __name__ == "__main__":
-    register()
+    unregister_keymaps()
+    
+    print("Unregistered Code Autocomplete")
