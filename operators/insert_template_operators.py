@@ -10,23 +10,7 @@ def get_insert_template_operators(text_block):
     return operators
     
     
-templates = []         
-        
-templates.append(("New Menu", "class \w*\(.*Menu\):", '''
-    bl_idname = "view3D.custom_menu"
-    bl_label = "Custom Menu"
-    
-    def draw(self, context):
-        layout = self.layout
-        '''))
-        
-templates.append(("New Pie Menu", "class \w*\(.*Menu\):", '''
-    bl_idname = "view3D.custom_menu"
-    bl_label = "Custom Menu"
-    
-    def draw(self, context):
-        pie = self.layout.menu_pie()
-        '''))        
+templates = []   
 
 templates.append(("Register", "def register\(\):", '''
     bpy.utils.register_module(__name__)
@@ -45,7 +29,7 @@ templates.append(("Addon Info", "bl_info.*=.*", ''' {
     "version": (0, 0, 1),
     "blender": (2, 74, 0),
     "location": "View3D",
-    "warning": "This is an unstable version",
+    "warning": "This addon is still in development.",
     "wiki_url": "",
     "category": "Object" }
     '''))    

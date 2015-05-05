@@ -27,6 +27,7 @@ def create_snippet_objects():
     global snippets
     snippets = [
         NewPanelSnippet(),
+        NewMenuSnippet(),
         NewOperatorSnippet(),
         NewClassSnippet(),
         SetupKeymapsSnippet(),
@@ -84,6 +85,45 @@ class NewPanelSnippet:
         name = match.group(1)
         return to_ui_text(name) 
         
+        
+class NewMenuSnippet:
+    expression = "class (\w*)\(.*Menu\):"
+    
+    menu_code = '''
+    bl_idname = "IDNAME"
+    bl_label = "LABEL"
+    
+    def draw(self, context):
+        layout = self.layout
+        '''
+    
+    pie_menu_code = '''
+    bl_idname = "IDNAME"
+    bl_label = "LABEL"
+    
+    def draw(self, context):
+        pie = self.layout.menu_pie()
+        '''
+      
+    def insert_snippet(self, text_block, match, name):
+        if name == "New Menu": code = self.menu_code
+        if name == "New Pie Menu": code = self.pie_menu_code
+        
+        code = code.replace("IDNAME", self.get_idname(match))
+        code = code.replace("LABEL", self.get_label(match))
+        text_block.insert(code)
+        
+    def get_snippet_names(self, match):
+        return ["New Menu", "New Pie Menu"]
+        
+    def get_idname(self, match):
+        name = match.group(1)
+        return "view3D." + to_lower_case_with_underscores(name)  
+        
+    def get_label(self, match):
+        name = match.group(1)
+        return to_ui_text(name) 
+      
         
 class NewOperatorSnippet:
     expression = "class (\w*)\(.*Operator\):"
@@ -244,7 +284,7 @@ def unregister_keymaps():
         text_block.insert(self.keymap_registration_code)
     
     def get_snippet_names(self, match):
-        return ["Setup Keymap Registration"]
+        return ["Keymap Registration"]
         
                 
 class KeymapItemSnippet:
