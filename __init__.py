@@ -18,9 +18,6 @@ Created by Jacques Lucke
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
- 
-import importlib, sys, os
-from fnmatch import fnmatch
 
 
 bl_info = {

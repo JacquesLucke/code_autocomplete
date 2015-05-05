@@ -205,7 +205,7 @@ class CreateNewAddon(bpy.types.Operator):
     
     def execute(self, context):
         self.create_addon_directory()
-        self.create_init_file()
+        self.generate_from_template()
         addon_path = get_current_addon_path()
         bpy.ops.script_auto_complete.open_file(path = addon_path + "__init__.py")
         make_directory_visible(addon_path)
@@ -214,11 +214,17 @@ class CreateNewAddon(bpy.types.Operator):
     def create_addon_directory(self):
         os.makedirs(get_current_addon_path())
             
-    def create_init_file(self):
+    def generate_from_template(self):
         t = self.new_addon_type
-        if t == "BASIC": code = code = self.read_template_file("basic.txt")
-        if t == "MULTIFILE": code = self.read_template_file("multifile.txt")
-        new_addon_file("__init__.py", code)
+        if t == "BASIC": 
+            code = code = self.read_template_file("basic.txt")
+            new_addon_file("__init__.py", code)
+        
+        if t == "MULTIFILE": 
+            code = self.read_template_file("multifile.txt")
+            new_addon_file("__init__.py", code)
+            code = self.read_template_file("developer_utils.txt")
+            new_addon_file("developer_utils.py", code)
     
     def read_template_file(self, path):
         path = join(dirname(__file__), "addon_templates\\" + path)
