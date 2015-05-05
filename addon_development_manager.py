@@ -209,6 +209,7 @@ class CreateNewAddon(bpy.types.Operator):
         addon_path = get_current_addon_path()
         bpy.ops.code_autocomplete.open_file(path = addon_path + "__init__.py")
         make_directory_visible(addon_path)
+        context.area.tag_redraw()
         return {"FINISHED"}
     
     def create_addon_directory(self):
@@ -259,6 +260,7 @@ class NewFile(bpy.types.Operator):
             path = self.directory + self.name
             new_file(self.directory + self.name)
             bpy.ops.code_autocomplete.open_file(path = path)
+            context.area.tag_redraw()
         return {"FINISHED"}
     
     
@@ -286,6 +288,7 @@ class NewDirectory(bpy.types.Operator):
         if self.name != "":
             new_directory(self.directory + self.name)
             new_file(self.directory + self.name + "\\__init__.py")
+            context.area.tag_redraw()
         return {"FINISHED"}    
     
   
