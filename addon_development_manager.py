@@ -189,7 +189,7 @@ class MakeAddonNameValid(bpy.types.Operator):
         
 new_addon_type_items = [
     ("BASIC", "Basic", ""),
-    ("MULTIFILE", "Multifile (recommended)", "") ]        
+    ("MULTIFILE", "Multi-File (recommended)", "") ]        
 
 class CreateNewAddon(bpy.types.Operator):
     bl_idname = "script_auto_complete.new_addon"
