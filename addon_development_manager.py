@@ -279,6 +279,7 @@ class NewDirectory(bpy.types.Operator):
     def execute(self, context):
         if self.name != "":
             new_directory(self.directory + self.name)
+            new_file(self.directory + self.name + "\\__init__.py")
         return {"FINISHED"}    
     
   
