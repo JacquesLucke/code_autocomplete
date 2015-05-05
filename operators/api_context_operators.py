@@ -1,5 +1,5 @@
-from script_auto_complete.text_operators import ExtendWordOperator
-from script_auto_complete.documentation import get_documentation
+from .. text_operators import ExtendWordOperator
+from .. documentation import get_documentation
 from operator import attrgetter
 
 # bpy.context.#active_object#

@@ -1,5 +1,5 @@
 import bpy, keyword
-from script_auto_complete.text_operators import ExtendWordOperator
+from .. text_operators import ExtendWordOperator
 
 def get_extend_word_operators(text_block):
     operators = []

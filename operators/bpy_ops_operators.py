@@ -1,7 +1,7 @@
-from script_auto_complete.text_operators import ExtendWordOperator
-from script_auto_complete.documentation import get_documentation
-from operator import attrgetter
 import re
+from operator import attrgetter
+from .. text_operators import ExtendWordOperator
+from .. documentation import get_documentation
 
 # bpy.ops.#text#.#move#
 def get_bpy_ops_operators(text_block):

@@ -18,61 +18,38 @@ Created by Jacques Lucke
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
- 
-import importlib, sys, os
-from fnmatch import fnmatch
+
 
 bl_info = {
     "name":        "Code Autocomplete",
     "description": "Improve the scripting experience in Blenders text editor.",
     "author":      "Jacques Lucke",
-    "version":     (1,0, 0),
+    "version":     (1, 5, 0),
     "blender":     (2, 7, 4),
     "location":    "Text Editor",
     "category":    "Development"
     }
     
-# import all modules in same/subdirectories
-###########################################
-currentPath = os.path.dirname(__file__)
-module_name = "script_auto_complete"
-sys.modules[module_name] = sys.modules[__name__]
+    
+    
+# load and reload submodules
+##################################    
 
-def getAllImportFiles():
-    def get_path(base):
-        b, t = os.path.split(base)
-        if __name__ == t:
-            return [module_name]
-        else:
-            return get_path(b) + [t]
+import sys
+sys.modules["code_autocomplete"] = sys.modules[__name__]
+    
+from . import developer_utils
+modules = developer_utils.setup_addon_modules(__path__, __name__)
 
-    for root, dirs, files in os.walk(currentPath):
-        path = ".".join(get_path(root))
-        for f in filter(lambda f:f.endswith(".py"), files):
-            name = f[:-3]
-            if not name == "__init__":
-                yield path + "." + name
 
-auto_complete_modules = []
 
-for name in getAllImportFiles():
-    mod = importlib.import_module(name)
-    auto_complete_modules.append(mod)
-
-reload_event = "bpy" in locals()
+# properties
+################################## 
 
 import bpy
-
-#  Reload
-#  makes F8 reload actually reload the code
-
-if reload_event:
-    for module in auto_complete_modules:
-        importlib.reload(module)
-        
         
 class AddonPreferences(bpy.types.AddonPreferences):
-    bl_idname = module_name
+    bl_idname = __name__
     
     line_amount = bpy.props.IntProperty(default = 8, min = 1, max = 20, name = "Lines")
     
@@ -80,19 +57,43 @@ class AddonPreferences(bpy.types.AddonPreferences):
         layout = self.layout
         row = layout.row(align = False)
         row.prop(self, "line_amount")
+        
                
     
 # register
 ##################################
 
+addon_keymaps = []
+def register_keymaps():
+    global addon_keymaps
+    wm = bpy.context.window_manager
+    km = wm.keyconfigs.addon.keymaps.new(name = "Text", space_type = "TEXT_EDITOR")
+    kmi = km.keymap_items.new("code_autocomplete.select_whole_string", type = "Y", value = "PRESS", ctrl = True)
+    kmi = km.keymap_items.new("code_autocomplete.switch_lines", type = "R", value = "PRESS", ctrl = True)
+    addon_keymaps.append(km)
+    
+def unregister_keymaps():
+    wm = bpy.context.window_manager
+    for km in addon_keymaps:
+        for kmi in km.keymap_items:
+            km.keymap_items.remove(kmi)
+        wm.keyconfigs.addon.keymaps.remove(km)
+    addon_keymaps.clear()
+ 
+from . addon_development_manager import AddonDevelopmentSceneProperties 
+from . quick_operators import register_menus, unregister_menus
+    
 def register():
-    try: bpy.utils.register_module(module_name)
-    except: pass
-    print("Loaded Script Auto Completion with {} modules".format(len(auto_complete_modules)))
+    bpy.utils.register_module(__name__)
+    register_keymaps()
+    register_menus()
+    bpy.types.Scene.addon_development = bpy.props.PointerProperty(name = "Addon Development", type = AddonDevelopmentSceneProperties)
+    
+    print("Registered Code Autocomplete with {} modules.".format(len(modules)))
 
 def unregister():
-    try: bpy.utils.unregister_module(module_name)
-    except: pass
-        
-if __name__ == "__main__":
-    register()
+    bpy.utils.unregister_module(__name__)
+    unregister_keymaps()
+    unregister_menus()
+    
+    print("Unregistered Code Autocomplete")

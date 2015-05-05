@@ -1,7 +1,7 @@
 import bpy
-from script_auto_complete.modal_handler import ModalHandler
-from script_auto_complete.text_editor_utils import *
-from script_auto_complete.documentation import get_documentation
+from . modal_handler import ModalHandler
+from . text_editor_utils import *
+from . documentation import get_documentation
 
 running = False
 def start():
@@ -12,7 +12,7 @@ def stop():
     running = False
 
 class AutoCompleteSettingsPanel(bpy.types.Panel):
-    bl_idname = "script_auto_complete.settings_panel"
+    bl_idname = "code_autocomplete.settings_panel"
     bl_label = "Autocomplete"
     bl_space_type = "TEXT_EDITOR"
     bl_region_type = "UI"
@@ -20,15 +20,15 @@ class AutoCompleteSettingsPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         if running: 
-            layout.operator("script_auto_complete.stop_auto_completion", icon = "PANEL_CLOSE")
-        else: layout.operator("script_auto_complete.start_auto_completion", icon = "LIBRARY_DATA_DIRECT")
+            layout.operator("code_autocomplete.stop_auto_completion", icon = "PANEL_CLOSE")
+        else: layout.operator("code_autocomplete.start_auto_completion", icon = "LIBRARY_DATA_DIRECT")
         if get_documentation().is_build:
-            layout.operator("script_auto_complete.rebuild_documentation")
-        layout.operator("script_auto_complete.correct_whitespaces")
+            layout.operator("code_autocomplete.rebuild_documentation")
+        layout.operator("code_autocomplete.correct_whitespaces")
         
 
 class StartAutoCompletion(bpy.types.Operator):
-    bl_idname = "script_auto_complete.start_auto_completion"
+    bl_idname = "code_autocomplete.start_auto_completion"
     bl_label = "Start"
     
     @classmethod
@@ -58,7 +58,7 @@ class StartAutoCompletion(bpy.types.Operator):
         
         
 class RebuildDocumentation(bpy.types.Operator):
-    bl_idname = "script_auto_complete.rebuild_documentation"
+    bl_idname = "code_autocomplete.rebuild_documentation"
     bl_label = "Reload API"
     
     @classmethod
@@ -71,7 +71,7 @@ class RebuildDocumentation(bpy.types.Operator):
         
         
 class StopAutoCompletion(bpy.types.Operator):
-    bl_idname = "script_auto_complete.stop_auto_completion"
+    bl_idname = "code_autocomplete.stop_auto_completion"
     bl_label = "Stop"
     
     @classmethod
@@ -81,15 +81,3 @@ class StopAutoCompletion(bpy.types.Operator):
     def execute(self, context):
         stop()
         return { "FINISHED" }   
-
-class SolveWhitespaceInconsistency(bpy.types.Operator):
-    bl_idname = "script_auto_complete.correct_whitespaces"
-    bl_label = "Correct Whitespaces"
-    bl_description = "Convert whitespaces to spaces or tabs"
-    
-    def execute(self, context):
-        if context.edit_text.use_tabs_as_spaces:
-            bpy.ops.text.convert_whitespace(type = "SPACES")
-        else:
-            bpy.ops.text.convert_whitespace(type = "TABS")
-        return { "FINISHED" } 

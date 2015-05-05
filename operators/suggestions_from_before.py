@@ -1,7 +1,7 @@
 import bpy
-from script_auto_complete.text_operators import ExtendWordOperator
-from script_auto_complete.documentation import WordDescription, get_documentation
 from operator import attrgetter
+from .. text_operators import ExtendWordOperator
+from .. documentation import WordDescription, get_documentation
 
 def get_suggestion_from_text_before(text_block):
     operators = []
@@ -40,6 +40,11 @@ suggestions[r"\s*bl_options *=.*\W(\"|\')"] = ["REGISTER", "UNDO", "BLOCKING", "
 
 suggestions["\s*return *\{ *(\"|\')"] = ["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH"]
 
+suggestions["bpy\.app\."] = ["handlers", "translations"]
+handlers = ["frame_change_post", "frame_change_post", "frame_change_pre", "game_host", "game_pre", "load_post", "load_pre", "render_cancel",
+	"render_complete", "render_init", "render_post", "render_pre", "render_stats", "render_write", "save_post", "save_pre", "scene_update_post", "scene_update_pre", "version_update"]
+suggestions["bpy\.app\.handlers\."] = handlers
+
 suggestions["class \w*\("] = ["bpy", "Panel", "Menu", "Operator"]
 suggestions["class \w*\(bpy\."] = ["types"]
 suggestions["class \w*\(bpy\.types\."] = ["Panel", "Menu", "Operator"]
@@ -49,3 +54,6 @@ suggestions[".*bpy\."] = ["context", "data", "ops", "types", "utils", "path", "a
 suggestions[".*bpy\.props\."] = [type_name for type_name in dir(bpy.props) if type_name[0] != "_"]
 
 suggestions["kmi\.properties\.name\s*=\s*(\"|\')"] = get_documentation().get_menu_names()
+
+suggestions["t\.ac"] = ["active_object"]
+suggestions["t\.sel"] = ["selected_objects"]

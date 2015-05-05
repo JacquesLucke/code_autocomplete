@@ -1,7 +1,7 @@
 import bpy, re
-from script_auto_complete.text_operators import ExtendWordOperator
-from script_auto_complete.documentation import get_documentation, PropertyDocumentation
 from operator import attrgetter
+from .. text_operators import ExtendWordOperator
+from .. documentation import get_documentation, PropertyDocumentation
 
 # scene.sync_mode = "#AUDIO_SYNC#"
 def get_assign_or_compare_operators(text_block):

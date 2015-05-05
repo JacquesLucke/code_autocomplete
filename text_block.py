@@ -6,6 +6,14 @@ class TextBlock:
         self.text_block = text_block
         
     @property
+    def filepath(self):
+        return self.text_block.filepath
+        
+    @property
+    def use_tabs_as_spaces(self):
+        return self.text_block.use_tabs_as_spaces
+        
+    @property
     def current_line(self):
         return self.text_block.current_line.body
     @current_line.setter
@@ -45,6 +53,15 @@ class TextBlock:
     @property
     def current_word(self):
         return self.get_last_word(self.text_before_cursor)
+    
+    @property
+    def selected_text(self):
+        wm = bpy.context.window_manager
+        clipboard = wm.clipboard
+        bpy.ops.text.copy()
+        text = wm.clipboard
+        wm.clipboard = clipboard
+        return text
         
     @property
     def lines(self):
@@ -61,6 +78,9 @@ class TextBlock:
         for line in self.text_block.lines:
             lines.append(line.body)
         return lines
+    
+    def set_line_text(self, line_index, text):
+        self.text_block.lines[line_index].body = text
     
     # 'bpy.context.sce' -> 'sce'
     def get_last_word(self, text):
@@ -201,13 +221,6 @@ class TextBlock:
     def delete_selection(self):
         self.insert(" ")
         self.remove_character_before_cursor()
-                
-    def select_current_string(self):        
-        string_letter = self.get_string_definition_type(self.current_line, self.current_character_index)
-        if string_letter is None: return
-        start, end = self.get_range_surrounded_by_letter(self.current_line, string_letter, self.current_character_index)
-        if start != end:
-            self.set_selection_in_line(start, end)
      
     def get_string_definition_type(self, text, current_index):
         string_letter = None

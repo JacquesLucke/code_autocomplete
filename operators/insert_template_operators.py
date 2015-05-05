@@ -1,5 +1,5 @@
 import re
-from script_auto_complete.text_operators import InsertTextOperator
+from .. text_operators import InsertTextOperator
 
 def get_insert_template_operators(text_block):
     operators = []
@@ -10,106 +10,7 @@ def get_insert_template_operators(text_block):
     return operators
     
     
-templates = []
-
-templates.append(("New Panel", "class \w*\(.*Panel\):", '''
-    bl_idname = "name"
-    bl_label = "label"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "TOOLS"
-    bl_category = "category"
-    
-    def draw(self, context):
-        layout = self.layout
-        '''))
-        
-templates.append(("New Operator", "class \w*\(.*Operator\):", '''
-    bl_idname = "my.operator"
-    bl_label = "label"
-    bl_description = ""
-    bl_options = {"REGISTER"}
-    
-    @classmethod
-    def poll(cls, context):
-        return True
-    
-    def execute(self, context):
-        return {"FINISHED"}
-        '''))
-        
-templates.append(("New Modal Operator", "class \w*\(.*Operator\):", '''
-    bl_idname = "my.modal_operator"
-    bl_label = "label"
-    bl_description = ""
-    bl_options = {"REGISTER"}
-    
-    @classmethod
-    def poll(cls, context):
-        return True
-        
-    def modal(self, context, event):
-    
-        if event.type == "LEFTMOUSE":
-            return {"FINISHED"}
-    
-        if event.type in {"RIGHTMOUSE", "ESC"}:
-            return {"CANCELLED"}
-            
-        return {"RUNNING_MODAL"}
-    
-    def invoke(self, context, event):
-        context.window_manager.modal_handler_add(self)
-        return {"RUNNING_MODAL"}
-        '''))
-
-templates.append(("New Modal Operator Draw", "class \w*\(.*Operator\):", '''
-    bl_idname = "my.modal_operator"
-    bl_label = "label"
-    bl_description = ""
-    bl_options = {"REGISTER"}
-    
-    @classmethod
-    def poll(cls, context):
-        return True
-        
-    def modal(self, context, event):
-        context.area.tag_redraw()
-        
-        if event.type == "LEFTMOUSE":
-            bpy.types.SpaceView3D.draw_handler_remove(self._handle, "WINDOW")
-            return {"FINISHED"}
-            
-        if event.type in {"RIGHTMOUSE", "ESC"}:
-            bpy.types.SpaceView3D.draw_handler_remove(self._handle, "WINDOW")
-            return {"CANCELLED"}
-            
-        return {"RUNNING_MODAL"}
-    
-    def invoke(self, context, event):
-        args = (self, context)
-        self._handle = bpy.types.SpaceView3D.draw_handler_add(draw_callback_px, args, "WINDOW", "POST_PIXEL")
-        context.window_manager.modal_handler_add(self)
-        return {"RUNNING_MODAL"}
-        
-def draw_callback_px(self, context):
-    pass
-    '''))          
-        
-templates.append(("New Menu", "class \w*\(.*Menu\):", '''
-    bl_idname = "view3D.custom_menu"
-    bl_label = "Custom Menu"
-    
-    def draw(self, context):
-        layout = self.layout
-        '''))
-        
-templates.append(("New Pie Menu", "class \w*\(.*Menu\):", '''
-    bl_idname = "view3D.custom_menu"
-    bl_label = "Custom Menu"
-    
-    def draw(self, context):
-        pie = self.layout.menu_pie()
-        '''))        
+templates = []   
 
 templates.append(("Register", "def register\(\):", '''
     bpy.utils.register_module(__name__)
@@ -128,13 +29,13 @@ templates.append(("Addon Info", "bl_info.*=.*", ''' {
     "version": (0, 0, 1),
     "blender": (2, 74, 0),
     "location": "View3D",
-    "warning": "This is an unstable version",
+    "warning": "This addon is still in development.",
     "wiki_url": "",
     "category": "Object" }
     '''))    
     
 templates.append(("License Header", "'''", """
-Copyright (C) 2014 YOUR NAME
+Copyright (C) 2015 YOUR NAME
 YOUR@MAIL.com
 
 Created by YOUR NAME
@@ -153,3 +54,11 @@ Created by YOUR NAME
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 """))
+
+templates.append(("Invoke Function", "\s*def invoke\(", """self, context, event):
+        
+        return {"FINISHED"}"""))
+        
+templates.append(("Modal Function", "\s*def modal\(", """self, context, event):
+        
+        return {"RUNNING_MODAL"}"""))        
