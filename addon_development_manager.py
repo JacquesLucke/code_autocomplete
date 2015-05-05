@@ -379,6 +379,9 @@ class ConvertAddonIndentation(bpy.types.Operator):
     bl_description = ""
     bl_options = {"REGISTER"}
     
+    old_indentation = StringProperty(default = "\t")
+    new_indentation = StringProperty(default = "    ")
+    
     @classmethod
     def poll(cls, context):
         return current_addon_exists()
@@ -386,7 +389,10 @@ class ConvertAddonIndentation(bpy.types.Operator):
     def execute(self, context):
         paths = self.get_addon_files()
         for path in paths:
-            bpy.ops.script_auto_complete.convert_file_indentation(path = path)
+            bpy.ops.script_auto_complete.convert_file_indentation(
+                path = path, 
+                old_indentation = self.old_indentation, 
+                new_indentation = self.new_indentation)
         return {"FINISHED"}
         
     def get_addon_files(self):

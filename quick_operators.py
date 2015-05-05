@@ -65,6 +65,8 @@ class ConvertFileIndentation(bpy.types.Operator):
     bl_options = {"REGISTER"}
     
     path = StringProperty()
+    old_indentation = StringProperty(default = "\t")
+    new_indentation = StringProperty(default = "    ")
     
     @classmethod
     def poll(cls, context):
@@ -73,8 +75,8 @@ class ConvertFileIndentation(bpy.types.Operator):
     def execute(self, context):
         if not os.path.exists(self.path): return {"CANCELLED"}
         
-        old = "\t"
-        new = "    "
+        old = self.old_indentation
+        new = self.new_indentation
         
         file = open(self.path, "r")
         lines = file.readlines()
