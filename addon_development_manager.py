@@ -69,21 +69,21 @@ class AddonDeveloperPanel(bpy.types.Panel):
         setting = get_settings()
         row = layout.row(align = True)
         row.prop(setting, "addon_name", text = "Name")
-        row.operator("script_auto_complete.find_existing_addon", icon = "EYEDROPPER", text = "")
+        row.operator("code_autocomplete.find_existing_addon", icon = "EYEDROPPER", text = "")
         
         if not current_addon_exists():
             if not is_addon_name_valid():
-                layout.operator("script_auto_complete.make_addon_name_valid", icon = "ERROR", text = "Correct Addon Name")
+                layout.operator("code_autocomplete.make_addon_name_valid", icon = "ERROR", text = "Correct Addon Name")
             else:
                 row = layout.row()
                 row.scale_y = 1.2
-                row.operator_menu_enum("script_auto_complete.new_addon", "new_addon_type", icon = "NEW", text = "New Addon")
+                row.operator_menu_enum("code_autocomplete.new_addon", "new_addon_type", icon = "NEW", text = "New Addon")
         else:
             row = layout.row()
             row.scale_y = 1.5
-            row.operator("script_auto_complete.run_addon", icon = "OUTLINER_DATA_POSE", text = "Run Addon")
-            layout.operator("script_auto_complete.export_addon", icon = "EXPORT", text = "Export as Zip")
-        layout.operator("script_auto_complete.restart_blender", icon = "BLENDER")
+            row.operator("code_autocomplete.run_addon", icon = "OUTLINER_DATA_POSE", text = "Run Addon")
+            layout.operator("code_autocomplete.export_addon", icon = "EXPORT", text = "Export as Zip")
+        layout.operator("code_autocomplete.restart_blender", icon = "BLENDER")
         
         
 class AddonFilesPanel(bpy.types.Panel):
@@ -100,14 +100,14 @@ class AddonFilesPanel(bpy.types.Panel):
         layout = self.layout
         addon_path = get_current_addon_path()
         
-        layout.operator("script_auto_complete.save_files", icon = "SAVE_COPY")
+        layout.operator("code_autocomplete.save_files", icon = "SAVE_COPY")
         self.draw_directory(layout, addon_path)
             
     def draw_directory(self, layout, directory):
         box = layout.box()
         if self.is_directory_visible(directory): icon = "DOWNARROW_HLT"
         else: icon = "RIGHTARROW"
-        operator = box.operator("script_auto_complete.toogle_directory_visibility", text = directory[:-1].split("\\")[-1], icon = icon, emboss = False)
+        operator = box.operator("code_autocomplete.toogle_directory_visibility", text = directory[:-1].split("\\")[-1], icon = icon, emboss = False)
         operator.directory = directory
         
         if self.is_directory_visible(directory):
@@ -121,16 +121,16 @@ class AddonFilesPanel(bpy.types.Panel):
             col = box.column(align = True) 
             for file_name in file_names:
                 row = col.row()
-                operator = row.operator("script_auto_complete.open_file", text = "", emboss = True, icon = "FILE")
+                operator = row.operator("code_autocomplete.open_file", text = "", emboss = True, icon = "FILE")
                 operator.path = directory + file_name
                 if operator.path == get_current_filepath():
                     row.label("", icon = "RIGHTARROW_THIN")
                 row.label(file_name)
             
             row = box.row(align = True)    
-            operator = row.operator("script_auto_complete.new_file", icon = "PLUS", text = "File")
+            operator = row.operator("code_autocomplete.new_file", icon = "PLUS", text = "File")
             operator.directory = directory
-            operator = row.operator("script_auto_complete.new_directory", icon = "PLUS", text = "Directory")
+            operator = row.operator("code_autocomplete.new_directory", icon = "PLUS", text = "Directory")
             operator.directory = directory
                 
     def is_directory_visible(self, directory):
@@ -145,7 +145,7 @@ def get_file_names(directory):
 
 
 class FindExistingAddon(bpy.types.Operator):
-    bl_idname = "script_auto_complete.find_existing_addon"
+    bl_idname = "code_autocomplete.find_existing_addon"
     bl_label = "Find Existing Addon"
     bl_description = "Pick an existing addon"
     bl_options = {"REGISTER"}
@@ -172,7 +172,7 @@ class FindExistingAddon(bpy.types.Operator):
         
         
 class MakeAddonNameValid(bpy.types.Operator):
-    bl_idname = "script_auto_complete.make_addon_name_valid"
+    bl_idname = "code_autocomplete.make_addon_name_valid"
     bl_label = "Make Name Valid"
     bl_description = "Make the addon name a valid module name"
     bl_options = {"REGISTER"}
@@ -192,7 +192,7 @@ new_addon_type_items = [
     ("MULTIFILE", "Multi-File (recommended)", "") ]        
 
 class CreateNewAddon(bpy.types.Operator):
-    bl_idname = "script_auto_complete.new_addon"
+    bl_idname = "code_autocomplete.new_addon"
     bl_label = "New Addon"
     bl_description = "Create a folder in the addon directory and setup a basic code base"
     bl_options = {"REGISTER"}
@@ -207,7 +207,7 @@ class CreateNewAddon(bpy.types.Operator):
         self.create_addon_directory()
         self.generate_from_template()
         addon_path = get_current_addon_path()
-        bpy.ops.script_auto_complete.open_file(path = addon_path + "__init__.py")
+        bpy.ops.code_autocomplete.open_file(path = addon_path + "__init__.py")
         make_directory_visible(addon_path)
         return {"FINISHED"}
     
@@ -235,7 +235,7 @@ class CreateNewAddon(bpy.types.Operator):
 
             
 class NewFile(bpy.types.Operator):
-    bl_idname = "script_auto_complete.new_file"
+    bl_idname = "code_autocomplete.new_file"
     bl_label = "New File"
     bl_description = "Create a new file in this directory"
     bl_options = {"REGISTER"}
@@ -258,12 +258,12 @@ class NewFile(bpy.types.Operator):
         if self.name != "":
             path = self.directory + self.name
             new_file(self.directory + self.name)
-            bpy.ops.script_auto_complete.open_file(path = path)
+            bpy.ops.code_autocomplete.open_file(path = path)
         return {"FINISHED"}
     
     
 class NewDirectory(bpy.types.Operator):
-    bl_idname = "script_auto_complete.new_directory"
+    bl_idname = "code_autocomplete.new_directory"
     bl_label = "New Directory"
     bl_description = "Create a new subdirectory"
     bl_options = {"REGISTER"}
@@ -306,7 +306,7 @@ def new_directory(path):
       
     
 class ToogleDirectoryVisibility(bpy.types.Operator):
-    bl_idname = "script_auto_complete.toogle_directory_visibility"
+    bl_idname = "code_autocomplete.toogle_directory_visibility"
     bl_label = "Toogle Directory Visibility"
     bl_description = ""
     bl_options = {"REGISTER"}
@@ -324,7 +324,7 @@ class ToogleDirectoryVisibility(bpy.types.Operator):
             
             
 class OpenFile(bpy.types.Operator):
-    bl_idname = "script_auto_complete.open_file"
+    bl_idname = "code_autocomplete.open_file"
     bl_label = "Open File"
     bl_description = "Load the file (hold ctrl to open an external file browser)"
     bl_options = {"REGISTER"}
@@ -356,7 +356,7 @@ class OpenFile(bpy.types.Operator):
     
     
 class SaveFiles(bpy.types.Operator):
-    bl_idname = "script_auto_complete.save_files"
+    bl_idname = "code_autocomplete.save_files"
     bl_label = "Save All Files"
     bl_description = "Save all files which correspond to a file on the hard drive"
     bl_options = {"REGISTER"}
@@ -374,7 +374,7 @@ class SaveFiles(bpy.types.Operator):
         
         
 class ConvertAddonIndentation(bpy.types.Operator):
-    bl_idname = "script_auto_complete.convert_addon_indentation"
+    bl_idname = "code_autocomplete.convert_addon_indentation"
     bl_label = "Convert Addon Indentation"
     bl_description = ""
     bl_options = {"REGISTER"}
@@ -389,7 +389,7 @@ class ConvertAddonIndentation(bpy.types.Operator):
     def execute(self, context):
         paths = self.get_addon_files()
         for path in paths:
-            bpy.ops.script_auto_complete.convert_file_indentation(
+            bpy.ops.code_autocomplete.convert_file_indentation(
                 path = path, 
                 old_indentation = self.old_indentation, 
                 new_indentation = self.new_indentation)
@@ -405,7 +405,7 @@ class ConvertAddonIndentation(bpy.types.Operator):
             
                     
 class ExportAddon(bpy.types.Operator):
-    bl_idname = "script_auto_complete.export_addon"
+    bl_idname = "code_autocomplete.export_addon"
     bl_label = "Export Addon"
     bl_description = "Save a .zip file of the addon"
     bl_options = {"REGISTER"}
@@ -431,7 +431,7 @@ class ExportAddon(bpy.types.Operator):
    
             
 class RunAddon(bpy.types.Operator):
-    bl_idname = "script_auto_complete.run_addon"
+    bl_idname = "code_autocomplete.run_addon"
     bl_label = "Run Addon"
     bl_description = "Unregister, reload and register it again."
     bl_options = {"REGISTER"}
@@ -441,7 +441,7 @@ class RunAddon(bpy.types.Operator):
         return current_addon_exists()
     
     def execute(self, context):
-        bpy.ops.script_auto_complete.save_files()
+        bpy.ops.code_autocomplete.save_files()
         
         addon_name = get_addon_name()
         module = sys.modules.get(addon_name)
@@ -453,7 +453,7 @@ class RunAddon(bpy.types.Operator):
 
 
 class RestartBlender(bpy.types.Operator):
-    bl_idname = "script_auto_complete.restart_blender"
+    bl_idname = "code_autocomplete.restart_blender"
     bl_label = "Restart Blender"
     bl_description = "Close and open a new Blender instance to test the Addon on the startup file."
     bl_options = {"REGISTER"}
@@ -466,7 +466,7 @@ class RestartBlender(bpy.types.Operator):
         return context.window_manager.invoke_confirm(self, event)
     
     def execute(self, context):
-        bpy.ops.script_auto_complete.save_files()
+        bpy.ops.code_autocomplete.save_files()
         save_status()
         start_another_blender_instance()
         bpy.ops.wm.quit_blender()

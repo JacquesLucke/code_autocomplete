@@ -5,7 +5,7 @@ from bpy.props import *
 from . text_block import TextBlock
 
 class SolveWhitespaceInconsistency(bpy.types.Operator):
-    bl_idname = "script_auto_complete.correct_whitespaces"
+    bl_idname = "code_autocomplete.correct_whitespaces"
     bl_label = "Correct Whitespaces"
     bl_description = "Convert whitespaces to spaces or tabs"
     
@@ -17,7 +17,7 @@ class SolveWhitespaceInconsistency(bpy.types.Operator):
         return { "FINISHED" } 
 
 class SelectWholeString(bpy.types.Operator):
-    bl_idname = "script_auto_complete.select_whole_string"
+    bl_idname = "code_autocomplete.select_whole_string"
     bl_label = "Select Whole String"
     bl_description = ""
     bl_options = {"REGISTER"}
@@ -38,7 +38,7 @@ class SelectWholeString(bpy.types.Operator):
         return {"FINISHED"}
         
 class SwitchLines(bpy.types.Operator):
-    bl_idname = "script_auto_complete.switch_lines"
+    bl_idname = "code_autocomplete.switch_lines"
     bl_label = "Switch Lines"
     bl_description = ""
     bl_options = {"REGISTER"}
@@ -59,7 +59,7 @@ class SwitchLines(bpy.types.Operator):
          
         
 class ConvertFileIndentation(bpy.types.Operator):
-    bl_idname = "script_auto_complete.convert_file_indentation"
+    bl_idname = "code_autocomplete.convert_file_indentation"
     bl_label = "Convert File Indentation"
     bl_description = ""
     bl_options = {"REGISTER"}
@@ -109,7 +109,7 @@ def right_click_menu_extension(self, context):
         match = re.match("def (\w+)\(\):", line)
         if match:
             function_name = match.group(1)
-            operator = layout.operator("script_auto_complete.execute_function")
+            operator = layout.operator("code_autocomplete.execute_function")
             operator.filepath = text_block.filepath
             operator.function_name = function_name
     
@@ -118,7 +118,7 @@ def format_menu_extension(self, context):
     text_block = get_active_text_block()
     if text_block:
         layout = self.layout
-        operator = layout.operator("script_auto_complete.convert_addon_indentation")
+        operator = layout.operator("code_autocomplete.convert_addon_indentation")
         if text_block.use_tabs_as_spaces:
             operator.old_indentation = "\t"
             operator.new_indentation = "    "

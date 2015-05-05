@@ -12,7 +12,7 @@ def stop():
     running = False
 
 class AutoCompleteSettingsPanel(bpy.types.Panel):
-    bl_idname = "script_auto_complete.settings_panel"
+    bl_idname = "code_autocomplete.settings_panel"
     bl_label = "Autocomplete"
     bl_space_type = "TEXT_EDITOR"
     bl_region_type = "UI"
@@ -20,15 +20,15 @@ class AutoCompleteSettingsPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         if running: 
-            layout.operator("script_auto_complete.stop_auto_completion", icon = "PANEL_CLOSE")
-        else: layout.operator("script_auto_complete.start_auto_completion", icon = "LIBRARY_DATA_DIRECT")
+            layout.operator("code_autocomplete.stop_auto_completion", icon = "PANEL_CLOSE")
+        else: layout.operator("code_autocomplete.start_auto_completion", icon = "LIBRARY_DATA_DIRECT")
         if get_documentation().is_build:
-            layout.operator("script_auto_complete.rebuild_documentation")
-        layout.operator("script_auto_complete.correct_whitespaces")
+            layout.operator("code_autocomplete.rebuild_documentation")
+        layout.operator("code_autocomplete.correct_whitespaces")
         
 
 class StartAutoCompletion(bpy.types.Operator):
-    bl_idname = "script_auto_complete.start_auto_completion"
+    bl_idname = "code_autocomplete.start_auto_completion"
     bl_label = "Start"
     
     @classmethod
@@ -58,7 +58,7 @@ class StartAutoCompletion(bpy.types.Operator):
         
         
 class RebuildDocumentation(bpy.types.Operator):
-    bl_idname = "script_auto_complete.rebuild_documentation"
+    bl_idname = "code_autocomplete.rebuild_documentation"
     bl_label = "Reload API"
     
     @classmethod
@@ -71,7 +71,7 @@ class RebuildDocumentation(bpy.types.Operator):
         
         
 class StopAutoCompletion(bpy.types.Operator):
-    bl_idname = "script_auto_complete.stop_auto_completion"
+    bl_idname = "code_autocomplete.stop_auto_completion"
     bl_label = "Stop"
     
     @classmethod

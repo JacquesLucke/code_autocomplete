@@ -36,7 +36,7 @@ bl_info = {
 ##################################    
 
 import sys
-sys.modules["script_auto_complete"] = sys.modules[__name__]
+sys.modules["code_autocomplete"] = sys.modules[__name__]
     
 from . import developer_utils
 modules = developer_utils.setup_addon_modules(__path__, __name__)
@@ -49,7 +49,7 @@ modules = developer_utils.setup_addon_modules(__path__, __name__)
 import bpy
         
 class AddonPreferences(bpy.types.AddonPreferences):
-    bl_idname = "script_auto_complete"
+    bl_idname = __name__
     
     line_amount = bpy.props.IntProperty(default = 8, min = 1, max = 20, name = "Lines")
     
@@ -68,8 +68,8 @@ def register_keymaps():
     global addon_keymaps
     wm = bpy.context.window_manager
     km = wm.keyconfigs.addon.keymaps.new(name = "Text", space_type = "TEXT_EDITOR")
-    kmi = km.keymap_items.new("script_auto_complete.select_whole_string", type = "Y", value = "PRESS", ctrl = True)
-    kmi = km.keymap_items.new("script_auto_complete.switch_lines", type = "R", value = "PRESS", ctrl = True)
+    kmi = km.keymap_items.new("code_autocomplete.select_whole_string", type = "Y", value = "PRESS", ctrl = True)
+    kmi = km.keymap_items.new("code_autocomplete.switch_lines", type = "R", value = "PRESS", ctrl = True)
     addon_keymaps.append(km)
     
 def unregister_keymaps():
