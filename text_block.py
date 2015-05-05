@@ -6,6 +6,10 @@ class TextBlock:
         self.text_block = text_block
         
     @property
+    def filepath(self):
+        return self.text_block.filepath
+        
+    @property
     def current_line(self):
         return self.text_block.current_line.body
     @current_line.setter

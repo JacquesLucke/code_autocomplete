@@ -1,5 +1,6 @@
 import bpy
 import os
+import re
 from bpy.props import *
 from . text_block import TextBlock
 
@@ -22,10 +23,8 @@ class SelectWholeString(bpy.types.Operator):
     bl_options = {"REGISTER"}
     
     def execute(self, context):
-        text = getattr(context.space_data, "text", None)
-        if not text: return {"CANCELLED"}
-    
-        text_block = TextBlock(text)
+        text_block = get_active_text_block
+        if not text_block: return {"CANCELLED"}
         
         line_text = text_block.current_line
         character_index = text_block.current_character_index
@@ -45,10 +44,8 @@ class SwitchLines(bpy.types.Operator):
     bl_options = {"REGISTER"}
     
     def execute(self, context):
-        text = getattr(context.space_data, "text", None)
-        if not text: return {"CANCELLED"}
-    
-        text_block = TextBlock(text)
+        text_block = get_active_text_block
+        if not text_block: return {"CANCELLED"}
         
         line_index = text_block.current_line_index
         if line_index < 1: return {"CANCELLED"}
@@ -95,7 +92,7 @@ class ConvertFileIndentation(bpy.types.Operator):
         file = open(self.path, "w")
         file.write("\n".join(new_lines))
         file.close()
-        return {"FINISHED"}      
+        return {"FINISHED"}     
                
                
 def right_click_menu_extension(self, context):
@@ -104,11 +101,32 @@ def right_click_menu_extension(self, context):
     layout.operator("text.comment")
     layout.operator("text.uncomment")
     
-bpy.types.TEXT_MT_toolbox.append(right_click_menu_extension) 
-
-
+    text_block = get_active_text_block()
+    if text_block:
+        line = text_block.current_line
+        match = re.match("def (\w+)\(\):", line)
+        if match:
+            function_name = match.group(1)
+            operator = layout.operator("script_auto_complete.execute_function")
+            operator.filepath = text_block.filepath
+            operator.function_name = function_name
+    
+    
 def format_menu_extension(self, context):
     layout = self.layout
     layout.operator("script_auto_complete.convert_addon_indentation")
+      
+
+
+def get_active_text_block():
+    text = getattr(bpy.context.space_data, "text", None)
+    if text: return TextBlock(text)
+    return None              
+
+def register_menus():
+    bpy.types.TEXT_MT_toolbox.append(right_click_menu_extension)  
+    bpy.types.TEXT_MT_format.append(format_menu_extension) 
     
-bpy.types.TEXT_MT_format.append(format_menu_extension)                  
+def unregister_menus():
+    bpy.types.TEXT_MT_toolbox.remove(right_click_menu_extension)  
+    bpy.types.TEXT_MT_format.remove(format_menu_extension)   

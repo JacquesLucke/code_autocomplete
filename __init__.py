@@ -47,9 +47,6 @@ modules = developer_utils.setup_addon_modules(__path__, __name__)
 ################################## 
 
 import bpy
-from . import quick_operators
-from . import ui
-from . addon_development_manager import AddonDevelopmentSceneProperties
         
 class AddonPreferences(bpy.types.AddonPreferences):
     bl_idname = "script_auto_complete"
@@ -82,11 +79,14 @@ def unregister_keymaps():
             km.keymap_items.remove(kmi)
         wm.keyconfigs.addon.keymaps.remove(km)
     addon_keymaps.clear()
+ 
+from . addon_development_manager import AddonDevelopmentSceneProperties 
+from . quick_operators import register_menus, unregister_menus
     
-
 def register():
     bpy.utils.register_module(__name__)
     register_keymaps()
+    register_menus()
     bpy.types.Scene.addon_development = bpy.props.PointerProperty(name = "Addon Development", type = AddonDevelopmentSceneProperties)
     
     print("Registered Code Autocomplete with {} modules.".format(len(modules)))
@@ -94,5 +94,6 @@ def register():
 def unregister():
     bpy.utils.unregister_module(__name__)
     unregister_keymaps()
+    unregister_menus()
     
     print("Unregistered Code Autocomplete")
