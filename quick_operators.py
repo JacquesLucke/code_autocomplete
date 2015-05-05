@@ -115,8 +115,16 @@ def right_click_menu_extension(self, context):
     
     
 def format_menu_extension(self, context):
-    layout = self.layout
-    layout.operator("script_auto_complete.convert_addon_indentation")
+    text_block = get_active_text_block()
+    if text_block:
+        layout = self.layout
+        operator = layout.operator("script_auto_complete.convert_addon_indentation")
+        if text_block.use_tabs_as_spaces:
+            operator.old_indentation = "\t"
+            operator.new_indentation = "    "
+        else:
+            operator.old_indentation = "    "
+            operator.new_indentation = "\t"
       
 
 

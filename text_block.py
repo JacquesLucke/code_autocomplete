@@ -10,6 +10,10 @@ class TextBlock:
         return self.text_block.filepath
         
     @property
+    def use_tabs_as_spaces(self):
+        return self.text_block.use_tabs_as_spaces
+        
+    @property
     def current_line(self):
         return self.text_block.current_line.body
     @current_line.setter
