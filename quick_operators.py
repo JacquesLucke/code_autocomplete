@@ -23,7 +23,7 @@ class SelectWholeString(bpy.types.Operator):
     bl_options = {"REGISTER"}
     
     def execute(self, context):
-        text_block = get_active_text_block
+        text_block = get_active_text_block()
         if not text_block: return {"CANCELLED"}
         
         line_text = text_block.current_line
@@ -44,7 +44,7 @@ class SwitchLines(bpy.types.Operator):
     bl_options = {"REGISTER"}
     
     def execute(self, context):
-        text_block = get_active_text_block
+        text_block = get_active_text_block()
         if not text_block: return {"CANCELLED"}
         
         line_index = text_block.current_line_index
