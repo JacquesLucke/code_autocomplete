@@ -45,6 +45,15 @@ class TextBlock:
     @property
     def current_word(self):
         return self.get_last_word(self.text_before_cursor)
+    
+    @property
+    def selected_text(self):
+        wm = bpy.context.window_manager
+        clipboard = wm.clipboard
+        bpy.ops.text.copy()
+        text = wm.clipboard
+        wm.clipboard = clipboard
+        return text
         
     @property
     def lines(self):
