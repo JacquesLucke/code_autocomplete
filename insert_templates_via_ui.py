@@ -14,6 +14,7 @@ class InsertTemplateMenu(bpy.types.Menu):
         layout.operator_menu_enum("code_autocomplete.insert_menu", "menu_type", text = "Menu")
         layout.operator_menu_enum("code_autocomplete.insert_operator", "operator_type", text = "Operator")
         layout.separator()
+        layout.operator("code_autocomplete.insert_register", "Register")
         layout.operator("code_autocomplete.insert_keymap", "Keymap")
         layout.operator("code_autocomplete.insert_license", "License")
 
@@ -47,6 +48,28 @@ def insert_template(code, changes = {}):
     if text_block:
         text_block.insert(code)
  
+ 
+# Register
+###########################
+
+class InsertRegister(bpy.types.Operator, InsertTemplateBase):
+    bl_idname = "code_autocomplete.insert_register"
+    bl_label = "Insert Keymap"
+    bl_description = ""
+    
+    def execute(self, context):
+        insert_template(register_template)
+        return {"FINISHED"} 
+        
+register_template = '''def register():
+    bpy.utils.register_module(__name__)
+
+def unregister():
+    bpy.utils.unregister_module(__name__)
+    
+if __name__ == "__main__":
+    register()
+'''       
 
  
 # Keymap
