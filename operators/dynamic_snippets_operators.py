@@ -25,15 +25,14 @@ def replace_match(text_block, match, text):
     
 def create_snippet_objects():
     global snippets
-    snippets = [
-        NewPanelSnippet(),
-        NewMenuSnippet(),
-        NewOperatorSnippet(),
-        NewClassSnippet(),
-        SetupKeymapsSnippet(),
-        KeymapItemSnippet() ]
+    snippets = []
+    for cls in DynamicSnippet.__subclasses__():
+        snippets.append(cls())
+        
+class DynamicSnippet:
+    pass
 
-class NewClassSnippet:
+class NewClassSnippet(DynamicSnippet):
     expression = "=(p|o|m)\|(\w+)"
     
     def insert_snippet(self, text_block, match, name):
@@ -54,7 +53,7 @@ class NewClassSnippet:
         if t == "m": return "Menu"
         
         
-class NewPanelSnippet:
+class NewPanelSnippet(DynamicSnippet):
     expression = "class (\w*)\(.*Panel\):"
     
     def insert_snippet(self, text_block, match, name):
@@ -65,7 +64,7 @@ class NewPanelSnippet:
         return ["New Panel"]
         
         
-class NewMenuSnippet:
+class NewMenuSnippet(DynamicSnippet):
     expression = "class (\w*)\(.*Menu\):"
     
     menu_types_dict = {
@@ -82,7 +81,7 @@ class NewMenuSnippet:
         return sorted(self.menu_types_dict.keys(), key = lambda s: len(s))
       
         
-class NewOperatorSnippet:
+class NewOperatorSnippet(DynamicSnippet):
     expression = "class (\w*)\(.*Operator\):"
     
     operator_types_dict = {
@@ -100,7 +99,7 @@ class NewOperatorSnippet:
         return sorted(self.operator_types_dict.keys(), key = lambda s: len(s))
     
         
-class SetupKeymapsSnippet:
+class SetupKeymapsSnippet(DynamicSnippet):
     expression = "=keymaps"
     
     def insert_snippet(self, text_block, match, name):
@@ -110,8 +109,41 @@ class SetupKeymapsSnippet:
     def get_snippet_names(self, match):
         return ["Keymap Registration"]
         
+        
+class LicenseSnippet(DynamicSnippet):
+    expression = "^'''"
+    
+    def insert_snippet(self, text_block, match, name):
+        text_block.current_line = ""
+        bpy.ops.code_autocomplete.insert_license()
+    
+    def get_snippet_names(self, match):
+        return ["License"]
+
+
+class AddonInfoSnippet(DynamicSnippet):
+    expression = "bl_info.*=.*"
+    
+    def insert_snippet(self, text_block, match, name):
+        text_block.current_line = ""
+        bpy.ops.code_autocomplete.insert_addon_info()
+    
+    def get_snippet_names(self, match):
+        return ["Addon Info"]     
+
+
+class RegisterSnippet(DynamicSnippet):
+    expression = "def register\(\)"
+    
+    def insert_snippet(self, text_block, match, name):
+        text_block.current_line = ""
+        bpy.ops.code_autocomplete.insert_register()
+    
+    def get_snippet_names(self, match):
+        return ["Register"]         
+        
                 
-class KeymapItemSnippet:
+class KeymapItemSnippet(DynamicSnippet):
     expression = "=key\|(\w+)((\|shift|\|(strg|ctrl)|\|alt)*)"
     
     # keep order
