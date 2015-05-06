@@ -70,6 +70,8 @@ def register_keymaps():
     km = wm.keyconfigs.addon.keymaps.new(name = "Text", space_type = "TEXT_EDITOR")
     kmi = km.keymap_items.new("code_autocomplete.select_whole_string", type = "Y", value = "PRESS", ctrl = True)
     kmi = km.keymap_items.new("code_autocomplete.switch_lines", type = "R", value = "PRESS", ctrl = True)
+    kmi = km.keymap_items.new("wm.call_menu", type = "Y", value = "PRESS", ctrl = True, alt = True)
+    kmi.properties.name = "text_editor.insert_template_menu"
     addon_keymaps.append(km)
     
 def unregister_keymaps():
