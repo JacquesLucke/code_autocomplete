@@ -106,7 +106,24 @@ class InsertModalFunction(bpy.types.Operator, InsertTemplateBase):
         
 modal_function_template = """    def modal(self, context, event):
         
-        return {"RUNNING_MODAL"}"""        
+        return {"RUNNING_MODAL"}"""     
+
+
+# Draw Function
+###########################
+
+class InsertDrawFunction(bpy.types.Operator, InsertTemplateBase):
+    bl_idname = "code_autocomplete.insert_draw_function"
+    bl_label = "Insert Draw Function"
+    bl_description = ""
+    
+    def execute(self, context):
+        insert_template(draw_function_template)
+        return {"FINISHED"} 
+        
+draw_function_template = """    def draw(self, context):
+        layout = self.layout
+        """        
 
  
 # Register

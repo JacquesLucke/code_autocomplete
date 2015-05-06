@@ -118,7 +118,18 @@ class InvokeFunctionSnippet(DynamicSnippet):
         bpy.ops.code_autocomplete.insert_invoke_function()
     
     def get_snippet_names(self, match):
-        return ["Invoke Function"]     
+        return ["Invoke Function"]  
+
+
+class DrawFunctionSnippet(DynamicSnippet):
+    expression = "def draw"
+    
+    def insert_snippet(self, text_block, match, name):
+        text_block.current_line = ""
+        bpy.ops.code_autocomplete.insert_draw_function()
+    
+    def get_snippet_names(self, match):
+        return ["Draw Function"]         
 
 
 class ModalFunctionSnippet(DynamicSnippet):
