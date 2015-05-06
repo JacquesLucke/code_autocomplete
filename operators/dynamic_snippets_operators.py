@@ -3,7 +3,6 @@ from operator import attrgetter
 from .. import expression_utils as exp
 from .. text_operators import *
 from .. text_editor_utils import *
-from .. name_utils import *
 
 def get_dynamic_snippets_operators(text_block):
     operators = []
