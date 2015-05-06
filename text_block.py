@@ -5,6 +5,12 @@ class TextBlock:
         if text_block is None: raise AttributeError()
         self.text_block = text_block
         
+    @classmethod
+    def get_active(cls):
+        text = getattr(bpy.context.space_data, "text", None)
+        if text: return TextBlock(text)
+        return None  
+        
     @property
     def filepath(self):
         return self.text_block.filepath

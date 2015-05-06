@@ -23,7 +23,7 @@ class SelectWholeString(bpy.types.Operator):
     bl_options = {"REGISTER"}
     
     def execute(self, context):
-        text_block = get_active_text_block()
+        text_block = TextBlock.get_active()
         if not text_block: return {"CANCELLED"}
         
         line_text = text_block.current_line
@@ -44,7 +44,7 @@ class SwitchLines(bpy.types.Operator):
     bl_options = {"REGISTER"}
     
     def execute(self, context):
-        text_block = get_active_text_block()
+        text_block = TextBlock.get_active()
         if not text_block: return {"CANCELLED"}
         
         line_index = text_block.current_line_index
@@ -103,7 +103,7 @@ def right_click_menu_extension(self, context):
     layout.operator("text.comment")
     layout.operator("text.uncomment")
     
-    text_block = get_active_text_block()
+    text_block = TextBlock.get_active()
     if text_block:
         line = text_block.current_line
         match = re.match("def (\w+)\(\):", line)
@@ -115,7 +115,7 @@ def right_click_menu_extension(self, context):
     
     
 def format_menu_extension(self, context):
-    text_block = get_active_text_block()
+    text_block = TextBlock.get_active()
     if text_block:
         layout = self.layout
         operator = layout.operator("code_autocomplete.convert_addon_indentation")
@@ -126,12 +126,7 @@ def format_menu_extension(self, context):
             operator.old_indentation = "    "
             operator.new_indentation = "\t"
       
-
-
-def get_active_text_block():
-    text = getattr(bpy.context.space_data, "text", None)
-    if text: return TextBlock(text)
-    return None              
+        
 
 def register_menus():
     bpy.types.TEXT_MT_toolbox.append(right_click_menu_extension)  
