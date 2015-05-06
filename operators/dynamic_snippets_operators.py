@@ -118,7 +118,18 @@ class InvokeFunctionSnippet(DynamicSnippet):
         bpy.ops.code_autocomplete.insert_invoke_function()
     
     def get_snippet_names(self, match):
-        return ["Invoke Function"]        
+        return ["Invoke Function"]     
+
+
+class ModalFunctionSnippet(DynamicSnippet):
+    expression = "def modal"
+    
+    def insert_snippet(self, text_block, match, name):
+        text_block.current_line = ""
+        bpy.ops.code_autocomplete.insert_modal_function()
+    
+    def get_snippet_names(self, match):
+        return ["Modal Function"]          
         
         
 class LicenseSnippet(DynamicSnippet):

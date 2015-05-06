@@ -75,7 +75,7 @@ addon_info_template = '''bl_info = {
     '''
     
     
- # Invoke Function
+# Invoke Function
 ###########################
 
 class InsertInvokeFunction(bpy.types.Operator, InsertTemplateBase):
@@ -90,6 +90,23 @@ class InsertInvokeFunction(bpy.types.Operator, InsertTemplateBase):
 invoke_function_template = """    def invoke(self, context, event):
         
         return {"FINISHED"}"""
+        
+        
+# Modal Function
+###########################
+
+class InsertModalFunction(bpy.types.Operator, InsertTemplateBase):
+    bl_idname = "code_autocomplete.insert_modal_function"
+    bl_label = "Insert Modal Function"
+    bl_description = ""
+    
+    def execute(self, context):
+        insert_template(modal_function_template)
+        return {"FINISHED"} 
+        
+modal_function_template = """    def modal(self, context, event):
+        
+        return {"RUNNING_MODAL"}"""        
 
  
 # Register

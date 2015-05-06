@@ -12,6 +12,3 @@ def get_insert_template_operators(text_block):
     
 templates = []
         
-templates.append(("Modal Function", "\s*def modal\(", """self, context, event):
-        
-        return {"RUNNING_MODAL"}"""))        
