@@ -13,6 +13,8 @@ class InsertTemplateMenu(bpy.types.Menu):
         layout.operator("code_autocomplete.insert_panel", text = "Panel")
         layout.operator_menu_enum("code_autocomplete.insert_menu", "menu_type", text = "Menu")
         layout.operator_menu_enum("code_autocomplete.insert_operator", "operator_type", text = "Operator")
+        layout.separator()
+        layout.operator("code_autocomplete.insert_keymap", "Keymap")
         layout.operator("code_autocomplete.insert_license", "License")
 
 class InsertTemplateBase:
@@ -21,12 +23,12 @@ class InsertTemplateBase:
     @classmethod
     def poll(cls, context):
         return TextBlock.get_active()
-    
-    def invoke(self, context, event):
-        return context.window_manager.invoke_props_dialog(self, 300, 200)
         
 class InsertClassTemplateBase(InsertTemplateBase):
-    class_name = StringProperty(name = "Class Name", default = "")     
+    class_name = StringProperty(name = "Class Name", default = "") 
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self, 300, 200)
 
     def draw(self, context):
         layout = self.layout
@@ -46,17 +48,51 @@ def insert_template(code, changes = {}):
         text_block.insert(code)
  
 
+ 
+# Keymap
+###########################
+
+class InsertKeymap(bpy.types.Operator, InsertTemplateBase):
+    bl_idname = "code_autocomplete.insert_keymap"
+    bl_label = "Insert Keymap"
+    bl_description = ""
+    
+    def execute(self, context):
+        insert_template(keymap_template)
+        return {"FINISHED"} 
+        
+keymap_template = '''addon_keymaps = []
+def register_keymaps():
+    global addon_keymaps
+    wm = bpy.context.window_manager
+    km = wm.keyconfigs.addon.keymaps.new(name = "3D View", space_type = "VIEW_3D")
+    
+    addon_keymaps.append(km)
+    
+def unregister_keymaps():
+    global addon_keymaps
+    wm = bpy.context.window_manager
+    for km in addon_keymaps:
+        for kmi in km.keymap_items:
+            km.keymap_items.remove(kmi)
+        wm.keyconfigs.addon.keymaps.remove(km)
+    addon_keymaps.clear()
+'''       
+        
 
 # License
 ###########################
 
-class InsertLicense(bpy.types.Operator, InsertClassTemplateBase):
+class InsertLicense(bpy.types.Operator, InsertTemplateBase):
     bl_idname = "code_autocomplete.insert_license"
     bl_label = "Insert License"
     bl_description = ""
     
     author_name = StringProperty(name = "Name", default = bpy.context.user_preferences.system.author)     
-    author_mail = StringProperty(name = "eMail", default = "")     
+    author_mail = StringProperty(name = "eMail", default = "")  
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self, 300, 200)
 
     def draw(self, context):
         layout = self.layout
