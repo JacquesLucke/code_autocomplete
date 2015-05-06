@@ -80,7 +80,7 @@ class NewMenuSnippet:
             menu_type = self.menu_types_dict[name])
         
     def get_snippet_names(self, match):
-        return self.menu_types_dict.keys()
+        return sorted(self.menu_types_dict.keys(), key = lambda s: len(s))
       
         
 class NewOperatorSnippet:
