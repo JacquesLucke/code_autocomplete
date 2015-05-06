@@ -14,6 +14,7 @@ class InsertTemplateMenu(bpy.types.Menu):
         layout.operator_menu_enum("code_autocomplete.insert_menu", "menu_type", text = "Menu")
         layout.operator_menu_enum("code_autocomplete.insert_operator", "operator_type", text = "Operator")
         layout.separator()
+        layout.operator("code_autocomplete.insert_addon_info", "Addon Info")
         layout.operator("code_autocomplete.insert_register", "Register")
         layout.operator("code_autocomplete.insert_keymap", "Keymap")
         layout.operator("code_autocomplete.insert_license", "License")
@@ -48,6 +49,31 @@ def insert_template(code, changes = {}):
     if text_block:
         text_block.insert(code)
  
+ 
+# Addon Info
+###########################
+
+class InsertAddonInfo(bpy.types.Operator, InsertTemplateBase):
+    bl_idname = "code_autocomplete.insert_addon_info"
+    bl_label = "Insert Addon Info"
+    bl_description = ""
+    
+    def execute(self, context):
+        insert_template(addon_info_template)
+        return {"FINISHED"} 
+        
+addon_info_template = '''bl_info = {
+    "name": "My Addon Name",
+    "description": "",
+    "author": "Your Name",
+    "version": (0, 0, 1),
+    "blender": (2, 74, 0),
+    "location": "View3D",
+    "warning": "This addon is still in development.",
+    "wiki_url": "",
+    "category": "Object" }
+    '''      
+
  
 # Register
 ###########################
