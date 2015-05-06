@@ -10,11 +10,7 @@ def get_insert_template_operators(text_block):
     return operators
     
     
-templates = []   
-
-templates.append(("Invoke Function", "\s*def invoke\(", """self, context, event):
-        
-        return {"FINISHED"}"""))
+templates = []
         
 templates.append(("Modal Function", "\s*def modal\(", """self, context, event):
         

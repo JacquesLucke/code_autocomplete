@@ -72,7 +72,24 @@ addon_info_template = '''bl_info = {
     "warning": "This addon is still in development.",
     "wiki_url": "",
     "category": "Object" }
-    '''      
+    '''
+    
+    
+ # Invoke Function
+###########################
+
+class InsertInvokeFunction(bpy.types.Operator, InsertTemplateBase):
+    bl_idname = "code_autocomplete.insert_invoke_function"
+    bl_label = "Insert Invoke Function"
+    bl_description = ""
+    
+    def execute(self, context):
+        insert_template(invoke_function_template)
+        return {"FINISHED"} 
+        
+invoke_function_template = """    def invoke(self, context, event):
+        
+        return {"FINISHED"}"""
 
  
 # Register

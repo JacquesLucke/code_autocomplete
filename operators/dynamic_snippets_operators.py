@@ -110,6 +110,17 @@ class SetupKeymapsSnippet(DynamicSnippet):
         return ["Keymap Registration"]
         
         
+class InvokeFunctionSnippet(DynamicSnippet):
+    expression = "def invoke"
+    
+    def insert_snippet(self, text_block, match, name):
+        text_block.current_line = ""
+        bpy.ops.code_autocomplete.insert_invoke_function()
+    
+    def get_snippet_names(self, match):
+        return ["Invoke Function"]        
+        
+        
 class LicenseSnippet(DynamicSnippet):
     expression = "^'''"
     
