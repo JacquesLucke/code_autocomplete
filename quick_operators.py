@@ -104,9 +104,11 @@ class SelectTextBlockMenu(bpy.types.Menu):
     def draw(self, context):
         layout = self.layout
         
-        for text in bpy.data.texts:
-            operator = layout.operator("code_autocomplete.open_text_block", text = text.name)
-            operator.name = text.name
+        if len(bpy.data.texts) == 0:
+        else:
+            for text in bpy.data.texts:
+                operator = layout.operator("code_autocomplete.open_text_block", text = text.name)
+                operator.name = text.name
             
 class OpenTextBlock(bpy.types.Operator):
     bl_idname = "code_autocomplete.open_text_block"
