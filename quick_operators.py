@@ -105,6 +105,7 @@ class SelectTextBlockMenu(bpy.types.Menu):
         layout = self.layout
         
         if len(bpy.data.texts) == 0:
+            layout.label("There are no texts in this file", icon = "INFO")
         else:
             for text in bpy.data.texts:
                 operator = layout.operator("code_autocomplete.open_text_block", text = text.name)
