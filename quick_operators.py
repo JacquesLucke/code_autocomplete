@@ -94,7 +94,35 @@ class ConvertFileIndentation(bpy.types.Operator):
         file = open(self.path, "w")
         file.write("\n".join(new_lines))
         file.close()
-        return {"FINISHED"}     
+        return {"FINISHED"}
+
+
+class SelectTextBlockMenu(bpy.types.Menu):
+    bl_idname = "code_autocomplete.select_text_block"
+    bl_label = "Select Text Block"
+    
+    def draw(self, context):
+        layout = self.layout
+        
+        for text in bpy.data.texts:
+            operator = layout.operator("code_autocomplete.open_text_block", text = text.name)
+            operator.name = text.name
+            
+class OpenTextBlock(bpy.types.Operator):
+    bl_idname = "code_autocomplete.open_text_block"
+    bl_label = "Open Text Block"
+    bl_description = ""
+    bl_options = {"REGISTER"}
+    
+    name = StringProperty()
+    
+    @classmethod
+    def poll(cls, context):
+        return hasattr(context.space_data, "text")
+    
+    def execute(self, context):
+        context.space_data.text = bpy.data.texts[self.name]
+        return {"FINISHED"}        
                
                
 def right_click_menu_extension(self, context):
