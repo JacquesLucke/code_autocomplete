@@ -4,7 +4,7 @@ from . name_utils import *
 from . text_block import TextBlock
 
 class InsertTemplateMenu(bpy.types.Menu):
-    bl_idname = "text_editor.insert_template_menu"
+    bl_idname = "code_autocomplete.insert_template_menu"
     bl_label = "Insert Template"
     
     def draw(self, context):
