@@ -34,9 +34,6 @@ bl_info = {
     
 # load and reload submodules
 ##################################    
-
-import sys
-sys.modules["code_autocomplete"] = sys.modules[__name__]
     
 from . import developer_utils
 modules = developer_utils.setup_addon_modules(__path__, __name__)
