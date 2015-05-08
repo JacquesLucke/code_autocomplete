@@ -92,7 +92,9 @@ class AutoCompleteTextBox:
         "DOWN_ARROW" : 1,
         "UP_ARROW" : -1,
         "PAGE_DOWN" : 4,
-        "PAGE_UP" : -4}
+        "PAGE_UP" : -4,
+        "END" : 10000,
+        "HOME" : -10000}
        
     def move_selection_with_keys(self, event):
         if event.value == "PRESS":
