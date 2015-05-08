@@ -86,6 +86,7 @@ class AutoCompleteTextBox:
         
     def update_operator_selection(self, event):
        self.move_selection_with_arrow_keys(event)
+       self.move_selection_with_page_up_down(event)
        self.move_selection_with_mouse_wheel(event)
        
     def move_selection_with_arrow_keys(self, event):
@@ -95,6 +96,15 @@ class AutoCompleteTextBox:
                 raise BlockEvent()
             if event.type == "UP_ARROW":
                 self.selected_index -= 1
+                raise BlockEvent()
+                
+    def move_selection_with_page_up_down(self, event):
+        if event.value == "PRESS":
+            if event.type == "PAGE_DOWN":
+                self.selected_index += 4
+                raise BlockEvent()
+            if event.type == "PAGE_UP":
+                self.selected_index -= 4
                 raise BlockEvent()
                 
     def move_selection_with_mouse_wheel(self, event):
