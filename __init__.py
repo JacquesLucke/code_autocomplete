@@ -51,7 +51,7 @@ import bpy
 class AddonPreferences(bpy.types.AddonPreferences):
     bl_idname = __name__
     
-    line_amount = bpy.props.IntProperty(default = 8, min = 1, max = 20, name = "Lines")
+    line_amount = bpy.props.IntProperty(default = 8, min = 1, max = 20, name = "Lines", description = "Amount of lines shown in the context box")
     
     def draw(self, context):
         layout = self.layout
