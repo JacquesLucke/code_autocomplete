@@ -85,27 +85,21 @@ class AutoCompleteTextBox:
             self.hide = True
         
     def update_operator_selection(self, event):
-       self.move_selection_with_arrow_keys(event)
-       self.move_selection_with_page_up_down(event)
+       self.move_selection_with_keys(event)
        self.move_selection_with_mouse_wheel(event)
        
-    def move_selection_with_arrow_keys(self, event):
+    selection_move_keys = {
+        "DOWN_ARROW" : 1,
+        "UP_ARROW" : -1,
+        "PAGE_DOWN" : 4,
+        "PAGE_UP" : -4}
+       
+    def move_selection_with_keys(self, event):
         if event.value == "PRESS":
-            if event.type == "DOWN_ARROW":
-                self.selected_index += 1
-                raise BlockEvent()
-            if event.type == "UP_ARROW":
-                self.selected_index -= 1
-                raise BlockEvent()
-                
-    def move_selection_with_page_up_down(self, event):
-        if event.value == "PRESS":
-            if event.type == "PAGE_DOWN":
-                self.selected_index += 4
-                raise BlockEvent()
-            if event.type == "PAGE_UP":
-                self.selected_index -= 4
-                raise BlockEvent()
+            for key, move in self.selection_move_keys.items():
+                if event.type == key:
+                    self.selected_index += move
+                    raise BlockEvent()
                 
     def move_selection_with_mouse_wheel(self, event):
         if self.operator_box_rectangle.contains(event.mouse_region_x, event.mouse_region_y):
