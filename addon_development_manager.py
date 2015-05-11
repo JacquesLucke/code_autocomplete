@@ -3,6 +3,7 @@ import os
 import sys
 import zipfile
 import importlib
+import subprocess
 import addon_utils
 from bpy.props import *
 from os import listdir
@@ -458,12 +459,12 @@ class RunAddon(bpy.types.Operator):
 class RestartBlender(bpy.types.Operator):
     bl_idname = "code_autocomplete.restart_blender"
     bl_label = "Restart Blender"
-    bl_description = "Close and open a new Blender instance to test the Addon on the startup file."
+    bl_description = "Close and open a new Blender instance to test the Addon on the startup file. (Currently only supported for windows)"
     bl_options = {"REGISTER"}
     
     @classmethod
     def poll(cls, context):
-        return True
+        return sys.platform == "win32"
     
     def invoke(self, context, event):
         return context.window_manager.invoke_confirm(self, event)
@@ -564,7 +565,17 @@ def zip_directory(source_path, output_path, additional_path = ""):
     except: print("Could not zip the directory")
     
 def start_another_blender_instance():
-    os.startfile(bpy.app.binary_path)  
+    open_file(bpy.app.binary_path) 
+ 
+# only works for windows currently   
+def open_file(path):
+    if sys.platform == "win32":
+        os.startfile(path)
+    else:
+        opener = "open" if sys.platform == "darwin" else "xdg-open"
+        subprocess.call([opener, path])
+
+
     
     
 bpy.app.handlers.load_post.append(open_status)  
