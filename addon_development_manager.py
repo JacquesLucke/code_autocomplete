@@ -108,7 +108,7 @@ class AddonFilesPanel(bpy.types.Panel):
         box = layout.box()
         if self.is_directory_visible(directory): icon = "DOWNARROW_HLT"
         else: icon = "RIGHTARROW"
-        operator = box.operator("code_autocomplete.toogle_directory_visibility", text = directory[:-1].split("\\")[-1], icon = icon, emboss = False)
+        operator = box.operator("code_autocomplete.toogle_directory_visibility", text = os.path.split(directory[:-1])[-1], icon = icon, emboss = False)
         operator.directory = directory
         
         if self.is_directory_visible(directory):
@@ -116,7 +116,7 @@ class AddonFilesPanel(bpy.types.Panel):
             directory_names = get_directory_names(directory)
             for directory_name in directory_names:
                 row = col.row()
-                self.draw_directory(row, directory + directory_name + "\\")
+                self.draw_directory(row, directory + directory_name + os.sep)
             
             file_names = get_file_names(directory)
             col = box.column(align = True) 
@@ -229,7 +229,7 @@ class CreateNewAddon(bpy.types.Operator):
             new_addon_file("developer_utils.py", code)
     
     def read_template_file(self, path):
-        path = join(dirname(__file__), "addon_templates\\" + path)
+        path = join(dirname(__file__), "addon_templates", path)
         file = open(path)
         text = file.read()
         file.close()
@@ -288,7 +288,7 @@ class NewDirectory(bpy.types.Operator):
     def execute(self, context):
         if self.name != "":
             new_directory(self.directory + self.name)
-            new_file(self.directory + self.name + "\\__init__.py")
+            new_file(join(self.directory + self.name, "__init__.py"))
             context.area.tag_redraw()
         return {"FINISHED"}    
     
@@ -404,7 +404,7 @@ class ConvertAddonIndentation(bpy.types.Operator):
         for root, dirs, files in os.walk(get_current_addon_path()):
             for file in files:
                 if file.endswith(".py"):
-                    paths.append("{}\\{}".format(root, file))
+                    paths.append(join(root, file))
         return paths
             
                     
@@ -425,7 +425,7 @@ class ExportAddon(bpy.types.Operator):
         return {"RUNNING_MODAL"}
     
     def execute(self, context):
-        subdirectory_name = get_addon_name() + "\\"
+        subdirectory_name = get_addon_name() + os.sep
         source_path = get_current_addon_path()
         output_path = self.filepath
         if not output_path.lower().endswith(".zip"):
@@ -477,7 +477,7 @@ class RestartBlender(bpy.types.Operator):
         return {"FINISHED"}         
         
 
-restart_data_path = dirname(__file__) + "\\restart_data.txt"   
+restart_data_path = join(dirname(__file__), "restart_data.txt")   
 
 id_addon_name = "ADDON_NAME: "
 id_current_path = "CURRENT_PATH: "  
@@ -531,7 +531,7 @@ def current_addon_exists():
     return os.path.exists(get_current_addon_path()) and get_settings().addon_name != ""
     
 def get_current_addon_path():
-    return "{}\\{}\\".format(addons_path, get_addon_name()) 
+    return join(addons_path, get_addon_name()) + os.sep
 
 def is_addon_name_valid():
     name = get_addon_name()
@@ -559,7 +559,7 @@ def zip_directory(source_path, output_path, additional_path = ""):
         for root, folders, files in content:
             for data in folders + files:
                 absolute_path = join(root, data)
-                relative_path = additional_path + absolute_path[len(parent_folder+"\\"):]
+                relative_path = additional_path + absolute_path[len(parent_folder+os.sep):]
                 zip_file.write(absolute_path, relative_path)
         zip_file.close()
     except: print("Could not zip the directory")
