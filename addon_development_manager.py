@@ -7,7 +7,7 @@ import subprocess
 import addon_utils
 from bpy.props import *
 from os import listdir
-from os.path import isfile, isdir, join, dirname
+from os.path import isfile, isdir, join, dirname, basename
 from collections import defaultdict
 from bpy.app.handlers import persistent
 from . text_block import TextBlock
@@ -122,11 +122,14 @@ class AddonFilesPanel(bpy.types.Panel):
             col = box.column(align = True) 
             for file_name in file_names:
                 row = col.row()
-                operator = row.operator("code_autocomplete.open_file", text = "", emboss = True, icon = "FILE")
-                operator.path = directory + file_name
-                if operator.path == get_current_filepath():
+                row.alignment = "LEFT"
+                full_path = directory + file_name
+                props = row.operator("code_autocomplete.open_file_menu", icon = "COLLAPSEMENU", text = "", emboss = True)
+                props.path = full_path
+                if full_path == get_current_filepath():
                     row.label("", icon = "RIGHTARROW_THIN")
-                row.label(file_name)
+                operator = row.operator("code_autocomplete.open_file", text = file_name, emboss = False)
+                operator.path = full_path
             
             row = box.row(align = True)    
             operator = row.operator("code_autocomplete.new_file", icon = "PLUS", text = "File")
@@ -325,26 +328,39 @@ class ToogleDirectoryVisibility(bpy.types.Operator):
         global directory_visibility
         directory_visibility[self.directory] = not directory_visibility[self.directory]
         return {"FINISHED"}
+        
+        
+class FileMenuOpener(bpy.types.Operator):
+    bl_idname = "code_autocomplete.open_file_menu"
+    bl_label = "Open File Menu"
+    
+    path = StringProperty(name = "Path", default = "")
+    
+    def invoke(self, context, event):
+        context.window_manager.popup_menu(self.drawMenu, title = "{} - File Menu".format(basename(self.path)))
+        return {"FINISHED"}
+    
+    def drawMenu(fileProps, self, context):
+        layout = self.layout
+        layout.operator_context = "INVOKE_DEFAULT"
+        props = layout.operator("code_autocomplete.rename_file", text = "Rename")        
+        props.path = fileProps.path
+        props = layout.operator("code_autocomplete.open_file", text = "Open in Text Editor")        
+        props.path = fileProps.path
+        props = layout.operator("code_autocomplete.open_external_file_browser", text = "Open External")        
+        props.directory = dirname(fileProps.path)
+        layout.separator()
+        props = layout.operator("code_autocomplete.delete_file", text = "Delete", icon = "ERROR")        
+        props.path = fileProps.path
             
             
 class OpenFile(bpy.types.Operator):
     bl_idname = "code_autocomplete.open_file"
     bl_label = "Open File"
-    bl_description = "Load the file (hold ctrl to open an external file browser)"
+    bl_description = "Load the file into the text editor"
     bl_options = {"REGISTER"}
     
     path = StringProperty(name = "Path", default = "")
-    
-    @classmethod
-    def poll(cls, context):
-        return True
-    
-    def invoke(self, context, event):
-        if event.ctrl:
-            bpy.ops.wm.path_open(filepath = dirname(self.path))
-        else:
-            self.execute(context)
-        return {"FINISHED"}
         
     def execute(self, context):
         text = None
@@ -357,6 +373,66 @@ class OpenFile(bpy.types.Operator):
         
         context.space_data.text = text
         return {"FINISHED"}
+    
+    
+class OpenExternalFileBrowser(bpy.types.Operator):
+    bl_idname = "code_autocomplete.open_external_file_browser"
+    bl_label = "Open External File Browser"
+    bl_description = ""
+    bl_options = {"REGISTER"}
+    
+    directory = StringProperty(name = "Directory", default = "")
+    
+    def execute(self, context):
+        bpy.ops.wm.path_open(filepath = self.directory)
+        return {"FINISHED"}
+        
+        
+class RenameFile(bpy.types.Operator):
+    bl_idname = "code_autocomplete.rename_file"
+    bl_label = "Open External File Browser"
+    bl_description = ""
+    bl_options = {"REGISTER"}
+    
+    path = StringProperty(name = "Directory", default = "")
+    new_name = StringProperty(name = "Directory", description = "New file name", default = "")
+    
+    def invoke(self, context, event):
+        self.new_name = basename(self.path)
+        return context.window_manager.invoke_props_dialog(self, width = 400)
+    
+    def draw(self, context):
+        layout = self.layout
+        layout.prop(self, "new_name")
+    
+    def execute(self, context):
+        new_path = join(dirname(self.path), self.new_name)
+        os.rename(self.path, new_path)
+        self.correct_text_block_paths(self.path, new_path)
+        context.area.tag_redraw()
+        return {"FINISHED"}     
+
+    def correct_text_block_paths(self, old_path, new_path):
+        for text in bpy.data.texts:
+            if text.filepath == old_path:
+                text.filepath = new_path
+                
+                
+class DeleteFile(bpy.types.Operator):
+    bl_idname = "code_autocomplete.delete_file"
+    bl_label = "Delete File"
+    bl_description = "Delete file on the hard drive"
+    bl_options = {"REGISTER"}
+    
+    path = StringProperty(name = "Directory", default = "")
+    
+    def invoke(self, context, event):
+        return context.window_manager.invoke_confirm(self, event)
+    
+    def execute(self, context):
+        os.remove(self.path)
+        context.area.tag_redraw()
+        return {"FINISHED"}  
     
     
 class SaveFiles(bpy.types.Operator):
