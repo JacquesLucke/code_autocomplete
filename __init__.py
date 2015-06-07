@@ -38,6 +38,9 @@ bl_info = {
 from . import developer_utils
 modules = developer_utils.setup_addon_modules(__path__, __name__, "bpy" in locals())
 
+# append jedi package path to make 'import jedi' available
+import os, sys
+sys.path.append(os.path.join(__path__[0], "jedi"))
 
 
 # properties
