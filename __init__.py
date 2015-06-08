@@ -84,7 +84,7 @@ def unregister_keymaps():
         wm.keyconfigs.addon.keymaps.remove(km)
     addon_keymaps.clear()
  
-from . addon_development_manager import AddonDevelopmentSceneProperties 
+from . addon_development.addon_development_manager import AddonDevelopmentSceneProperties 
 from . quick_operators import register_menus, unregister_menus
     
 def register():
