@@ -8,7 +8,8 @@ from . utils import (get_settings,
                      is_addon_name_valid, 
                      get_directory_names, 
                      get_file_names, 
-                     get_current_filepath)
+                     get_current_filepath,
+                     get_addon_name)
 
 class AddonDeveloperPanel(bpy.types.Panel):
     bl_idname = "addon_developer_panel"
@@ -25,7 +26,10 @@ class AddonDeveloperPanel(bpy.types.Panel):
         
         if not current_addon_exists():
             if not is_addon_name_valid():
-                layout.operator("code_autocomplete.make_addon_name_valid", icon = "ERROR", text = "Correct Addon Name")
+                if get_addon_name() == "":
+                    layout.label("Insert the name of your addon.", icon = "INFO")
+                else:
+                    layout.operator("code_autocomplete.make_addon_name_valid", icon = "ERROR", text = "Correct Addon Name")
             else:
                 row = layout.row()
                 row.scale_y = 1.2
