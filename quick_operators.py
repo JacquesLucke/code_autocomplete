@@ -150,13 +150,13 @@ def format_menu_extension(self, context):
     if text_block:
         layout = self.layout
         layout.operator("code_autocomplete.correct_whitespaces")
-        operator = layout.operator("code_autocomplete.convert_addon_indentation")
+        props = layout.operator("code_autocomplete.convert_addon_indentation")
         if text_block.use_tabs_as_spaces:
-            operator.old_indentation = "\t"
-            operator.new_indentation = "    "
+            props.old_indentation = "\t"
+            props.new_indentation = "    "
         else:
-            operator.old_indentation = "    "
-            operator.new_indentation = "\t"
+            props.old_indentation = "    "
+            props.new_indentation = "\t"
       
         
 

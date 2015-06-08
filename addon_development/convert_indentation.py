@@ -1,4 +1,5 @@
 import bpy
+import os
 from bpy.props import *
 from . utils import current_addon_exists, get_current_addon_path
 
