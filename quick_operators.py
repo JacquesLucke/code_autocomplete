@@ -7,7 +7,7 @@ from . text_block import TextBlock
 class SolveWhitespaceInconsistency(bpy.types.Operator):
     bl_idname = "code_autocomplete.correct_whitespaces"
     bl_label = "Correct Whitespaces"
-    bl_description = "Convert whitespaces to spaces or tabs"
+    bl_description = "Convert whitespaces to spaces or tabs depending on what is set for this text block"
     
     def execute(self, context):
         if context.edit_text.use_tabs_as_spaces:
@@ -149,6 +149,7 @@ def format_menu_extension(self, context):
     text_block = TextBlock.get_active()
     if text_block:
         layout = self.layout
+        layout.operator("code_autocomplete.correct_whitespaces")
         operator = layout.operator("code_autocomplete.convert_addon_indentation")
         if text_block.use_tabs_as_spaces:
             operator.old_indentation = "\t"
