@@ -72,9 +72,9 @@ def register_keymaps():
     kmi = km.keymap_items.new("code_autocomplete.select_whole_string", type = "Y", value = "PRESS", ctrl = True)
     kmi = km.keymap_items.new("code_autocomplete.switch_lines", type = "R", value = "PRESS", ctrl = True)
     kmi = km.keymap_items.new("wm.call_menu", type = "SPACE", value = "PRESS", ctrl = True)
-    kmi.properties.name = "code_autocomplete.insert_template_menu"
+    kmi.properties.name = "code_autocomplete_insert_template_menu"
     kmi = km.keymap_items.new("wm.call_menu", type = "TAB", value = "PRESS", ctrl = True)
-    kmi.properties.name = "code_autocomplete.select_text_block"
+    kmi.properties.name = "code_autocomplete_select_text_block"
     addon_keymaps.append(km)
     
 def unregister_keymaps():

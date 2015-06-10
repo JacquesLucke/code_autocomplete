@@ -6,7 +6,7 @@ from .. utils.variable_name_conversion import (get_valid_variable_name,
                                                get_separated_capitalized_words)
 
 class InsertTemplateMenu(bpy.types.Menu):
-    bl_idname = "code_autocomplete.insert_template_menu"
+    bl_idname = "code_autocomplete_insert_template_menu"
     bl_label = "Insert Template"
     
     def draw(self, context):

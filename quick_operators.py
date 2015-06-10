@@ -98,7 +98,7 @@ class ConvertFileIndentation(bpy.types.Operator):
 
 
 class SelectTextBlockMenu(bpy.types.Menu):
-    bl_idname = "code_autocomplete.select_text_block"
+    bl_idname = "code_autocomplete_select_text_block"
     bl_label = "Select Text Block"
     
     def draw(self, context):
@@ -149,6 +149,7 @@ def format_menu_extension(self, context):
     text_block = TextBlock.get_active()
     if text_block:
         layout = self.layout
+        layout.operator("code_autocomplete.build_script")
         layout.operator("code_autocomplete.correct_whitespaces")
         props = layout.operator("code_autocomplete.convert_addon_indentation")
         if text_block.use_tabs_as_spaces:
