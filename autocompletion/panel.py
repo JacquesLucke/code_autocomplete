@@ -3,6 +3,34 @@ import jedi
 import time
 from .. text_block import TextBlock
 
+
+class PrintCompletions(bpy.types.Operator):
+    bl_idname = "code_autocomplete.print_completions"
+    bl_label = "Print Completions"
+    bl_description = ""
+    
+    def execute(self, context):
+        text = TextBlock.get_active()
+        if not text: { "FINISHED" }
+        
+        print(("#"*80+"\n")*2)
+        
+        source = text.text
+        line = text.current_line_index + 1
+        character = text.current_character_index
+        
+        start = time.clock()
+        script = jedi.Script(source, line, character, text.filepath)
+        completions = script.completions()
+        print("Total Time: {}".format(time.clock() - start))
+        print("Amount: {}".format(len(completions)))
+        
+        for i, c in enumerate(completions):
+            print("{}".format(c.name))
+            print("    Type: {}".format(c.type))
+        
+        return { "FINISHED" }
+
 class CompletionsPanel(bpy.types.Panel):
     bl_idname = "completions_panel"
     bl_label = "Completions Panel"
@@ -12,27 +40,5 @@ class CompletionsPanel(bpy.types.Panel):
     
     def draw(self, context):
         layout = self.layout
+        layout.operator("code_autocomplete.print_completions")
         
-        text = TextBlock.get_active()
-        if not text: return
-        
-        word = text.current_word
-        if len(word) == 0 and not "import" in text.current_line and not text.current_line.endswith("."): return
-        
-        start = time.clock()
-    
-        source = text.text
-        line = text.current_line_index + 1
-        character = text.current_character_index
-        
-        script = jedi.Script(source, line, character)
-        completions = script.completions()
-        
-        end = time.clock()
-        layout.label(str(end-start))
-        layout.label(str(len(completions)))
-        
-        for i, c in enumerate(completions):
-            if i > 20: break
-            col = layout.column(align = True)
-            col.label(c.name)
