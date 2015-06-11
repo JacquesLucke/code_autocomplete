@@ -59,6 +59,18 @@ class AddonPreferences(bpy.types.AddonPreferences):
         row = layout.row(align = False)
         row.prop(self, "line_amount")
         
+import unittest
+import bpy
+
+class RunTests(bpy.types.Operator):
+    bl_idname = "code_autocomplete.run_tests"
+    bl_label = "Run Code Autocomplete Tests"
+    bl_description = ""
+    bl_options = {"REGISTER"}
+    
+    def execute(self, context):
+        unittest.main(exit = False)
+        return {"FINISHED"}        
                
     
 # register

@@ -1,0 +1,2 @@
+class BlockEvent(Exception):
+    pass
