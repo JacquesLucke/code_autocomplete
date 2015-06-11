@@ -2,6 +2,7 @@ import bpy
 from .. import settings
 from . exception import BlockEvent
 from . autocomplete_handler import AutocompleteHandler
+from . event_utils import is_event
 
 
 class Autocomplete(bpy.types.Panel):
@@ -22,48 +23,48 @@ class StartModalOperator(bpy.types.Operator):
     bl_options = {"REGISTER"}
     
     def execute(self, context):
-        bpy.ops.code_autocomplete.modal_operator("INVOKE_DEFAULT")
+        bpy.ops.code_autocomplete.modal_text_operator("INVOKE_DEFAULT")
         return {"FINISHED"}
 
 
-class ModalOperator(bpy.types.Operator):
-    bl_idname = "code_autocomplete.modal_operator"
-    bl_label = "Modal Operator"
+class ModalTextOperator(bpy.types.Operator):
+    bl_idname = "code_autocomplete.modal_text_operator"
+    bl_label = "Modal Text Operator"
     bl_description = ""
     bl_options = {"REGISTER"}
-    
-    @classmethod
-    def poll(cls, context):
-        return True
         
     def invoke(self, context, event):
         args = (self, context)
         self._handle = bpy.types.SpaceTextEditor.draw_handler_add(self.draw_callback_px, args, "WINDOW", "POST_PIXEL")
         context.window_manager.modal_handler_add(self)
-        
         self.handlers = [AutocompleteHandler()]
-        
         return {"RUNNING_MODAL"}
         
     def modal(self, context, event):
-        for area in context.screen.areas:
-            if area.type == "TEXT_EDITOR":
-                area.tag_redraw()
+        self.redraw_text_editors()
         
-        if event.type == "ESC":
+        if is_event(event, "ESC", shift = True):
             return self.finish()
             
+        return self.update_handlers(event)
+        
+    def redraw_text_editors(self):
+        for area in bpy.context.screen.areas:
+            if area.type == "TEXT_EDITOR":
+                area.tag_redraw()
+                
+    def update_handlers(self, event):
         try:
             for handler in self.handlers:
                 handler.update(event)
+            return {"PASS_THROUGH"}
         except BlockEvent:
             if settings.debug: print("Event blocked: {} - {}".format(event.type, event.value))
             return {"RUNNING_MODAL"}
-            
-        return {"PASS_THROUGH"}
         
     def finish(self):
         bpy.types.SpaceTextEditor.draw_handler_remove(self._handle, "WINDOW")
+        if settings.debug: print("Finished modal text operator")
         return {"FINISHED"}
     
     def draw_callback_px(tmp, self, context):
