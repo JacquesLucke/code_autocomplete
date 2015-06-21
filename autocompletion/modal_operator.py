@@ -4,8 +4,10 @@ from .. text_block import TextBlock
 from . exception import BlockEvent
 from . autocomplete_handler import AutocompleteHandler
 from . event_utils import is_event
+from . active_text_area import ActiveTextArea
 
 is_running = False
+active_text_area = ActiveTextArea()
 
 class Autocomplete(bpy.types.Panel):
     bl_idname = "autocomplete"
@@ -29,6 +31,7 @@ class StartModalOperator(bpy.types.Operator):
     
     def execute(self, context):
         bpy.ops.code_autocomplete.modal_text_operator("INVOKE_DEFAULT")
+        active_text_area.set_area(context.area)
         global is_running
         is_running = True
         return {"FINISHED"}
@@ -61,6 +64,7 @@ class ModalTextOperator(bpy.types.Operator):
         
     def modal(self, context, event):
         self.redraw_text_editors()
+        active_text_area.update(event)
         
         if not is_running:
             return self.finish()
@@ -76,7 +80,8 @@ class ModalTextOperator(bpy.types.Operator):
                 area.tag_redraw()
                 
     def update_handlers(self, event):
-        text_block = TextBlock.get_active()
+        text_block = self.get_text_block()
+        if not text_block: return {"PASS_THROUGH"}
     
         try:
             for handler in self.handlers:
@@ -92,5 +97,16 @@ class ModalTextOperator(bpy.types.Operator):
         return {"FINISHED"}
     
     def draw_callback_px(tmp, self, context):
-        for handler in self.handlers:
-            handler.draw()
+        if context.area == active_text_area.get():
+            text_block = self.get_text_block()
+            if not text_block: return
+            
+            for handler in self.handlers:
+                handler.draw(text_block)
+            
+    def get_text_block(self):
+        text = active_text_area.get_text()
+        if text: return TextBlock(text)
+            
+            
+          
