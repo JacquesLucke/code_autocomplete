@@ -5,4 +5,10 @@ jedi_provider = JediCompletionProvider()
 def complete(text_block):
     completions = []
     completions.extend(jedi_provider.complete(text_block))
-    return completions
+    
+    primary, secondary = [], []
+    for c in completions:
+        if c.type == "PARAMETER": primary.append(c)
+        else: secondary.append(c)
+    
+    return primary + secondary

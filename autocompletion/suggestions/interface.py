@@ -9,7 +9,7 @@ class Completion:
         if name == "description":
             return ""
         if name == "type":
-            return ""
+            return "UNKNOWN"
             
     def insert(self, text_block):
         pass

@@ -9,6 +9,7 @@ class ListItem:
         self.active = False
         self.alignment = "LEFT"
         self.data = None
+        self.offset = 0
         
 
 class ListBox:
@@ -68,6 +69,7 @@ class ListBox:
             x = rectangle.left + self.padding
         if item.alignment == "CENTER":
             x = rectangle.center.x - blf.dimensions(self.font, item.text)[0] / 2
+        x += item.offset
             
         offset = blf.dimensions(self.font, "i")[1] / 2
             

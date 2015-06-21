@@ -23,9 +23,8 @@ text_changing_types = ["BACK_SPACE", "PERIOD", "SPACE", "COMMA", "RET",
 show_types = ["PERIOD", "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"] + \
     list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     
-hide_types = ["BACK_SPACE", "DEL", "RIGHT_BRACKET", "RET"] 
+hide_types = ["BACK_SPACE", "DEL", "ESC", "RET"] 
 
-insert_types = ["TAB", "RET"]
     
 class AutocompleteHandler:
     def __init__(self):
@@ -39,7 +38,7 @@ class AutocompleteHandler:
         
     def update(self, event, text_block):        
     
-        if event.type in insert_types and event.value == "PRESS" and not self.hide:
+        if (is_event(event, "TAB") or is_event(event, "RET", shift = True)) and not self.hide:
             if len(self.completions) > 0:
                 c = self.completions[self.active_index]
                 c.insert(text_block)
@@ -57,7 +56,7 @@ class AutocompleteHandler:
             
     def update_visibility(self, event, text_block):
         if self.hide:
-            if event.type in show_types and event.value == "PRESS":
+            if event.type in show_types and event.value == "PRESS" and not (event.ctrl or event.alt):
                 self.show()
             if is_event(event, "ESC", shift = True):
                 self.show()
@@ -66,8 +65,9 @@ class AutocompleteHandler:
                 self.hide = True
                 
         text = text_block.text_before_cursor
-        if is_event(event, "SPACE") and (text.endswith("import") or text.endswith("from")):
-            self.show()
+        if is_event(event, "SPACE"): 
+            if text.endswith("import") or text.endswith("from"): self.show()
+            else: self.hide = True
             
     def show(self):
         self.hide = False
@@ -116,6 +116,7 @@ class AutocompleteHandler:
             item = ListItem(c.name)
             item.active = self.active_index == i
             item.data = c
+            item.offset = 10 if c.type == "PARAMETER" else 0
             items.append(item)
             
         self.context_box.items = items

@@ -5,10 +5,15 @@ from . interface import Provider, Completion
 class JediCompletion(Completion):
     def __init__(self, suggestion):
         self.name = suggestion.name
-        self.insertion = suggestion.complete
+        self.insertion = suggestion.name
+        self.description = suggestion.docstring(raw = True)
+        if suggestion.type == "function": self.type = "FUNCTION"
+        if suggestion.type == "class": self.type = "CLASS"
+        if suggestion.type == "param":
+            self.type = "PARAMETER"
         
     def insert(self, text_block):
-        text_block.insert(self.insertion)
+        text_block.replace_current_word(self.insertion)
       
       
 class JediCompletionProvider(Provider):
