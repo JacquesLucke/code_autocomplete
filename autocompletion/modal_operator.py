@@ -1,9 +1,11 @@
 import bpy
 from .. import settings
+from .. text_block import TextBlock
 from . exception import BlockEvent
 from . autocomplete_handler import AutocompleteHandler
 from . event_utils import is_event
 
+is_running = False
 
 class Autocomplete(bpy.types.Panel):
     bl_idname = "autocomplete"
@@ -13,7 +15,10 @@ class Autocomplete(bpy.types.Panel):
     
     def draw(self, context):
         layout = self.layout
-        layout.operator("code_autocomplete.start_modal_operator")
+        if is_running:
+            layout.operator("code_autocomplete.stop_modal_operator")
+        else:
+            layout.operator("code_autocomplete.start_modal_operator")
         
 
 class StartModalOperator(bpy.types.Operator):
@@ -24,7 +29,21 @@ class StartModalOperator(bpy.types.Operator):
     
     def execute(self, context):
         bpy.ops.code_autocomplete.modal_text_operator("INVOKE_DEFAULT")
+        global is_running
+        is_running = True
         return {"FINISHED"}
+        
+        
+class StopModalOperator(bpy.types.Operator):
+    bl_idname = "code_autocomplete.stop_modal_operator"
+    bl_label = "Stop Modal Operator"
+    bl_description = ""
+    bl_options = {"REGISTER"}
+    
+    def execute(self, context):
+        global is_running
+        is_running = False
+        return {"FINISHED"}        
 
 
 class ModalTextOperator(bpy.types.Operator):
@@ -43,6 +62,9 @@ class ModalTextOperator(bpy.types.Operator):
     def modal(self, context, event):
         self.redraw_text_editors()
         
+        if not is_running:
+            return self.finish()
+        
         if is_event(event, "ESC", shift = True):
             return self.finish()
             
@@ -54,9 +76,11 @@ class ModalTextOperator(bpy.types.Operator):
                 area.tag_redraw()
                 
     def update_handlers(self, event):
+        text_block = TextBlock.get_active()
+    
         try:
             for handler in self.handlers:
-                handler.update(event)
+                handler.update(event, text_block)
             return {"PASS_THROUGH"}
         except BlockEvent:
             if settings.debug: print("Event blocked: {} - {}".format(event.type, event.value))

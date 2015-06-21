@@ -2,22 +2,41 @@ import bpy
 from .. graphics.rectangle import Rectangle
 from . exception import BlockEvent
 from . event_utils import is_event, get_area_under_event
-from bgl import *
+from . suggestions import complete
 
+completions = []
 
 class AutocompleteHandler:
     def __init__(self):
         self.active_text_area = ActiveTextArea(bpy.context.area)
         
-    def update(self, event):
-        self.active_text_area.update(event)
-        if is_event(event, "D"):
-            raise BlockEvent()
+    def update(self, event, text_block):
+        global completions
+        completions = complete(text_block)
+    
+        #self.active_text_area.update(event)
+        #if is_event(event, "D"):
+        #    raise BlockEvent()
         
     def draw(self):
-        area = bpy.context.area
-        if area == self.active_text_area.get():
-            Rectangle(20, 50, 400, 100).draw()
+        pass
+        #area = bpy.context.area
+        #if area == self.active_text_area.get():
+        #    Rectangle(20, 50, 400, 100).draw()
+        
+        
+class Autocomplete(bpy.types.Panel):
+    bl_idname = "test"
+    bl_label = "Completions"
+    bl_space_type = "TEXT_EDITOR"
+    bl_region_type = "UI"
+    
+    def draw(self, context):
+        layout = self.layout
+        global completions
+        for i, c in enumerate(completions):
+            if i > 10: break
+            layout.label(c.name)
     
     
 class ActiveTextArea:

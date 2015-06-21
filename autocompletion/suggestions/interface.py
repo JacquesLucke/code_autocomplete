@@ -1,7 +1,5 @@
-from .. text_block import TextBlock
-
-class AutocompleteProvider:
-    def complete(self, text_block, filepath = ""):
+class Provider:
+    def complete(self, text_block):
         return []
         
 class Completion:
