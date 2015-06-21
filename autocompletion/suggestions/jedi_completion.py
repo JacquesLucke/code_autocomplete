@@ -27,8 +27,8 @@ class JediCompletionProvider(Provider):
         try:
             script = jedi.Script(source, line_index, character_index, filepath)
             completions = script.completions()
+            return [JediCompletion(c) for c in completions]
         except:
-            completions = []
+            return []
         
-        return [JediCompletion(c) for c in completions]
         
