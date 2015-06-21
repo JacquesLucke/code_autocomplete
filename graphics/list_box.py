@@ -8,6 +8,7 @@ class ListItem:
         self.text = text
         self.active = False
         self.alignment = "LEFT"
+        self.data = None
         
 
 class ListBox:

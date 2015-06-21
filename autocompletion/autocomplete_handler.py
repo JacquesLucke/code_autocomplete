@@ -104,6 +104,7 @@ class AutocompleteHandler:
             if not self.top_index <= i < self.top_index + self.draw_max: continue
             item = ListItem(c.name)
             item.active = self.active_index == i
+            item.data = c
             items.append(item)
             
         self.context_box.items = items
