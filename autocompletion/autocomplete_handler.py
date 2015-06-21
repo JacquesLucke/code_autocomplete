@@ -16,14 +16,9 @@ move_index_commands = {
     "END" : 10000,
     "HOME" : -10000 }
 
-text_changing_types = ["BACK_SPACE", "PERIOD", "SPACE", "COMMA", "RET", 
-    "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE",
-    "DEL", "SEMI_COLON", "MINUS", "RIGHT_BRACKET", "LEFT_BRACKET", "SLASH"] + \
-    list("ABCDEFGHIJKLMNOPQRSTUVWXYZ") + ["NUMPAD_" + str(i) for i in range(10)]
+text_changing_types = ["BACK_SPACE", "SPACE", "COMMA", "RET", "DEL",
+    "SEMI_COLON", "MINUS", "RIGHT_BRACKET", "LEFT_BRACKET", "SLASH"]
     
-show_types = ["PERIOD", "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"] + \
-    list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
 statement_chars = "abcdefghijklmnopqrstuvwxyz0123456789_."  
     
 hide_types = ["BACK_SPACE", "DEL", "ESC", "RET"]
@@ -44,7 +39,9 @@ class AutocompleteHandler:
         self.update_visibility(event, text_block)
         if self.is_hidden: return
           
-        if is_event_in_list(event, text_changing_types, "PRESS"):
+        char = event.unicode.lower()
+        if char == "": char = "empty"
+        if is_event_in_list(event, text_changing_types, "PRESS") or char in statement_chars:
             self.reload_completions = True
             
         if len(self.completions) > 0:
@@ -74,12 +71,14 @@ class AutocompleteHandler:
         self.active_index = 0
             
     def update_visibility(self, event, text_block):
+        char = event.unicode.lower()
+        if char == "": char = "empty"
         if self.is_hidden:
-            if is_event_in_list(event, show_types, "PRESS", shift = "ANY"): self.show()
+            if char in statement_chars: self.show()
             if is_event(event, "ESC", shift = True): self.show()
         else:
             if is_event_in_list(event, hide_types, "PRESS"): self.hide()
-            if not event.unicode in statement_chars: self.hide()
+            if not (char in statement_chars or char == "empty"): self.hide()
                 
         text = text_block.text_before_cursor
         if is_event(event, "SPACE"): 
@@ -89,8 +88,9 @@ class AutocompleteHandler:
         if is_mouse_click(event): self.hide()
             
     def show(self):
-        self.is_hidden = False
-        self.reload_completions = True
+        if self.is_hidden:
+            self.is_hidden = False
+            self.reload_completions = True
         
     def hide(self):
         self.is_hidden = True
