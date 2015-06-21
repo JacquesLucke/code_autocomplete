@@ -1,4 +1,5 @@
 import bpy
+import re
 from mathutils import Vector
 from .. graphics.list_box import ListItem, ListBox
 from . exception import BlockEvent
@@ -66,7 +67,7 @@ class AutocompleteHandler:
                 
         text = text_block.text_before_cursor
         if is_event(event, "SPACE"): 
-            if text.endswith("import") or text.endswith("from"): self.show()
+            if re.search("[import|from]\s*.?\s*$", text): self.show()
             else: self.hide = True
             
     def show(self):
