@@ -1,7 +1,8 @@
 from bgl import *
+from mathutils import Vector
 
 class Rectangle:
-    def __init__(self, x1, y1, x2, y2):
+    def __init__(self, x1 = 0, y1 = 0, x2 = 0, y2 = 0):
         self.x1 = float(x1)
         self.y1 =  float(y1)
         self.x2 =  float(x2)
@@ -29,6 +30,14 @@ class Rectangle:
     @property
     def bottom(self):
         return min(self.y1, self.y2)
+        
+    @property
+    def center(self):
+        return Vector((self.center_x, self.center_y))
+        
+    @property
+    def center_x(self):
+        return (self.x1 + self.x2) / 2
 
     @property
     def center_y(self):
@@ -65,3 +74,6 @@ class Rectangle:
         for border in (topBorder, bottomBorder, leftBorder, rightBorder):
             border.color = self.border_color
             border.draw()
+            
+    def __repr__(self):
+        return "({}, {}) - ({}, {})".format(self.x1, self.y1, self.x2, self.y2)

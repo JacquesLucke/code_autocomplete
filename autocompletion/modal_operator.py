@@ -1,5 +1,5 @@
 import bpy
-from .. import settings
+from .. settings import get_settings
 from .. text_block import TextBlock
 from . exception import BlockEvent
 from . autocomplete_handler import AutocompleteHandler
@@ -88,12 +88,12 @@ class ModalTextOperator(bpy.types.Operator):
                 handler.update(event, text_block)
             return {"PASS_THROUGH"}
         except BlockEvent:
-            if settings.debug: print("Event blocked: {} - {}".format(event.type, event.value))
+            if get_settings().debug: print("Event blocked: {} - {}".format(event.type, event.value))
             return {"RUNNING_MODAL"}
         
     def finish(self):
         bpy.types.SpaceTextEditor.draw_handler_remove(self._handle, "WINDOW")
-        if settings.debug: print("Finished modal text operator")
+        if get_settings().debug: print("Finished modal text operator")
         return {"FINISHED"}
     
     def draw_callback_px(tmp, self, context):

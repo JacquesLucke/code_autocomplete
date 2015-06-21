@@ -41,40 +41,13 @@ sys.path.append(os.path.join(__path__[0], "jedi"))
     
 from . import developer_utils
 modules = developer_utils.setup_addon_modules(__path__, __name__, "bpy" in locals())
-
-
-
-# properties
-################################## 
-
-import bpy
-        
-class AddonPreferences(bpy.types.AddonPreferences):
-    bl_idname = __name__
+            
     
-    line_amount = bpy.props.IntProperty(default = 8, min = 1, max = 20, name = "Lines", description = "Amount of lines shown in the context box")
-    
-    def draw(self, context):
-        layout = self.layout
-        row = layout.row(align = False)
-        row.prop(self, "line_amount")
-        
-import unittest
-import bpy
-
-class RunTests(bpy.types.Operator):
-    bl_idname = "code_autocomplete.run_tests"
-    bl_label = "Run Code Autocomplete Tests"
-    bl_description = ""
-    bl_options = {"REGISTER"}
-    
-    def execute(self, context):
-        unittest.main(exit = False)
-        return {"FINISHED"}        
-               
     
 # register
 ##################################
+
+import bpy
 
 addon_keymaps = []
 def register_keymaps():
