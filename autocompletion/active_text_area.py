@@ -35,7 +35,7 @@ class ActiveTextArea:
         self.height = area.height
         
     def get_nearest_text_area(self):
-        differences = [(area, self.get_area_difference(area)) for area in bpy.context.screen.areas if area.type == "TEXT_EDITOR"]
+        differences = [(area, self.get_area_difference(area)) for area in bpy.context.screen.areas if area.type == "TEXT_EDITOR"] + [(bpy.context.area, 0)]
         return min(differences, key = lambda x: x[1])[0]
             
     def get_area_difference(self, area):
