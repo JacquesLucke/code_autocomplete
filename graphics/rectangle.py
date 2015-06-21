@@ -26,6 +26,10 @@ class Rectangle:
     @property    
     def right(self):
         return max(self.x1, self.x2)
+        
+    @property
+    def top(self):
+        return max(self.y1, self.y2)
 
     @property
     def bottom(self):
@@ -42,6 +46,9 @@ class Rectangle:
     @property
     def center_y(self):
         return (self.y1 + self.y2) / 2
+        
+    def contains(self, point):
+        return self.left <= point[0] <= self.right and self.bottom <= point[1] <= self.top
 
     def draw(self):
         glColor4f(*self.color)

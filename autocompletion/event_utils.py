@@ -1,4 +1,8 @@
 import bpy
+from mathutils import Vector
+
+def get_mouse_region_position(event):
+    return Vector((event.mouse_region_x, event.mouse_region_y))
 
 def is_event(event, type, value = "PRESS", shift = False, ctrl = False, alt = False):
     if event.type in ("LEFT_SHIFT", "RIGHT_SHIFT"): shift = True

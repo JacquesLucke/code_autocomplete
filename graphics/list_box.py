@@ -28,6 +28,10 @@ class ListBox:
         self.active_item_border_color = (1.0, 0.8, 0.5, 1.0)
         self.calc_height()
         
+    def contains(self, point):
+        background = self.get_background_rectangle()
+        return background.contains(point)
+        
     def draw(self):
         self.calc_height()
         self.draw_background()

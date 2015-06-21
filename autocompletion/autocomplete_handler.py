@@ -3,7 +3,7 @@ import re
 from mathutils import Vector
 from .. graphics.list_box import ListItem, ListBox
 from . exception import BlockEvent
-from . event_utils import is_event, is_event_in_list, is_mouse_click
+from . event_utils import is_event, is_event_in_list, is_mouse_click, get_mouse_region_position
 from . suggestions import complete
 from .. settings import get_settings
 import time
@@ -83,7 +83,16 @@ class AutocompleteHandler:
                 if is_event(event, key):
                     self.change_active_index(amount)
                     raise BlockEvent()
+        def move_with_mouse():
+            if not self.event_over_context_box(event): return
+            if is_event(event, "WHEELUPMOUSE"):
+                self.change_active_index(-1)
+                raise BlockEvent()
+            if is_event(event, "WHEELDOWNMOUSE"):
+                self.change_active_index(1)
+                raise BlockEvent()
         move_with_keyboard()
+        move_with_mouse()
                 
     def change_active_index(self, amount):
         index = self.active_index + amount
@@ -95,6 +104,10 @@ class AutocompleteHandler:
         if len(self.completions) < self.draw_max:
             self.top_index = 0
         self.active_index = index
+        
+    def event_over_context_box(self, event):
+        point = get_mouse_region_position(event)
+        return self.context_box.contains(point)
                 
     def update_completions(self, text_block):
         self.completions = complete(text_block)
