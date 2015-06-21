@@ -10,3 +10,6 @@ class Completion:
             return ""
         if name == "type":
             return ""
+            
+    def insert(self, text_block):
+        pass

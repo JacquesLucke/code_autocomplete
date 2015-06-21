@@ -23,7 +23,9 @@ text_changing_types = ["BACK_SPACE", "PERIOD", "SPACE", "COMMA", "RET",
 show_types = ["PERIOD", "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"] + \
     list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     
-hide_types = ["BACK_SPACE", "DEL", "RIGHT_BRACKET", "RET"]  
+hide_types = ["BACK_SPACE", "DEL", "RIGHT_BRACKET", "RET"] 
+
+insert_types = ["TAB", "RET"]
     
 class AutocompleteHandler:
     def __init__(self):
@@ -35,14 +37,23 @@ class AutocompleteHandler:
         self.reload_completions = False
         self.hide = True
         
-    def update(self, event, text_block):
-        print(event.type)
+    def update(self, event, text_block):        
+    
+        if event.type in insert_types and event.value == "PRESS" and not self.hide:
+            if len(self.completions) > 0:
+                c = self.completions[self.active_index]
+                c.insert(text_block)
+                self.hide = True
+                raise BlockEvent()
+                
         self.update_visibility(event, text_block)
         if self.hide: return
-                
-        self.move_active_index(event)
+          
         if event.value == "PRESS" and event.type in text_changing_types:
             self.reload_completions = True
+            
+        if len(self.completions) > 0:
+            self.move_active_index(event)
             
     def update_visibility(self, event, text_block):
         if self.hide:
