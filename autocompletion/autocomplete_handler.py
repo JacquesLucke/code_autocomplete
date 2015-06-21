@@ -66,7 +66,7 @@ class AutocompleteHandler:
                 
         text = text_block.text_before_cursor
         if is_event(event, "SPACE"): 
-            if re.search("[import|from]\s*.?\s*$", text): self.show()
+            if re.search("(import|from)\s*\.?\s*$", text): self.show()
             else: self.hide = True
             
     def show(self):
