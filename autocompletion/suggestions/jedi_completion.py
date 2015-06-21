@@ -1,4 +1,4 @@
-#import jedi
+import jedi
 from . interface import Provider, Completion
 
 
@@ -14,9 +14,8 @@ class JediCompletionProvider(Provider):
         character_index = text_block.current_character_index
         filepath = text_block.filepath
         
-        #script = jedi.Script(source, line_index, character_index, filepath)
-        #completions = script.completions()
-        completions = []
-        return completions
+        script = jedi.Script(source, line_index, character_index, filepath)
+        completions = script.completions()
+        
         return [JediCompletion(c) for c in completions]
         
