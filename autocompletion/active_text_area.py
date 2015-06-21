@@ -18,7 +18,8 @@ class ActiveTextArea:
             return getattr(space, "text", None)
 
     def get(self):
-        return self.get_nearest_text_area()
+        area = self.get_nearest_text_area()
+        if area.type == "TEXT_EDITOR": return area
         
     def update(self, event):
         if is_event(event, "LEFTMOUSE", "PRESS"):
