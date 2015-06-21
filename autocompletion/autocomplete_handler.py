@@ -23,8 +23,10 @@ text_changing_types = ["BACK_SPACE", "PERIOD", "SPACE", "COMMA", "RET",
     
 show_types = ["PERIOD", "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"] + \
     list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+statement_chars = "abcdefghijklmnopqrstuvwxyz0123456789_."  
     
-hide_types = ["BACK_SPACE", "DEL", "ESC", "RET"] 
+hide_types = ["BACK_SPACE", "DEL", "ESC", "RET"]
 
     
 class AutocompleteHandler:
@@ -35,12 +37,12 @@ class AutocompleteHandler:
         self.top_index = 0
         self.active_index = 0
         self.reload_completions = False
-        self.hide = True
+        self.hide()
         
-    def update(self, event, text_block):   
+    def update(self, event, text_block):  
         self.check_event_for_insertion(event, text_block)
         self.update_visibility(event, text_block)
-        if self.hide: return
+        if self.is_hidden: return
           
         if is_event_in_list(event, text_changing_types, "PRESS"):
             self.reload_completions = True
@@ -62,32 +64,36 @@ class AutocompleteHandler:
                 raise BlockEvent()
         
         if len(self.completions) == 0: return
-        if self.hide: return
+        if self.is_hidden: return
         insert_with_keyboard()
         insert_with_mouse()
         
     def insert_completion(self, text_block, completion):
         completion.insert(text_block)
-        self.hide = True
+        self.hide()
         self.active_index = 0
             
     def update_visibility(self, event, text_block):
-        if self.hide:
+        if self.is_hidden:
             if is_event_in_list(event, show_types, "PRESS", shift = "ANY"): self.show()
             if is_event(event, "ESC", shift = True): self.show()
         else:
-            if is_event_in_list(event, hide_types, "PRESS"): self.hide = True
+            if is_event_in_list(event, hide_types, "PRESS"): self.hide()
+            if not event.unicode in statement_chars: self.hide()
                 
         text = text_block.text_before_cursor
         if is_event(event, "SPACE"): 
             if re.search("(import|from)\s*\.?\s*$", text): self.show()
-            else: self.hide = True
+            else: self.hide()
             
-        if is_mouse_click(event): self.hide = True
+        if is_mouse_click(event): self.hide()
             
     def show(self):
-        self.hide = False
+        self.is_hidden = False
         self.reload_completions = True
+        
+    def hide(self):
+        self.is_hidden = True
                 
     def move_active_index(self, event):
         def move_with_keyboard():
@@ -130,7 +136,7 @@ class AutocompleteHandler:
         self.change_active_index(0)
         
     def draw(self, text_block):
-        if self.hide: return
+        if self.is_hidden: return
         
         if self.reload_completions:
             self.update_completions(text_block)
