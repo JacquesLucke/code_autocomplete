@@ -3,7 +3,7 @@ import re
 from mathutils import Vector
 from .. graphics.list_box import ListItem, ListBox
 from . exception import BlockEvent
-from . event_utils import is_event
+from . event_utils import is_event, is_event_in_list, is_mouse_click
 from . suggestions import complete
 from .. settings import get_settings
 import time
@@ -38,36 +38,40 @@ class AutocompleteHandler:
         self.hide = True
         
     def update(self, event, text_block):        
-        if (is_event(event, "TAB") or is_event(event, "RET", shift = True)) and not self.hide:
-            if len(self.completions) > 0:
-                c = self.completions[self.active_index]
-                c.insert(text_block)
-                self.hide = True
-                raise BlockEvent()
-                
+        self.insert_completion(event, text_block)
         self.update_visibility(event, text_block)
         if self.hide: return
           
-        if event.value == "PRESS" and event.type in text_changing_types:
+        if is_event_in_list(event, text_changing_types, "PRESS"):
             self.reload_completions = True
             
         if len(self.completions) > 0:
             self.move_active_index(event)
+           
+    def insert_completion(self, event, text_block):
+        if len(self.completions) == 0: return
+        if self.hide: return
+        if not is_event_in_list(event, ("TAB", "RET")): return
+        
+        c = self.completions[self.active_index]
+        c.insert(text_block)
+        self.hide = True
+        self.active_index = 0
+        raise BlockEvent()
             
     def update_visibility(self, event, text_block):
         if self.hide:
-            if event.type in show_types and event.value == "PRESS" and not (event.ctrl or event.alt):
-                self.show()
-            if is_event(event, "ESC", shift = True):
-                self.show()
+            if is_event_in_list(event, show_types, "PRESS", shift = "ANY"): self.show()
+            if is_event(event, "ESC", shift = True): self.show()
         else:
-            if event.type in hide_types and event.value == "PRESS":
-                self.hide = True
+            if is_event_in_list(event, hide_types, "PRESS"): self.hide = True
                 
         text = text_block.text_before_cursor
         if is_event(event, "SPACE"): 
             if re.search("(import|from)\s*\.?\s*$", text): self.show()
             else: self.hide = True
+            
+        if is_mouse_click(event): self.hide = True
             
     def show(self):
         self.hide = False
