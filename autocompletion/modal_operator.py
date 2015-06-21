@@ -68,9 +68,6 @@ class ModalTextOperator(bpy.types.Operator):
         
         if not is_running:
             return self.finish()
-        
-        if is_event(event, "ESC", shift = True):
-            return self.finish()
             
         return self.update_handlers(event)
         

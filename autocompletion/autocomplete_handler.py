@@ -7,45 +7,97 @@ from . suggestions import complete
 from .. settings import get_settings
 import time
 
+move_index_commands = {
+    "DOWN_ARROW" : 1,
+    "UP_ARROW" : -1,
+    "PAGE_DOWN" : 4,
+    "PAGE_UP" : -4,
+    "END" : 10000,
+    "HOME" : -10000 }
+
+text_changing_types = ["BACK_SPACE", "PERIOD", "SPACE", "COMMA", "RET", 
+    "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE",
+    "DEL", "SEMI_COLON", "MINUS", "RIGHT_BRACKET", "LEFT_BRACKET", "SLASH"] + \
+    list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    
+show_types = ["PERIOD", "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"] + \
+    list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    
+hide_types = ["BACK_SPACE", "DEL", "RIGHT_BRACKET", "RET"]  
+    
 class AutocompleteHandler:
     def __init__(self):
         self.context_box = ListBox()
         self.completions = []
         self.draw_max = 8
         self.top_index = 0
-        self.active_index = 3
+        self.active_index = 0
+        self.reload_completions = False
+        self.hide = True
         
     def update(self, event, text_block):
+        print(event.type)
+        self.update_visibility(event, text_block)
+        if self.hide: return
+                
+        self.move_active_index(event)
+        if event.value == "PRESS" and event.type in text_changing_types:
+            self.reload_completions = True
+            
+    def update_visibility(self, event, text_block):
+        if self.hide:
+            if event.type in show_types and event.value == "PRESS":
+                self.show()
+            if is_event(event, "ESC", shift = True):
+                self.show()
+        else:
+            if event.type in hide_types and event.value == "PRESS":
+                self.hide = True
+                
         text = text_block.text_before_cursor
-        
-        if is_event(event, "DOWN_ARROW"): 
-            self.active_index += 1
-            raise BlockEvent()
-        if is_event(event, "UP_ARROW", "RELEASE"):
-            self.active_index -= 1
-            raise BlockEvent()
-        
-        if event.value == "RELEASE" and event.type not in ("MOUSEMOVE", "INBETWEEN_MOUSEMOVE"):
-            changed = False
-            if len(text) > 0:
-                c = text[-1]
-                if c.isalpha() or c in "._" or text.endswith("import "):
-                    self.update_completions(text_block)
-                    changed = True
-                    
-            if not changed:
-                self.completions = []
+        if is_event(event, "SPACE") and (text.endswith("import") or text.endswith("from")):
+            self.show()
+            
+    def show(self):
+        self.hide = False
+        self.reload_completions = True
+                
+    def move_active_index(self, event):
+        def move_with_keyboard():
+            for key, amount in move_index_commands.items():
+                if is_event(event, key):
+                    self.change_active_index(amount)
+                    raise BlockEvent()
+        move_with_keyboard()
+                
+    def change_active_index(self, amount):
+        index = self.active_index + amount
+        index = min(max(index, 0), len(self.completions) - 1)
+        if index < self.top_index:
+            self.top_index = index
+        if index > self.top_index + self.draw_max - 1:
+            self.top_index = index - self.draw_max + 1
+        if len(self.completions) < self.draw_max:
+            self.top_index = 0
+        self.active_index = index
                 
     def update_completions(self, text_block):
         self.completions = complete(text_block)
+        self.change_active_index(0)
         
     def draw(self, text_block):
+        if self.hide: return
+        
+        if self.reload_completions:
+            self.update_completions(text_block)
+            self.reload_completions = False
+    
         s = get_settings().context_box
         self.context_box.font_size = s.font_size
         self.context_box.line_height = s.line_height
         self.context_box.width = s.width
         self.context_box.padding = s.padding
-        self.context_box.position = Vector((200, 300))
+        self.context_box.position = text_block.current_cursor_region_location
     
         items = []
         for i, c in enumerate(self.completions):
@@ -55,6 +107,7 @@ class AutocompleteHandler:
             items.append(item)
             
         self.context_box.items = items
-        self.context_box.draw()
+        if len(items) > 0:
+            self.context_box.draw()
             
         

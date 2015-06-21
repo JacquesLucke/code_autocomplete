@@ -22,7 +22,7 @@ class ListBox:
         self.background_color = (1.0, 1.0, 1.0, 1.0)
         self.background_border_color = (0.9, 0.76, 0.4, 1.0)
         self.text_color = (0.1, 0.1, 0.1, 1.0)
-        self.active_item_color = (0.93, 0.93, 0.93, 1.0)
+        self.active_item_color = (0.95, 0.95, 1.0, 1.0)
         self.active_item_border_color = (1.0, 0.8, 0.5, 1.0)
         self.calc_height()
         
@@ -81,7 +81,7 @@ class ListBox:
         item_rec.y2 = item_rec.y1 - self.line_height
         item_rec.color = self.active_item_color
         item_rec.border_color = self.active_item_border_color
-        item_rec.border_thickness = 1
+        item_rec.border_thickness = -1
         return item_rec
             
     def calc_height(self):

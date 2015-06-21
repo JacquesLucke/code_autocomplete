@@ -1,4 +1,5 @@
 import bpy, re
+from mathutils import Vector
 
 class TextBlock:
     def __init__(self, text_block):
@@ -14,6 +15,14 @@ class TextBlock:
     @property
     def filepath(self):
         return self.text_block.filepath
+        
+    @property
+    def current_cursor_region_location(self):
+        space = bpy.context.space_data
+        line = self.current_line_index
+        character = self.current_character_index
+        location = space.region_location_from_cursor(line, character)
+        return Vector(location)
         
     @property
     def use_tabs_as_spaces(self):
