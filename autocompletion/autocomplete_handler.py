@@ -19,7 +19,7 @@ move_index_commands = {
 text_changing_types = ["BACK_SPACE", "PERIOD", "SPACE", "COMMA", "RET", 
     "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE",
     "DEL", "SEMI_COLON", "MINUS", "RIGHT_BRACKET", "LEFT_BRACKET", "SLASH"] + \
-    list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    list("ABCDEFGHIJKLMNOPQRSTUVWXYZ") + ["NUMPAD_" + str(i) for i in range(10)]
     
 show_types = ["PERIOD", "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"] + \
     list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -38,7 +38,6 @@ class AutocompleteHandler:
         self.hide = True
         
     def update(self, event, text_block):        
-    
         if (is_event(event, "TAB") or is_event(event, "RET", shift = True)) and not self.hide:
             if len(self.completions) > 0:
                 c = self.completions[self.active_index]
