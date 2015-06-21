@@ -2,10 +2,10 @@ from bgl import *
 
 class Rectangle:
     def __init__(self, x1, y1, x2, y2):
-        self.x1 = x1
-        self.y1 = y1
-        self.x2 = x2
-        self.y2 = y2
+        self.x1 = float(x1)
+        self.y1 =  float(y1)
+        self.x2 =  float(x2)
+        self.y2 =  float(y2)
         self.color = (0.8, 0.8, 0.8, 1.0)
         self.border_color = (0.1, 0.1, 0.1, 1.0)
         self.border_thickness = 0
@@ -21,6 +21,10 @@ class Rectangle:
     @property
     def left(self):
         return min(self.x1, self.x2)
+    
+    @property    
+    def right(self):
+        return max(self.x1, self.x2)
 
     @property
     def bottom(self):
