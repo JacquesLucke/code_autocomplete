@@ -37,8 +37,8 @@ class AutocompleteHandler:
         self.reload_completions = False
         self.hide = True
         
-    def update(self, event, text_block):        
-        self.insert_completion(event, text_block)
+    def update(self, event, text_block):   
+        self.check_event_for_insertion(event, text_block)
         self.update_visibility(event, text_block)
         if self.hide: return
           
@@ -48,16 +48,28 @@ class AutocompleteHandler:
         if len(self.completions) > 0:
             self.move_active_index(event)
            
-    def insert_completion(self, event, text_block):
+    def check_event_for_insertion(self, event, text_block):
+        def insert_with_keyboard():
+            if is_event_in_list(event, ("TAB", "RET")):
+                self.insert_completion(text_block, self.completions[self.active_index])
+                raise BlockEvent()
+        
+        def insert_with_mouse():
+            if not is_event(event, "LEFTMOUSE"): return
+            item = self.get_context_box_item_under_event(event)
+            if item:
+                self.insert_completion(text_block, item.data)
+                raise BlockEvent()
+        
         if len(self.completions) == 0: return
         if self.hide: return
-        if not is_event_in_list(event, ("TAB", "RET")): return
+        insert_with_keyboard()
+        insert_with_mouse()
         
-        c = self.completions[self.active_index]
-        c.insert(text_block)
+    def insert_completion(self, text_block, completion):
+        completion.insert(text_block)
         self.hide = True
         self.active_index = 0
-        raise BlockEvent()
             
     def update_visibility(self, event, text_block):
         if self.hide:
@@ -108,6 +120,10 @@ class AutocompleteHandler:
     def event_over_context_box(self, event):
         point = get_mouse_region_position(event)
         return self.context_box.contains(point)
+        
+    def get_context_box_item_under_event(self, event):
+        point = get_mouse_region_position(event)
+        return self.context_box.get_item_under_point(point)
                 
     def update_completions(self, text_block):
         self.completions = complete(text_block)

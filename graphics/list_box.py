@@ -32,6 +32,11 @@ class ListBox:
         background = self.get_background_rectangle()
         return background.contains(point)
         
+    def get_item_under_point(self, point):
+        for i, item in enumerate(self.items):
+            rec = self.get_item_rectangle(i)
+            if rec.contains(point): return item
+        
     def draw(self):
         self.calc_height()
         self.draw_background()
@@ -54,6 +59,9 @@ class ListBox:
         background.border_color = self.background_border_color
         return background
         
+    def calc_height(self):
+        self.height = len(self.items) * self.line_height + self.padding
+        
     def draw_items(self):
         for index in range(len(self.items)):
             self.draw_item(index)
@@ -64,6 +72,17 @@ class ListBox:
         if item.active:
             item_rec.draw()
         self.draw_item_in_rectangle(item, item_rec)
+        
+    def get_item_rectangle(self, index):
+        item_rec = Rectangle()
+        item_rec.x1 = self.position.x
+        item_rec.y1 = self.position.y - index * self.line_height - self.padding / 2
+        item_rec.x2 = self.position.x + self.width
+        item_rec.y2 = item_rec.y1 - self.line_height
+        item_rec.color = self.active_item_color
+        item_rec.border_color = self.active_item_border_color
+        item_rec.border_thickness = -1
+        return item_rec
             
     def draw_item_in_rectangle(self, item, rectangle):
         glColor4f(*self.text_color)
@@ -79,17 +98,3 @@ class ListBox:
             
         blf.position(self.font, x, rectangle.center.y - offset, 0)
         blf.draw(self.font, item.text)
-        
-    def get_item_rectangle(self, index):
-        item_rec = Rectangle()
-        item_rec.x1 = self.position.x
-        item_rec.y1 = self.position.y - index * self.line_height - self.padding / 2
-        item_rec.x2 = self.position.x + self.width
-        item_rec.y2 = item_rec.y1 - self.line_height
-        item_rec.color = self.active_item_color
-        item_rec.border_color = self.active_item_border_color
-        item_rec.border_thickness = -1
-        return item_rec
-            
-    def calc_height(self):
-        self.height = len(self.items) * self.line_height + self.padding
