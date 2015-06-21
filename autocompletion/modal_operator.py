@@ -103,7 +103,9 @@ class ModalTextOperator(bpy.types.Operator):
             
     def get_text_block(self):
         text = active_text_area.get_text()
-        if text: return TextBlock(text)
-            
-            
+        area = active_text_area.get()
+        if text: 
+            text_block = TextBlock(text)
+            text_block.set_context(area = area, space = area.spaces[0])
+            return text_block
           

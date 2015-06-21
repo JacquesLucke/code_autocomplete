@@ -5,6 +5,14 @@ class TextBlock:
     def __init__(self, text_block):
         if text_block is None: raise AttributeError()
         self.text_block = text_block
+        self.set_context()
+        
+    def set_context(self, window = None, area = None, region = None, space = None):
+        context = bpy.context
+        self.window = window if window else context.window
+        self.area = area if window else context.area
+        self.region = region if window else context.region
+        self.space = space if window else context.space_data
         
     @classmethod
     def get_active(cls):
@@ -73,7 +81,7 @@ class TextBlock:
     def selected_text(self):
         wm = bpy.context.window_manager
         clipboard = wm.clipboard
-        bpy.ops.text.copy()
+        bpy.ops.text.copy(self.override)
         text = wm.clipboard
         wm.clipboard = clipboard
         return text
@@ -142,8 +150,7 @@ class TextBlock:
         return existing_words
             
     def insert(self, text):
-        self.make_active()
-        bpy.ops.text.insert(text = text)
+        bpy.ops.text.insert(self.override, text = text)
         
     def get_current_text_after_pattern(self, pattern):
         return self.get_text_after_pattern(pattern, self.text_before_cursor)
@@ -324,19 +331,19 @@ class TextBlock:
         self.move_cursor("NEXT_LINE", select)
         
     def move_cursor(self, type, select = False):
-        self.make_active()
-        if select: bpy.ops.text.move_select(type = type)
-        else: bpy.ops.text.move(type = type)
+        if select: bpy.ops.text.move_select(self.override, type = type)
+        else: bpy.ops.text.move(self.override, type = type)
         
     def remove_character_before_cursor(self):
-        self.make_active()
-        bpy.ops.text.delete(type = "PREVIOUS_CHARACTER")
+        bpy.ops.text.delete(self.override, type = "PREVIOUS_CHARACTER")
         
     def line_break(self):
-        self.make_active()
-        bpy.ops.text.line_break()
+        bpy.ops.text.line_break(self.override)
         
-    def make_active(self):
-        bpy.context.space_data.text = self.text_block
-        
-     
+    @property
+    def override(self):
+        return {"edit_text" : self.text_block,
+                "area" : self.area,
+                "space_data" : self.space,
+                "region" : self.region,
+                "window" : self.window}
