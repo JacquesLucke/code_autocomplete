@@ -64,12 +64,13 @@ def parse_startup_file_lines(lines):
             get_settings().addon_name = line[len(id_addon_name):].strip()
         if line.startswith(id_current_path):
             path = line[len(id_current_path):].strip()
-            text_block = bpy.data.texts.load(path, internal = False)
-            for screen in bpy.data.screens:
-                for area in screen.areas:
-                    for space in area.spaces:
-                        if space.type == "TEXT_EDITOR":
-                            space.text = text_block
+            if os.path.exists(path):
+                text_block = bpy.data.texts.load(path, internal = False)
+                for screen in bpy.data.screens:
+                    for area in screen.areas:
+                        for space in area.spaces:
+                            if space.type == "TEXT_EDITOR":
+                                space.text = text_block
         if line.startswith(id_visiblie_path):
             path = line[len(id_visiblie_path):].strip()
             bpy.ops.code_autocomplete.set_directory_visibility(directory = path, visibility = True)
