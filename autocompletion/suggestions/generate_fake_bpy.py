@@ -137,7 +137,7 @@ def get_property_declaration(property):
     if property.type == "INT": return "0"
     if property.type == "STRING": return "''"
     if property.type == "COLLECTION":
-        if property.srna is None: return "[{}()]".format(property.fixed_type.identifier)
+        if property.srna is None: return "({}(),)".format(property.fixed_type.identifier)
         else:
             collection_types[property.srna.identifier] = property.fixed_type.identifier
             return property.srna.identifier + "()"
