@@ -21,6 +21,7 @@ class Autocomplete(bpy.types.Panel):
             layout.operator("code_autocomplete.stop_modal_operator")
         else:
             layout.operator("code_autocomplete.start_modal_operator")
+        layout.operator("code_autocomplete.regenerate_fake_bpy", "Build bpy Module")
         
 
 class StartModalOperator(bpy.types.Operator):
