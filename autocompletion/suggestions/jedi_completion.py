@@ -7,7 +7,7 @@ from . generate_fake_bpy import fake_package_name
 class JediCompletion(Completion):
     def __init__(self, suggestion):
         self.name = suggestion.name
-        self.description = suggestion.docstring(raw = True)
+        self.description = suggestion.docstring()
         if suggestion.type == "function": self.type = "FUNCTION"
         if suggestion.type == "class": self.type = "CLASS"
         if suggestion.type == "param":
