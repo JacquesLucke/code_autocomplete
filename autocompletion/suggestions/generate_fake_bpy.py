@@ -2,6 +2,7 @@ import bpy
 import os
 import sys
 import shutil
+import textwrap
 
 fake_package_name = "_bpy_fake"
 top_directory = os.path.join(os.path.dirname(__file__), "dynamic")
@@ -84,12 +85,24 @@ def get_import_code_lines(dependencies):
     return ["from . {} import {}".format(d.lower(), d) for d in dependencies] + ["from . bpy_struct import bpy_struct", "import mathutils", ""]
 
 def get_property_code_lines(type):
-    return ["    {} = {}".format(p.identifier, get_property_declaration(p)) for p in get_type_properties(type)]
+    lines = []
+    for property in get_type_properties(type):
+        lines.extend(get_property_definition_code_lines(property))
+    return lines
+    
+def get_property_definition_code_lines(property):
+    lines = []
+    lines.append("    @property")
+    lines.append("    def {}(self):".format(property.identifier))
+    lines.extend(get_docstring_lines(property))
+    lines.append("        return {}".format(get_property_declaration(property)))
+    return lines
 
 def get_function_code_lines(name, type):
     lines = []
     for function in type.bl_rna.functions:
         lines.append("    def {}({}):".format(function.identifier, get_function_parameter_list(function)))
+        lines.extend(get_docstring_lines(function))
         lines.append("        return {}".format(get_function_return_list(function)))
     
     global collection_types
@@ -100,6 +113,15 @@ def get_function_code_lines(name, type):
         lines.append("    def __iter__(key): yield {}()".format(subtype))
     
     return lines
+    
+def get_docstring_lines(attribute, width = 70, indent = 8):
+    description = attribute.description
+    if description in (None, ""): return []
+    docstring_lines = textwrap.wrap(attribute.description, width)
+    docstring_lines[0] = "'''" + docstring_lines[0]
+    docstring_lines[-1] += "'''"
+    spaces = " " * indent
+    return [spaces + line for line in docstring_lines]  
         
 def get_dependencies(type):
     def find_property_dependency(property):
