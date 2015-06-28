@@ -94,7 +94,7 @@ def get_property_definition_code_lines(property):
     lines = []
     lines.append("    @property")
     lines.append("    def {}(self):".format(property.identifier))
-    lines.extend(get_docstring_lines(property))
+    lines.extend(get_property_docstring_lines(property))
     lines.append("        return {}".format(get_property_declaration(property)))
     return lines
 
@@ -102,7 +102,7 @@ def get_function_code_lines(name, type):
     lines = []
     for function in type.bl_rna.functions:
         lines.append("    def {}({}):".format(function.identifier, get_function_parameter_list(function)))
-        lines.extend(get_docstring_lines(function))
+        lines.extend(get_function_docstring_lines(function))
         lines.append("        return {}".format(get_function_return_list(function)))
     
     global collection_types
@@ -114,14 +114,67 @@ def get_function_code_lines(name, type):
     
     return lines
     
-def get_docstring_lines(attribute, width = 70, indent = 8):
-    description = attribute.description
-    if description in (None, ""): return []
-    docstring_lines = textwrap.wrap(attribute.description, width)
-    docstring_lines[0] = "'''" + docstring_lines[0]
-    docstring_lines[-1] += "'''"
+def get_property_docstring_lines(property, width = 70, indent = 8):
+    lines = get_description_lines(property, width)
+    lines.extend(get_enum_item_lines(property, width))
+    return make_docstring_from_lines(lines, indent)
+    
+def get_function_docstring_lines(function, width = 70, indent = 8):
+    lines = get_description_lines(function, width)
+    parameter_lines = get_parameter_lines(function, width)
+    lines.extend(parameter_lines)
+    return make_docstring_from_lines(lines, indent)
+    
+def get_parameter_lines(function, width):
+    lines = []
+    params = [p for p in function.parameters if not p.is_output]
+    if len(params) > 0:
+        lines.append("")
+        lines.append("Parameter:")
+        lines.extend(get_parameter_list_lines(params, width))
+    returns = [p for p in function.parameters if p.is_output]
+    if len(returns) > 0:
+        lines.append("")
+        lines.append("Returns:")
+        lines.extend(get_parameter_list_lines(returns, width))
+    return lines
+    
+def get_parameter_list_lines(params, width):
+    lines = []
+    for param in params:
+        lines.append(param.identifier + ":")
+        description_lines = get_description_lines(param, width)
+        amount = len(description_lines)
+        if amount == 0: lines[-1] += " <no description available>"
+        elif amount == 1: lines[-1] += " " + description_lines[0]
+        else:
+            indent_lines(description_lines, 2)
+            lines.extend(description_lines)
+    indent_lines(lines, 2)
+    return lines
+
+def get_description_lines(attribute, width):
+    if attribute.description in (None, ""): return []
+    return textwrap.wrap(attribute.description, width)
+    
+def get_enum_item_lines(property, width):
+    if getattr(property, "enum_items", None) is None: return []
+    items = property.enum_items
+    if len(items) == 0: return []
+    item_string = "["+ ", ".join("'{}'".format(item.identifier) for item in items) +"]"
+    return [""] + textwrap.wrap(item_string, width)
+    
+def make_docstring_from_lines(lines, indent = 8):
+    if len(lines) == 0: return []
+    lines[0] = "'''" + lines[0]
+    lines[-1] += "'''"
+    indent_lines(lines, indent)
+    return lines
+    
+def indent_lines(lines, indent = 4):
     spaces = " " * indent
-    return [spaces + line for line in docstring_lines]  
+    for i in range(len(lines)):
+        lines[i] = spaces + lines[i]
         
 def get_dependencies(type):
     def find_property_dependency(property):
@@ -155,9 +208,9 @@ def get_function_return_list(function):
 
 def get_property_declaration(property):
     global collection_types
-    if property.type == "BOOLEAN": return "True"
-    if property.type == "INT": return "0"
-    if property.type == "STRING": return "''"
+    if property.type == "BOOLEAN": return "bool()"
+    if property.type == "INT": return "int()"
+    if property.type == "STRING": return "str()"
     if property.type == "COLLECTION":
         if property.srna is None: return "({}(),)".format(property.fixed_type.identifier)
         else:
