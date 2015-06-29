@@ -79,11 +79,12 @@ class ModalTextOperator(bpy.types.Operator):
                 
     def update_handlers(self, event):
         text_block = self.get_text_block()
+        area = active_text_area.get()
         if not text_block: return {"PASS_THROUGH"}
     
         try:
             for handler in self.handlers:
-                handler.update(event, text_block)
+                handler.update(event, text_block, area)
             return {"PASS_THROUGH"}
         except BlockEvent:
             if get_settings().debug: print("Event blocked: {} - {}".format(event.type, event.value))

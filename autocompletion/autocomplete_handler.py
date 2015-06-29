@@ -4,7 +4,7 @@ from mathutils import Vector
 from .. graphics.list_box import ListItem, ListBox
 from .. graphics.text_box import TextBox
 from . exception import BlockEvent
-from . event_utils import is_event, is_event_in_list, is_mouse_click, get_mouse_region_position
+from . event_utils import is_event, is_event_in_list, is_mouse_click, get_mouse_region_position, is_event_over_area
 from . suggestions import complete
 from .. settings import get_settings
 import time
@@ -35,7 +35,8 @@ class AutocompleteHandler:
         self.reload_completions = False
         self.hide()
         
-    def update(self, event, text_block):  
+    def update(self, event, text_block, area):
+        if not is_event_over_area(event, area): return
         self.update_settings()
         self.check_event_for_insertion(event, text_block)
         self.update_visibility(event, text_block)
