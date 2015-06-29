@@ -23,7 +23,7 @@ def is_event_in_list(event, types, value = "PRESS", shift = False, ctrl = False,
     return is_event(event, event.type, value, shift, ctrl, alt)
            
 def is_mouse_click(event):
-    return is_event_in_list(event, ("LEFTMOUSE", "MIDDLEMOUSE", "RIGHTMOUSE"))
+    return is_event_in_list(event, ("LEFTMOUSE", "RIGHTMOUSE"))
            
 def get_area_under_event(event):
     for area in bpy.context.screen.areas:

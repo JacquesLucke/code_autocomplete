@@ -2,7 +2,9 @@ import bpy
 import os
 import sys
 import shutil
+import inspect
 import textwrap
+from ... settings import get_settings
 
 fake_package_name = "_bpy_fake"
 top_directory = os.path.join(os.path.dirname(__file__), "dynamic")
@@ -10,6 +12,9 @@ directory = os.path.join(top_directory, fake_package_name)
 private_path = os.path.join(directory, "__private__")
 
 sys.path.append(top_directory) 
+
+docstring_width = 70
+use_quote_marks = False
 
 
 class GenerateFakeBPY(bpy.types.Operator):
@@ -34,8 +39,15 @@ def remove_old_fake():
 def generate_fake_bpy():
     try: os.makedirs(directory)
     except: pass
+    update_settings()
     create_init()
     create_private_subdirectory()
+    
+def update_settings():
+    global docstring_width, use_quote_marks
+    s = get_settings().fake_module
+    docstring_width = s.docstring_width
+    use_quote_marks = s.use_quote_marks
     
 def create_init():
     path = os.path.join(directory, "__init__.py")
@@ -57,7 +69,7 @@ def create_private_subdirectory():
 
 
 collection_types = {}
-def generate_code_files():
+def generate_code_files(create_all = False):
     types_to_generate = {"Context"}
     generated_types = set()
     
@@ -69,9 +81,15 @@ def generate_code_files():
         write_code_file(name, code)
         types_to_generate.update([d for d in dependencies if d not in generated_types])
         
+        if len(types_to_generate) == 0 and create_all:
+            bpy_types = [(name, type) for name, type in inspect.getmembers(bpy.types) if "." not in name]
+            for name, type in bpy_types:
+                if name not in generated_types:
+                    types_to_generate.add(name)
+        
         
 def get_code_and_dependencies(name, type):
-    dependencies = get_dependencies(type)
+    dependencies = get_dependencies(name, type)
     
     lines = []
     lines.extend(get_import_code_lines(dependencies))
@@ -94,7 +112,7 @@ def get_property_definition_code_lines(property):
     lines = []
     lines.append("    @property")
     lines.append("    def {}(self):".format(property.identifier))
-    lines.extend(get_property_docstring_lines(property))
+    lines.extend(get_property_docstring_lines(property, docstring_width))
     lines.append("        return {}".format(get_property_declaration(property)))
     return lines
 
@@ -102,7 +120,7 @@ def get_function_code_lines(name, type):
     lines = []
     for function in type.bl_rna.functions:
         lines.append("    def {}({}):".format(function.identifier, get_function_parameter_list(function)))
-        lines.extend(get_function_docstring_lines(function))
+        lines.extend(get_function_docstring_lines(function, docstring_width))
         lines.append("        return {}".format(get_function_return_list(function)))
     
     global collection_types
@@ -115,12 +133,12 @@ def get_function_code_lines(name, type):
     return lines
     
 def get_property_docstring_lines(property, width = 70, indent = 8):
-    lines = get_description_lines(property, width)
+    lines = get_property_description_lines(property, width)
     lines.extend(get_enum_item_lines(property, width))
     return make_docstring_from_lines(lines, indent)
     
 def get_function_docstring_lines(function, width = 70, indent = 8):
-    lines = get_description_lines(function, width)
+    lines = get_function_description_lines(function, width)
     parameter_lines = get_parameter_lines(function, width)
     lines.extend(parameter_lines)
     return make_docstring_from_lines(lines, indent)
@@ -142,8 +160,8 @@ def get_parameter_lines(function, width):
 def get_parameter_list_lines(params, width):
     lines = []
     for param in params:
-        lines.append(param.identifier + ":")
-        description_lines = get_description_lines(param, width)
+        lines.append("{}:".format(param.identifier))
+        description_lines = get_property_description_lines(param, width)
         amount = len(description_lines)
         if amount == 0: lines[-1] += " <no description available>"
         elif amount == 1: lines[-1] += " " + description_lines[0]
@@ -153,15 +171,21 @@ def get_parameter_list_lines(params, width):
     indent_lines(lines, 2)
     return lines
 
-def get_description_lines(attribute, width):
-    if attribute.description in (None, ""): return []
-    return textwrap.wrap(attribute.description, width)
+def get_property_description_lines(property, width):
+    type = "[{}]".format(get_readable_property_type(property))
+    if property.description in (None, ""): return [type]
+    return textwrap.wrap(type + " " + property.description, width)
+    
+def get_function_description_lines(function, width):
+    if function.description in (None, ""): return []
+    return textwrap.wrap(function.description, width)    
     
 def get_enum_item_lines(property, width):
     if getattr(property, "enum_items", None) is None: return []
     items = property.enum_items
     if len(items) == 0: return []
-    item_string = "["+ ", ".join("'{}'".format(item.identifier) for item in items) +"]"
+    quote_mark = "'" if use_quote_marks else ""
+    item_string = "["+ ", ".join(quote_mark + item.identifier + quote_mark for item in items) +"]"
     return [""] + textwrap.wrap(item_string, width)
     
 def make_docstring_from_lines(lines, indent = 8):
@@ -176,7 +200,7 @@ def indent_lines(lines, indent = 4):
     for i in range(len(lines)):
         lines[i] = spaces + lines[i]
         
-def get_dependencies(type):
+def get_dependencies(name, type):
     def find_property_dependency(property):
         if property.type == "POINTER":
             dependencies.add(property.fixed_type.identifier)
@@ -185,6 +209,8 @@ def get_dependencies(type):
             else: dependencies.add(property.srna.identifier)
             
     dependencies = set()
+    if name in collection_types:
+        dependencies.add(collection_types[name])
     for property in get_type_properties(type):
         find_property_dependency(property)
     for function in type.bl_rna.functions:
@@ -210,7 +236,7 @@ def get_property_declaration(property):
     global collection_types
     if property.type == "BOOLEAN": return "bool()"
     if property.type == "INT": return "int()"
-    if property.type == "STRING": return "str()"
+    if property.type in ("STRING", "ENUM"): return "str()"
     if property.type == "COLLECTION":
         if property.srna is None: return "({}(),)".format(property.fixed_type.identifier)
         else:
@@ -218,12 +244,25 @@ def get_property_declaration(property):
             return property.srna.identifier + "()"
     if property.type == "FLOAT":
         if property.array_length <= 1: return "float()"
-        if property.array_length == 2: return "mathutils.Vector()"
-        if property.array_length == 3: return "mathutils.Vector()"
+        if property.array_length in (2, 3): return "mathutils.Vector()"
         if property.array_length == 16: return "mathutils.Matrix()"
     if property.type == "POINTER":
         return property.fixed_type.identifier + "()"
-    return "''"  
+    return "''" 
+
+def get_readable_property_type(property):
+    if property.type == "BOOLEAN": return "Boolean"
+    if property.type == "INT": return "Integer"
+    if property.type == "STRING": return "String"
+    if property.type == "COLLECTION": return "Sequence of " + property.fixed_type.identifier
+    if property.type == "FLOAT":
+        if property.array_length <= 1: return "Float"
+        if property.array_length == 2: return "Vector 2D"
+        if property.array_length == 3: return "Vector 3D"
+        if property.array_length == 16: return "Matrix"
+        return "Float[{}]".format(property.array_length)
+    if property.type == "POINTER": return property.fixed_type.identifier
+    if property.type == "ENUM": return "Enum"
 
 def write_code_file(name, code):
     path = os.path.join(private_path, name.lower() + ".py")
