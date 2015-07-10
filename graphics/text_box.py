@@ -17,6 +17,10 @@ class TextBox:
         self.line_height = 23
         self.padding = 5
         
+    def update(self):
+        self.calc_lines()
+        self.calc_size()
+        
     def draw(self):
         blf.size(self.font, self.font_size, 12)
         
@@ -43,8 +47,7 @@ class TextBox:
         self.lines = lines
         
     def get_background_rectangle(self):
-        self.calc_height()
-        self.calc_width()
+        self.calc_size()
         background = Rectangle(
             x1 = self.position.x,
             y1 = self.position.y,
@@ -55,9 +58,13 @@ class TextBox:
         background.border_color = self.background_border_color
         return background
         
+    def calc_size(self):
+        self.calc_height()
+        self.calc_width()
+        
     def calc_height(self):
         self.height = 2 * self.padding + self.line_height * len(self.lines)
         
     def calc_width(self):
-        widths = [blf.dimensions(self.font, line)[0] for line in self.lines]
+        widths = [blf.dimensions(self.font, line)[0] for line in self.lines] + [0]
         self.width = max(widths) + 2 * self.padding
