@@ -9,6 +9,10 @@ def prop_changed(self, context):
     for area in bpy.context.screen.areas:
         if area.type == "TEXT_EDITOR":
             area.tag_redraw()
+            
+class CompletionProviders (bpy.types.PropertyGroup):
+    use_jedi_completion = BoolProperty(default = True, name = "Use Jedi Completion", update = prop_changed)
+    use_word_completion = BoolProperty(default = True, name = "Use Word Completion", update = prop_changed)
 
 class ContextBoxProperties(bpy.types.PropertyGroup):
     font_size = IntProperty(default = 80, name = "Font Size", min = 10, update = prop_changed)
@@ -29,6 +33,7 @@ class FakeModuleProperties(bpy.types.PropertyGroup):
 class AddonPreferences(bpy.types.AddonPreferences):
     bl_idname = addon_name
     
+    completion_providers = PointerProperty(type = CompletionProviders)
     context_box = PointerProperty(type = ContextBoxProperties)
     description_box = PointerProperty(type = DescriptionBoxProperties)
     fake_module = PointerProperty(type = FakeModuleProperties)
@@ -36,6 +41,11 @@ class AddonPreferences(bpy.types.AddonPreferences):
     
     def draw(self, context):
         layout = self.layout
+        
+        col = layout.column()
+        col.label("Completion Providers:")
+        col.prop(self.completion_providers, "use_jedi_completion", "Jedi")
+        col.prop(self.completion_providers, "use_word_completion", "Existing Words")
         
         row = layout.row()
         col = row.column(align = True)

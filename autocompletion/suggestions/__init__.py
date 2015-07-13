@@ -1,10 +1,16 @@
 from . jedi_completion import JediCompletionProvider
+from . word_completion import WordCompletionProvider
+from ... settings import get_settings
 
 jedi_provider = JediCompletionProvider()
+word_provider = WordCompletionProvider()
 
 def complete(text_block):
+    setting = get_settings().completion_providers
+
     completions = []
-    completions.extend(jedi_provider.complete(text_block))
+    if setting.use_jedi_completion: completions.extend(jedi_provider.complete(text_block))
+    if setting.use_word_completion: completions.extend(word_provider.complete(text_block))
     
     primary, secondary = [], []
     for c in completions:
