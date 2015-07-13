@@ -162,7 +162,6 @@ class ContextUI:
     def __init__(self):
         self.context_box = ListBox()
         self.description_box = TextBox()
-        self.function_info_box = TextBox()
         
     def update_settings(self):
         settings = get_settings()
@@ -177,10 +176,6 @@ class ContextUI:
         self.description_box.font_size = s.font_size
         self.description_box.line_height = s.line_height
         self.description_box.padding = s.padding
-        
-        self.function_info_box.font_size = s.font_size
-        self.function_info_box.line_height = s.line_height
-        self.function_info_box.padding = s.padding
         
     def insert_items(self, items):
         self.context_box.items = items
@@ -201,11 +196,6 @@ class ContextUI:
             self.context_box.draw()
             if len(self.description_box.text) > 0:
                 self.description_box.draw()
-            
-        self.description_box.update()
-        self.function_info_box.position = self.description_box.position + Vector((self.description_box.width + 10, 0))
-        self.function_info_box.text = "Hello"
-        self.function_info_box.draw()
                 
     def event_over_context_box(self, event):
         point = get_mouse_region_position(event)
