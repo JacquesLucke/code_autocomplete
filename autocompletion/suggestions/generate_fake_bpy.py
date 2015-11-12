@@ -4,14 +4,14 @@ import sys
 import shutil
 import inspect
 import textwrap
-from ... settings import get_settings
+from ... settings import get_preferences
 
 fake_package_name = "_bpy_fake"
 top_directory = os.path.join(os.path.dirname(__file__), "dynamic")
 directory = os.path.join(top_directory, fake_package_name)
 private_path = os.path.join(directory, "__private__")
 
-sys.path.append(top_directory) 
+sys.path.append(top_directory)
 
 docstring_width = 70
 use_quote_marks = False
@@ -22,43 +22,43 @@ class GenerateFakeBPY(bpy.types.Operator):
     bl_label = "Generate Fake BPY"
     bl_description = ""
     bl_options = {"REGISTER"}
-    
+
     def execute(self, context):
         regenerate_fake_bpy()
         return {"FINISHED"}
-     
-        
+
+
 def regenerate_fake_bpy():
     remove_old_fake()
     generate_fake_bpy()
-        
+
 def remove_old_fake():
     if os.path.exists(directory):
         shutil.rmtree(directory, ignore_errors = True)
-        
+
 def generate_fake_bpy():
     try: os.makedirs(directory)
     except: pass
     update_settings()
     create_init()
     create_private_subdirectory()
-    
+
 def update_settings():
     global docstring_width, use_quote_marks
-    s = get_settings().fake_module
+    s = get_preferences().fake_module
     docstring_width = s.docstring_width
     use_quote_marks = s.use_quote_marks
-    
+
 def create_init():
     path = os.path.join(directory, "__init__.py")
     file = open(path, "w+")
     file.write(init_content)
-    file.close()    
-    
+    file.close()
+
 init_content = '''
 from . __private__.context import Context as context
 from . __private__.blenddata import BlendData as data
-'''    
+'''
 
 def create_private_subdirectory():
     os.makedirs(private_path)
@@ -72,7 +72,7 @@ collection_types = {}
 def generate_code_files(create_all = False):
     types_to_generate = {"Context"}
     generated_types = set()
-    
+
     while len(types_to_generate) > 0:
         name = types_to_generate.pop()
         generated_types.add(name)
@@ -80,23 +80,23 @@ def generate_code_files(create_all = False):
         code, dependencies = get_code_and_dependencies(name, type)
         write_code_file(name, code)
         types_to_generate.update([d for d in dependencies if d not in generated_types])
-        
+
         if len(types_to_generate) == 0 and create_all:
             bpy_types = [(name, type) for name, type in inspect.getmembers(bpy.types) if "." not in name]
             for name, type in bpy_types:
                 if name not in generated_types:
                     types_to_generate.add(name)
-        
-        
+
+
 def get_code_and_dependencies(name, type):
     dependencies = get_dependencies(name, type)
-    
+
     lines = []
     lines.extend(get_import_code_lines(dependencies))
     lines.append("class {}({}):".format(name, "" if name == "Context" else "bpy_struct"))
     lines.extend(get_property_code_lines(type))
     lines.extend(get_function_code_lines(name, type))
-    
+
     return "\n".join(lines), dependencies
 
 def get_import_code_lines(dependencies):
@@ -107,7 +107,7 @@ def get_property_code_lines(type):
     for property in get_type_properties(type):
         lines.extend(get_property_definition_code_lines(property))
     return lines
-    
+
 def get_property_definition_code_lines(property):
     lines = []
     lines.append("    @property")
@@ -122,27 +122,27 @@ def get_function_code_lines(name, type):
         lines.append("    def {}({}):".format(function.identifier, get_function_parameter_list(function)))
         lines.extend(get_function_docstring_lines(function, docstring_width))
         lines.append("        return {}".format(get_function_return_list(function)))
-    
+
     global collection_types
     if name in collection_types:
         subtype = collection_types[name]
         lines.append("    def get(key): return {}()".format(subtype))
         lines.append("    def __getitem__(key): return {}()".format(subtype))
         lines.append("    def __iter__(key): yield {}()".format(subtype))
-    
+
     return lines
-    
+
 def get_property_docstring_lines(property, width = 70, indent = 8):
     lines = get_property_description_lines(property, width)
     lines.extend(get_enum_item_lines(property, width))
     return make_docstring_from_lines(lines, indent)
-    
+
 def get_function_docstring_lines(function, width = 70, indent = 8):
     lines = get_function_description_lines(function, width)
     parameter_lines = get_parameter_lines(function, width)
     lines.extend(parameter_lines)
     return make_docstring_from_lines(lines, indent)
-    
+
 def get_parameter_lines(function, width):
     lines = []
     params = [p for p in function.parameters if not p.is_output]
@@ -156,7 +156,7 @@ def get_parameter_lines(function, width):
         lines.append("Returns:")
         lines.extend(get_parameter_list_lines(returns, width))
     return lines
-    
+
 def get_parameter_list_lines(params, width):
     lines = []
     for param in params:
@@ -175,11 +175,11 @@ def get_property_description_lines(property, width):
     type = "[{}]".format(get_readable_property_type(property))
     if property.description in (None, ""): return [type]
     return textwrap.wrap(type + " " + property.description, width)
-    
+
 def get_function_description_lines(function, width):
     if function.description in (None, ""): return []
-    return textwrap.wrap(function.description, width)    
-    
+    return textwrap.wrap(function.description, width)
+
 def get_enum_item_lines(property, width):
     if getattr(property, "enum_items", None) is None: return []
     items = property.enum_items
@@ -187,19 +187,19 @@ def get_enum_item_lines(property, width):
     quote_mark = "'" if use_quote_marks else ""
     item_string = "["+ ", ".join(quote_mark + item.identifier + quote_mark for item in items) +"]"
     return [""] + textwrap.wrap(item_string, width)
-    
+
 def make_docstring_from_lines(lines, indent = 8):
     if len(lines) == 0: return []
     lines[0] = "'''" + lines[0]
     lines[-1] += "'''"
     indent_lines(lines, indent)
     return lines
-    
+
 def indent_lines(lines, indent = 4):
     spaces = " " * indent
     for i in range(len(lines)):
         lines[i] = spaces + lines[i]
-        
+
 def get_dependencies(name, type):
     def find_property_dependency(property):
         if property.type == "POINTER":
@@ -207,7 +207,7 @@ def get_dependencies(name, type):
         if property.type == "COLLECTION":
             if property.srna is None: dependencies.add(property.fixed_type.identifier)
             else: dependencies.add(property.srna.identifier)
-            
+
     dependencies = set()
     if name in collection_types:
         dependencies.add(collection_types[name])
@@ -217,7 +217,7 @@ def get_dependencies(name, type):
         for parameter in function.parameters:
             find_property_dependency(parameter)
     return dependencies
-    
+
 def get_type_properties(type):
     fakes = []
     if type.bl_rna.identifier == "Context":
@@ -227,7 +227,7 @@ def get_type_properties(type):
 def get_function_parameter_list(function):
     parameters = ["self"] + [parameter.identifier for parameter in function.parameters if not parameter.is_output]
     return ", ".join(parameters)
-    
+
 def get_function_return_list(function):
     returns = [parameter for parameter in function.parameters if parameter.is_output]
     return ", ".join([get_property_declaration(parameter) for parameter in returns])
@@ -248,7 +248,7 @@ def get_property_declaration(property):
         if property.array_length == 16: return "mathutils.Matrix()"
     if property.type == "POINTER":
         return property.fixed_type.identifier + "()"
-    return "''" 
+    return "''"
 
 def get_readable_property_type(property):
     if property.type == "BOOLEAN": return "Boolean"
@@ -268,10 +268,10 @@ def write_code_file(name, code):
     path = os.path.join(private_path, name.lower() + ".py")
     file = open(path, "w+")
     file.write(code)
-    file.close()   
+    file.close()
 
-    
-    
+
+
 
 bpy_struct_content = '''
 from . fcurve import FCurve
@@ -294,7 +294,7 @@ class bpy_struct:
         return
     def property_unsert(property):
         return
-'''    
+'''
 
 class FakeProp:
     def __init__(self, identifier):
@@ -304,22 +304,22 @@ class FakeProp:
         if name == "array_length": return 0
         if name == "srna": return None
         if name == "fixed_type": return None
-        
+
 class FakePointer(FakeProp):
     def __init__(self, name, fixed_identifier):
         self.identifier = name
         self.type = "POINTER"
         self.fixed_type = FakeProp(fixed_identifier)
-        
+
 class FakeSequence(FakeProp):
     def __init__(self, name, fixed_identifier):
         self.identifier = name
         self.type = "COLLECTION"
         self.fixed_type = FakeProp(fixed_identifier)
-        
-FP = FakePointer    
-FS = FakeSequence    
-        
+
+FP = FakePointer
+FS = FakeSequence
+
 fake_context_properties = [
     FP("active_bone", "EditBone"),
     FP("active_pose_bone", "PoseBone"),
@@ -389,4 +389,4 @@ fake_context_properties = [
     FS("editable_gpencil_strokes", "GPencilStroke"),
     FS("active_gpencil_layer", "GPencilLayer"),
     FS("active_gpencil_frame", "GPencilLayer"),
-    FS("selected_nodes", "Node") ]       
+    FS("selected_nodes", "Node") ]
