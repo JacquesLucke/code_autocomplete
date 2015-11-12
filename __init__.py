@@ -29,21 +29,23 @@ bl_info = {
     "location":    "Text Editor",
     "category":    "Development"
     }
-    
-    
-    
+
+
+
 # load and reload submodules
-##################################    
+##################################
 
 # append jedi package path to make 'import jedi' available
 import os, sys
 sys.path.append(os.path.join(__path__[0], "jedi"))
-    
+
+import importlib
 from . import developer_utils
+importlib.reload(developer_utils)
 modules = developer_utils.setup_addon_modules(__path__, __name__, "bpy" in locals())
-            
-    
-    
+
+
+
 # register
 ##################################
 
@@ -61,7 +63,7 @@ def register_keymaps():
     kmi = km.keymap_items.new("wm.call_menu", type = "TAB", value = "PRESS", ctrl = True)
     kmi.properties.name = "code_autocomplete_select_text_block"
     addon_keymaps.append(km)
-    
+
 def unregister_keymaps():
     wm = bpy.context.window_manager
     for km in addon_keymaps:
@@ -69,21 +71,21 @@ def unregister_keymaps():
             km.keymap_items.remove(kmi)
         wm.keyconfigs.addon.keymaps.remove(km)
     addon_keymaps.clear()
- 
-from . addon_development import AddonDevelopmentSceneProperties 
+
+from . addon_development import AddonDevelopmentSceneProperties
 from . quick_operators import register_menus, unregister_menus
-    
+
 def register():
     bpy.utils.register_module(__name__)
     register_keymaps()
     register_menus()
     bpy.types.Scene.addon_development = bpy.props.PointerProperty(name = "Addon Development", type = AddonDevelopmentSceneProperties)
-    
+
     print("Registered Code Autocomplete with {} modules.".format(len(modules)))
 
 def unregister():
     bpy.utils.unregister_module(__name__)
     unregister_keymaps()
     unregister_menus()
-    
+
     print("Unregistered Code Autocomplete")
