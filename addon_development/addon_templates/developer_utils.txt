@@ -9,6 +9,9 @@ def setup_addon_modules(path, package_name, reload):
 
     path -- __path__ from __init__.py
     package_name -- __name__ from __init__.py
+
+    Individual modules can define a __reload_order_index__ property which
+    will be used to reload the modules in a specific order. The default is 0.
     """
     def get_submodule_names(path = path[0], root = ""):
         module_names = []
