@@ -5,6 +5,7 @@ import shutil
 import inspect
 import textwrap
 from ... settings import get_preferences
+from . rna_utils import get_readable_property_type
 
 fake_package_name = "_bpy_fake"
 top_directory = os.path.join(os.path.dirname(__file__), "dynamic")
@@ -172,7 +173,7 @@ def get_parameter_list_lines(params, width):
     return lines
 
 def get_property_description_lines(property, width):
-    type = "[{}]".format(get_readable_property_type(property))
+    type = "({})".format(get_readable_property_type(property))
     if property.description in (None, ""): return [type]
     return textwrap.wrap(type + " " + property.description, width)
 
@@ -249,20 +250,6 @@ def get_property_declaration(property):
     if property.type == "POINTER":
         return property.fixed_type.identifier + "()"
     return "''"
-
-def get_readable_property_type(property):
-    if property.type == "BOOLEAN": return "Boolean"
-    if property.type == "INT": return "Integer"
-    if property.type == "STRING": return "String"
-    if property.type == "COLLECTION": return "Sequence of " + property.fixed_type.identifier
-    if property.type == "FLOAT":
-        if property.array_length <= 1: return "Float"
-        if property.array_length == 2: return "Vector 2D"
-        if property.array_length == 3: return "Vector 3D"
-        if property.array_length == 16: return "Matrix"
-        return "Float[{}]".format(property.array_length)
-    if property.type == "POINTER": return property.fixed_type.identifier
-    if property.type == "ENUM": return "Enum"
 
 def write_code_file(name, code):
     path = os.path.join(private_path, name.lower() + ".py")
