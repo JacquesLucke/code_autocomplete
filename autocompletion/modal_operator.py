@@ -67,7 +67,7 @@ class ModalTextOperator(bpy.types.Operator):
         self.redraw_text_editors()
         active_text_area.update(event)
 
-        if not is_running:
+        if not is_running or event.type == "F8":
             return self.finish()
 
         return self.update_handlers(event)
