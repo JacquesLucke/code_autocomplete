@@ -23,6 +23,11 @@ class Autocomplete(bpy.types.Panel):
             layout.operator("code_autocomplete.start_modal_operator")
         layout.operator("code_autocomplete.regenerate_fake_bpy", "Build bpy Module")
 
+        providers = get_preferences().completion_providers
+        layout.prop(providers, "use_jedi_completion")
+        layout.prop(providers, "use_word_completion")
+        layout.prop(providers, "use_operator_completion")
+
 
 class StartModalOperator(bpy.types.Operator):
     bl_idname = "code_autocomplete.start_modal_operator"
