@@ -53,3 +53,5 @@ def iter_clarification_lines(text):
     for match in re.finditer("class (\w+)\(.*Operator\)", text):
         yield "{}().invoke(bpy.context, bpy.__private__.event.Event())".format(match.group(1))
         yield "{}().execute(bpy.context)".format(match.group(1))
+    for match in re.finditer("class (\w+)\(.*Panel\)", text):
+        yield "{}().draw(bpy.context)".format(match.group(1))
