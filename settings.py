@@ -13,6 +13,7 @@ def prop_changed(self, context):
 class CompletionProviders (bpy.types.PropertyGroup):
     use_jedi_completion = BoolProperty(default = True, name = "Use Jedi Completion", update = prop_changed)
     use_word_completion = BoolProperty(default = True, name = "Use Word Completion", update = prop_changed)
+    use_operator_completion = BoolProperty(default = True, name = "Use Operator Completion", update = prop_changed)
 
 class ContextBoxProperties(bpy.types.PropertyGroup):
     font_size = IntProperty(default = 80, name = "Font Size", min = 10, update = prop_changed)
@@ -46,6 +47,7 @@ class AddonPreferences(bpy.types.AddonPreferences):
         col.label("Completion Providers:")
         col.prop(self.completion_providers, "use_jedi_completion", "Jedi")
         col.prop(self.completion_providers, "use_word_completion", "Existing Words")
+        col.prop(self.completion_providers, "use_operator_completion", "Operators")
 
         row = layout.row()
         col = row.column(align = True)
@@ -70,4 +72,4 @@ class AddonPreferences(bpy.types.AddonPreferences):
 
 def get_preferences():
     addon = bpy.context.user_preferences.addons.get(addon_name)
-    return getattr(addon, "preferences", None)
+    return getattr(addon, "preferences", None)    
