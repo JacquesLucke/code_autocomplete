@@ -71,7 +71,7 @@ def create_private_subdirectory():
 
 collection_types = {}
 def generate_code_files(create_all = False):
-    types_to_generate = {"Context"}
+    types_to_generate = {"Context", "Panel"}
     generated_types = set()
 
     while len(types_to_generate) > 0:
