@@ -40,6 +40,20 @@ def get_operator_parameters(operator):
     rna = operator.get_rna().bl_rna
     return [prop for prop in rna.properties if prop.identifier != "rna_type"]
 
+def get_enum_items_string(property, width = 70):
+    items = get_enum_items(property)
+    if len(items) == 0: return ""
+    lines = textwrap.wrap(str(items), width)
+    return "\n".join(lines)
+
+def get_enum_items(property):
+    return [item.identifier for item in getattr(property, "enum_items", [])]
+
+def get_property_default(property):
+    if len(getattr(property, "default_array", [])) > 0:
+        return repr(property.default_array[:])
+    return repr(property.default)
+
 def get_readable_property_type(property):
     suffix = "[{}]".format(property.array_length) if getattr(property, "array_length", 1) > 1 else ""
     if property.type == "BOOLEAN": return "Boolean" + suffix

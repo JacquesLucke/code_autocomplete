@@ -2,7 +2,9 @@ import re
 import bpy
 import textwrap
 from . interface import Provider, Completion
-from . rna_utils import (get_operator_parameters,
+from . rna_utils import (get_property_default,
+                         get_enum_items_string,
+                         get_operator_parameters,
                          make_operator_description,
                          get_readable_property_type)
 
@@ -30,10 +32,12 @@ class ParameterCompletion(Completion):
     def __init__(self, parameter):
         self.name = parameter.identifier + " = "
         self.type = "PARAMETER"
-        self.description = "{} ({})\n\n{}".format(
+        self.description = "{} ({}) = {}\n\n{}\n{}".format(
                                 parameter.name,
                                 get_readable_property_type(parameter),
-                                parameter.description)
+                                get_property_default(parameter),
+                                parameter.description,
+                                get_enum_items_string(parameter, 70))
 
     def insert(self, text_block):
         text_block.replace_current_word(self.name)
