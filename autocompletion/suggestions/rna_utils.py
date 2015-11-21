@@ -18,7 +18,7 @@ def make_operator_description(operator, width = 70):
     yield from textwrap.wrap(rna.description, width)
     yield ""
 
-    parameters = [prop for prop in rna.properties if prop.identifier != "rna_type"]
+    parameters = get_operator_parameters(operator)
     if len(parameters) == 0: return
 
     yield "Parameters:"
@@ -35,6 +35,10 @@ def make_property_description(property, width = 70):
         yield from indent(textwrap.wrap(description, width - 3), indentation = 3)
     else:
         yield "{} {}".format(identifier, description)
+
+def get_operator_parameters(operator):
+    rna = operator.get_rna().bl_rna
+    return [prop for prop in rna.properties if prop.identifier != "rna_type"]
 
 def get_readable_property_type(property):
     suffix = "[{}]".format(property.array_length) if getattr(property, "array_length", 1) > 1 else ""
