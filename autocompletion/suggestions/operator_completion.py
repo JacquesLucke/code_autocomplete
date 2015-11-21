@@ -30,6 +30,9 @@ class OperatorCompletionProvider(Provider):
         current_word = text_block.current_word
         parents = text_block.parents_of_current_word
 
+        if parents[:1] == ["bpy"]:
+            if len(parents) == 1 and "ops".startswith(current_word):
+                return [WordCompletion("ops")]
         if parents[:2] == ["bpy", "ops"]:
             if len(parents) == 2:
                 return to_completions(get_category_completions(current_word))
