@@ -2,7 +2,8 @@ import re
 import bpy
 import textwrap
 from . interface import Provider, Completion
-from . rna_utils import (get_property_default,
+from . rna_utils import (get_enum_items,
+                         get_property_default,
                          get_enum_items_string,
                          get_operator_parameters,
                          make_operator_description,
@@ -43,6 +44,7 @@ class ParameterCompletion(Completion):
         text_block.replace_current_word(self.name)
 
 
+
 class OperatorCompletionProvider(Provider):
     def complete(self, text_block):
         current_word = text_block.current_word
@@ -60,7 +62,7 @@ class OperatorCompletionProvider(Provider):
 
         operator = get_current_operator(text_block)
         if operator is not None:
-            return list(iter_operator_inner_complection(operator, text_block))
+            return list(iter_operator_inner_completions(operator, text_block))
 
         return []
 
@@ -90,8 +92,9 @@ def get_current_operator(text_block):
     operator = getattr(category, operator_name, None)
     return operator
 
-def iter_operator_inner_complection(operator, text_block):
+def iter_operator_inner_completions(operator, text_block):
     yield from iter_parameter_completions(operator, text_block)
+    yield from iter_enum_parameter_completions(operator, text_block)
 
 def iter_parameter_completions(operator, text_block):
     word_start = text_block.get_current_text_after_pattern("[\(\,]\s*")
@@ -99,3 +102,14 @@ def iter_parameter_completions(operator, text_block):
     for parameter in get_operator_parameters(operator):
         if word_start in parameter.identifier:
             yield ParameterCompletion(parameter)
+
+def iter_enum_parameter_completions(operator, text_block):
+    for parameter in get_operator_parameters(operator):
+        pattern = parameter.identifier + "\s*=\s*(\"|\')"
+        word_start = text_block.get_current_text_after_pattern(pattern)
+        if word_start is None: continue
+        word_start = word_start.upper()
+        for enum_item in get_enum_items(parameter):
+            if word_start in enum_item.upper():
+                completion = WordCompletion(enum_item)
+                yield completion
