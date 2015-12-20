@@ -17,13 +17,10 @@ move_index_commands = {
     "END" : 10000,
     "HOME" : -10000 }
 
-text_changing_types = ["BACK_SPACE", "SPACE", "COMMA", "RET", "DEL",
-    "SEMI_COLON", "MINUS", "RIGHT_BRACKET", "LEFT_BRACKET", "SLASH"]
-
-statement_chars = "abcdefghijklmnopqrstuvwxyz0123456789_."
-
-hide_types = ["BACK_SPACE", "DEL", "ESC", "RET"]
-
+def is_event_changing_the_text(event):
+    if len(event.unicode) > 0: return True
+    if is_event_in_list(event, ["BACK_SPACE", "RET", "DEL"], "PRESS"): return True
+    return False
 
 class AutocompleteHandler:
     def __init__(self):
@@ -42,12 +39,10 @@ class AutocompleteHandler:
         self.update_visibility(event, text_block)
         if self.is_hidden: return
 
-        char = event.unicode.lower()
-        if char == "": char = "empty"
-        if is_event_in_list(event, text_changing_types, "PRESS") or char in statement_chars:
+        if is_event_changing_the_text(event):
             self.reload_completions = True
 
-        if len(self.completions) > 0:
+        if self.completions_amount > 0:
             self.move_active_index(event)
 
     def update_settings(self):
@@ -66,33 +61,45 @@ class AutocompleteHandler:
                 self.insert_completion(text_block, item.data)
                 raise BlockEvent()
 
-        if len(self.completions) == 0: return
+        if self.completions_amount == 0: return
         if self.is_hidden: return
         insert_with_keyboard()
         insert_with_mouse()
 
     def insert_completion(self, text_block, completion):
         completion.insert(text_block)
-        self.hide()
+        if completion.finished_statement: self.hide()
         self.active_index = 0
 
     def update_visibility(self, event, text_block):
+        if is_mouse_click(event):
+            return self.hide()
+
+        if is_event(event, "ESC", shift = True):
+            return self.show()
+
+        if is_event_in_list(event, ["BACK_SPACE", "DEL", "ESC", "RET"], "PRESS"):
+            return self.hide()
+
         char = event.unicode.lower()
-        if char == "": char = "empty"
-        if self.is_hidden:
-            if char in statement_chars: self.show()
-            if char == "(": self.show()
-            if is_event(event, "ESC", shift = True): self.show()
-        else:
-            if is_event_in_list(event, hide_types, "PRESS"): self.hide()
-            if not (char in statement_chars or char == "empty"): self.hide()
+        if len(char) > 0:
+            if char in "abcdefghijklmnopqrstuvwxyz0123456789_({[\\/=@.":
+                return self.show()
+            line = text_block.text_before_cursor
+            if char in "\"":
+                if line.count("\"") % 2 == 0: return self.show()
+                else: return self.hide()
+            if char in '\'':
+                if line.count('\'') % 2 == 0: return self.show()
+                else: return self.hide()
 
-        text = text_block.text_before_cursor
+        # open with space in import statement and after comma
         if is_event(event, "SPACE"):
-            if re.search("(import|from)\s*\.?\s*$", text): self.show()
-            else: self.hide()
-
-        if is_mouse_click(event): self.hide()
+            line = text_block.text_before_cursor
+            if re.search("(import|from)\s*\.?\s*$", line) or re.search(",\s*$", line):
+                return self.show()
+            else:
+                return self.hide()
 
     def show(self):
         if self.is_hidden:
@@ -120,19 +127,27 @@ class AutocompleteHandler:
         move_with_mouse()
 
     def change_active_index(self, amount):
-        index = self.active_index + amount
-        index = min(max(index, 0), len(self.completions) - 1)
-        if index < self.top_index:
-            self.top_index = index
-        if index > self.top_index + self.draw_max - 1:
-            self.top_index = index - self.draw_max + 1
-        if len(self.completions) < self.draw_max:
-            self.top_index = 0
-        self.active_index = index
+        self.active_index += amount
+        self.correct_selection_indices()
 
     def update_completions(self, text_block):
         self.completions = complete(text_block)
-        self.change_active_index(0)
+        self.correct_selection_indices()
+
+    def correct_selection_indices(self):
+        index = self.active_index
+        if index < 0:
+            index = 0
+        if index >= self.completions_amount:
+            index = self.completions_amount - 1
+        if index < self.top_index:
+            self.top_index = index
+        if index > self.bottom_index:
+            self.top_index = index - self.draw_max + 1
+        if self.completions_amount < self.draw_max:
+            self.top_index = 0
+        self.active_index = index
+
 
     def draw(self, text_block):
         if self.is_hidden: return
@@ -156,6 +171,14 @@ class AutocompleteHandler:
             item.offset = 10 if c.type == "PARAMETER" else 0
             items.append(item)
         return items
+
+    @property
+    def completions_amount(self):
+        return len(self.completions)
+
+    @property
+    def bottom_index(self):
+        return self.top_index + self.draw_max - 1
 
 
 class ContextUI:
