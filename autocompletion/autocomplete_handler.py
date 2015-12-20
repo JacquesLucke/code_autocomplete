@@ -85,6 +85,8 @@ class AutocompleteHandler:
         if len(char) > 0:
             if char in "abcdefghijklmnopqrstuvwxyz0123456789_({[\\/=@.":
                 return self.show()
+
+            # open with string declaration start and close with its end
             line = text_block.text_before_cursor
             if char in "\"":
                 if line.count("\"") % 2 == 0: return self.show()
