@@ -78,7 +78,7 @@ class AutocompleteHandler:
         if is_event(event, "ESC", shift = True):
             return self.show()
 
-        if is_event_in_list(event, ["BACK_SPACE", "DEL", "ESC", "RET"], "PRESS"):
+        if is_event_in_list(event, ["BACK_SPACE", "DEL", "ESC", "RET", "LEFT_ARROW", "RIGHT_ARROW"], "PRESS"):
             return self.hide()
 
         char = event.unicode.lower()
@@ -98,7 +98,7 @@ class AutocompleteHandler:
         # open with space in import statement and after comma
         if is_event(event, "SPACE"):
             line = text_block.text_before_cursor
-            if re.search("(import|from)\s*\.?\s*$", line) or re.search(",\s*$", line):
+            if re.search("(import|from)\s*\.?\s*$", line) or re.search("(,|=)\s*$", line):
                 return self.show()
             else:
                 return self.hide()
