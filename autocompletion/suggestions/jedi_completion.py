@@ -30,20 +30,17 @@ class JediCompletionProvider(Provider):
             return []
 
 def get_completion_source(text_block):
-    current_line_number = text_block.current_line_index + 1
-    new_current_line_number = None
-    character_index = len(text_block.text_before_cursor)
-    filepath = text_block.filepath
-
     new_lines = []
-    for i, line in enumerate(text_block.iter_lines()):
-        line_number = i + 1
+    corrected_line_number = 0
+    for line_number, line in enumerate(text_block.iter_lines()):
         new_lines.extend(list(iter_corrected_lines_from_line(line)))
-        if line_number == current_line_number:
-            new_current_line_number = len(new_lines)
-
+        if line_number == text_block.current_line_index:
+            corrected_line_number = len(new_lines)
     text = "\n".join(new_lines)
-    return text, new_current_line_number, character_index, filepath
+
+    filepath = text_block.filepath
+    character_index = len(text_block.text_before_cursor)
+    return text, corrected_line_number, character_index, filepath
 
 def iter_corrected_lines_from_line(line):
     if "bpy" in line:
