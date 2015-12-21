@@ -56,7 +56,7 @@ class OperatorCompletionProvider(Provider):
                 return [WordCompletion("ops")]
         if parents[:2] == ["bpy", "ops"]:
             if len(parents) == 2:
-                return to_completions(get_category_completions(current_word))
+                return get_category_completions(current_word)
             if len(parents) == 3:
                 return list(iter_operator_completions(current_word, category_name = parents[2]))
 
@@ -64,14 +64,20 @@ class OperatorCompletionProvider(Provider):
         if operator is not None:
             return list(iter_operator_inner_completions(operator, text_block))
 
-        return []
+        # layout.operator("#text#.#move#")
+        operator_start = text_block.get_current_text_after_pattern("\.operator\((\"|\')")
+        if operator_start is not None:
+            if "." not in operator_start:
+                return get_category_completions(operator_start)
+            else:
+                category, operator_name_start  = operator_start.split(".", maxsplit = 1)[:2]
+                return list(iter_operator_completions(operator_name_start, category_name = category))
 
-def to_completions(words):
-    return [WordCompletion(word) for word in words]
+        return []
 
 # bpy.ops.#text#
 def get_category_completions(current_word):
-    return [category for category in dir(bpy.ops) if category.startswith(current_word)]
+    return [WordCompletion(category) for category in dir(bpy.ops) if category.startswith(current_word)]
 
 # bpy.ops.text.#move#
 def iter_operator_completions(current_word, category_name):
