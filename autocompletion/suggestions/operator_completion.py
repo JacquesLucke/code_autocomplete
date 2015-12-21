@@ -69,9 +69,11 @@ class OperatorCompletionProvider(Provider):
 def to_completions(words):
     return [WordCompletion(word) for word in words]
 
+# bpy.ops.#text#
 def get_category_completions(current_word):
     return [category for category in dir(bpy.ops) if category.startswith(current_word)]
 
+# bpy.ops.text.#move#
 def iter_operator_completions(current_word, category_name):
     category = getattr(bpy.ops, category_name, None)
     if category is None: return
@@ -92,10 +94,12 @@ def get_current_operator(text_block):
     operator = getattr(category, operator_name, None)
     return operator
 
+# bpy.ops.text.move(#type# = "#NEXT_CHARACTER#")
 def iter_operator_inner_completions(operator, text_block):
     yield from iter_parameter_completions(operator, text_block)
     yield from iter_enum_parameter_completions(operator, text_block)
 
+# bpy.ops.text.move(#type# = "NEXT_CHARACTER")
 def iter_parameter_completions(operator, text_block):
     word_start = text_block.get_current_text_after_pattern("[\(\,]\s*")
     if word_start is None: return
@@ -103,6 +107,7 @@ def iter_parameter_completions(operator, text_block):
         if word_start in parameter.identifier:
             yield ParameterCompletion(parameter)
 
+# bpy.ops.text.move(type = "#NEXT_CHARACTER#")
 def iter_enum_parameter_completions(operator, text_block):
     for parameter in get_operator_parameters(operator):
         pattern = parameter.identifier + "\s*=\s*(\"|\')"
