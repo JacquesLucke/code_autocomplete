@@ -78,6 +78,13 @@ class AutocompleteHandler:
         if is_event(event, "ESC", shift = True):
             return self.show()
 
+        # open after removing after . or ' or "
+        if is_event_in_list(event, ["BACK_SPACE", "DEL"], "PRESS"):
+            line = text_block.text_before_cursor
+            if len(line) > 0:
+                if line[-1] in "\"\'.":
+                    return self.show()
+
         if is_event_in_list(event, ["BACK_SPACE", "DEL", "ESC", "RET", "LEFT_ARROW", "RIGHT_ARROW"], "PRESS"):
             return self.hide()
 
