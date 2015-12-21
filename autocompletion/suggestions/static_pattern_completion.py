@@ -38,7 +38,7 @@ handlers = [
 
 suggestions = {
     "bl_space_type\s*=\s*(\"|\')" : space_types,
-    "bl_region_type\s*=\s*(\"|\')" : space_types,
+    "bl_region_type\s*=\s*(\"|\')" : region_types,
     "bl_options\s*=.*(,|{)\s*(\"|\')" : ["REGISTER", "UNDO", "BLOCKING", "GRAB_POINTER", "PRESET", "INTERNAL"],
     "bl_category\s*=\s*(\"|\')" : ["Tools", "Create", "Relations", "Animation", "Physics", "Grease Pencil"],
     "return\s*\{\s*(\"|\')" : ["RUNNING_MODAL", "CANCELLED", "FINISHED", "PASS_THROUGH"],
