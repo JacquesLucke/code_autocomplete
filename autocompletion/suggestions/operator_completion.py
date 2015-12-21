@@ -44,7 +44,6 @@ class ParameterCompletion(Completion):
         text_block.replace_current_word(self.name)
 
 
-
 class OperatorCompletionProvider(Provider):
     def complete(self, text_block):
         current_word = text_block.current_word
@@ -74,6 +73,7 @@ class OperatorCompletionProvider(Provider):
                 return list(iter_operator_completions(operator_name_start, category_name = category))
 
         return []
+
 
 # bpy.ops.#text#
 def get_category_completions(current_word):
