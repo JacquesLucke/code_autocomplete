@@ -46,7 +46,7 @@ keymap_template = '''addon_keymaps = []
 def register_keymaps():
     addon = bpy.context.window_manager.keyconfigs.addon
     km = addon.keymaps.new(name = "3D View", space_type = "VIEW_3D")
-
+    # insert keymap items here
     addon_keymaps.append(km)
 
 def unregister_keymaps():
