@@ -18,9 +18,10 @@ def complete(text_block):
     if setting.use_jedi_completion: completions.extend(jedi_provider.complete(text_block))
     if setting.use_word_completion: completions.extend(word_provider.complete(text_block))
 
-    primary, secondary = [], []
+    list1, list2, list3 = [], [], []
     for c in completions:
-        if c.type == "PARAMETER": primary.append(c)
-        else: secondary.append(c)
+        if c.type == "OPERATOR_PARAMETER": list1.append(c)
+        elif c.type == "PARAMETER": list2.append(c)
+        else: list3.append(c)
 
-    return primary + secondary
+    return list1 + list2 + list3

@@ -32,7 +32,7 @@ class OperatorCompletion(Completion):
 class ParameterCompletion(Completion):
     def __init__(self, parameter):
         self.name = parameter.identifier + " = "
-        self.type = "PARAMETER"
+        self.type = "OPERATOR_PARAMETER"
         self.description = "{} ({}) = {}\n\n{}\n{}".format(
                                 parameter.name,
                                 get_readable_property_type(parameter),
