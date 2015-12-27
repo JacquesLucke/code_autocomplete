@@ -30,10 +30,10 @@ class Autocomplete(bpy.types.Panel):
         else:
             layout.operator("code_autocomplete.regenerate_fake_bpy", "Build BPY Module", icon = "ERROR")
 
-        providers = get_preferences().completion_providers
-        layout.prop(providers, "use_jedi_completion")
-
-        if not jedi_module_found():
+        if jedi_module_found():
+            providers = get_preferences().completion_providers
+            layout.prop(providers, "use_jedi_completion")
+        else:
             layout.label("Jedi library not found", icon = "ERROR")
 
 
