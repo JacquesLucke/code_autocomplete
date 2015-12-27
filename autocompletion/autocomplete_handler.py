@@ -181,7 +181,7 @@ class AutocompleteHandler:
             item = ListItem(c.name)
             item.active = self.active_index == i
             item.data = c
-            item.offset = 10 if c.type == "PARAMETER" else 0
+            item.offset = 10 * getDpiFactor() if c.type.endswith("PARAMETER") else 0
             items.append(item)
         return items
 
