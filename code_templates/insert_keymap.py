@@ -1,6 +1,7 @@
 import bpy
 from bpy.props import *
 from .. text_block import TextBlock
+from .. graphics.utils import getDpiFactor
 from . base import InsertTemplateBase, insert_template
 
 class InsertKeymap(bpy.types.Operator, InsertTemplateBase):
@@ -12,7 +13,8 @@ class InsertKeymap(bpy.types.Operator, InsertTemplateBase):
         description = "Insert code in register and unregister functions if they exist")
 
     def invoke(self, context, event):
-        return context.window_manager.invoke_props_dialog(self, 300, 200)
+        dpiFactor = getDpiFactor()
+        return context.window_manager.invoke_props_dialog(self, 300 * dpiFactor, 200 * dpiFactor)
 
     def draw(self, context):
         layout = self.layout
