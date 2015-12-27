@@ -77,10 +77,6 @@ class TextBlock:
     def current_word(self):
         return self.get_last_word(self.text_before_cursor)
 
-    @property
-    def line_index(self):
-        return self.text_block.line_index
-
 
     @property
     def lines(self):
