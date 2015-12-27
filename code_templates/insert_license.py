@@ -1,4 +1,5 @@
 import bpy
+from datetime import datetime
 from bpy.props import *
 from . base import InsertTemplateBase, insert_template
 
@@ -21,12 +22,13 @@ class InsertLicense(bpy.types.Operator, InsertTemplateBase):
     def execute(self, context):
         changes = {
             "YOUR_NAME" : self.author_name,
-            "YOUR_MAIL" : self.author_mail }
+            "YOUR_MAIL" : self.author_mail,
+            "CURRENT_YEAR" : str(datetime.now().year) }
         insert_template(license_template, changes)
         return {"FINISHED"}
 
 license_template = """'''
-Copyright (C) 2015 YOUR_NAME
+Copyright (C) CURRENT_YEAR YOUR_NAME
 YOUR_MAIL
 
 Created by YOUR_NAME
