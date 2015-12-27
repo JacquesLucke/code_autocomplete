@@ -1,8 +1,12 @@
-import jedi
 import re
 from . interface import Provider, Completion
 from . generate_fake_bpy import fake_package_name
 
+try: import jedi
+except: print("jedi library not found")
+
+def jedi_module_found():
+    return "jedi" in globals()
 
 class JediCompletion(Completion):
     def __init__(self, suggestion):
@@ -22,6 +26,7 @@ class JediCompletionProvider(Provider):
         source, line_index, character_index, filepath = get_completion_source(text_block)
 
         # jedi raises an error when trying to complete parts of the bpy module
+        # or when the jedi module is not found
         try:
             script = jedi.Script(source, line_index, character_index, filepath)
             completions = script.completions()

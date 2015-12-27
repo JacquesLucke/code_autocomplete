@@ -5,6 +5,7 @@ from .. text_block import TextBlock
 from .. settings import get_preferences
 from . active_text_area import ActiveTextArea
 from . autocomplete_handler import AutocompleteHandler
+from . suggestions.jedi_completion import jedi_module_found
 from . suggestions.generate_fake_bpy import fake_bpy_module_exists
 
 is_running = False
@@ -31,6 +32,9 @@ class Autocomplete(bpy.types.Panel):
 
         providers = get_preferences().completion_providers
         layout.prop(providers, "use_jedi_completion")
+
+        if not jedi_module_found():
+            layout.label("Jedi library not found", icon = "ERROR")
 
 
 class StartModalOperator(bpy.types.Operator):
