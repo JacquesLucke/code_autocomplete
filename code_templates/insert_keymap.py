@@ -14,7 +14,7 @@ class InsertKeymap(bpy.types.Operator, InsertTemplateBase):
 
     def invoke(self, context, event):
         dpiFactor = getDpiFactor()
-        return context.window_manager.invoke_props_dialog(self, 300 * dpiFactor, 200 * dpiFactor)
+        return context.window_manager.invoke_props_dialog(self, 200 * dpiFactor, 200 * dpiFactor)
 
     def draw(self, context):
         layout = self.layout
