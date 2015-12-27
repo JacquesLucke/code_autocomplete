@@ -1,6 +1,7 @@
 import bpy
-from datetime import datetime
 from bpy.props import *
+from datetime import datetime
+from .. graphics.utils import getDpiFactor
 from . base import InsertTemplateBase, insert_template
 
 class InsertLicense(bpy.types.Operator, InsertTemplateBase):
@@ -12,7 +13,8 @@ class InsertLicense(bpy.types.Operator, InsertTemplateBase):
     author_mail = StringProperty(name = "eMail", default = "")
 
     def invoke(self, context, event):
-        return context.window_manager.invoke_props_dialog(self, 300, 200)
+        dpiFactor = getDpiFactor()
+        return context.window_manager.invoke_props_dialog(self, 300 * dpiFactor, 200 * dpiFactor)
 
     def draw(self, context):
         layout = self.layout
