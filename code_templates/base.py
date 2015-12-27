@@ -1,6 +1,7 @@
 import bpy
 from bpy.props import *
 from .. text_block import TextBlock
+from .. graphics.utils import getDpiFactor
 
 class InsertTemplateMenu(bpy.types.Menu):
     bl_idname = "code_autocomplete_insert_template_menu"
@@ -39,7 +40,8 @@ class InsertClassTemplateBase(InsertTemplateBase):
     class_name = StringProperty(name = "Class Name", default = "")
 
     def invoke(self, context, event):
-        return context.window_manager.invoke_props_dialog(self, 300, 200)
+        dpiFactor = getDpiFactor()
+        return context.window_manager.invoke_props_dialog(self, 300 * dpiFactor, 200 * dpiFactor)
 
     def draw(self, context):
         layout = self.layout
