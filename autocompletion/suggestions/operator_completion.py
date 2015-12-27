@@ -53,27 +53,26 @@ class OperatorCompletionProvider(Provider):
         if parents[:1] == ["bpy"]:
             if len(parents) == 1 and "ops".startswith(current_word):
                 return [WordCompletion("ops")]
-        if parents[:2] == ["bpy", "ops"]:
-            if len(parents) == 2:
-                return get_category_completions(current_word)
-            if len(parents) == 3:
-                return list(iter_operator_completions(current_word, category_name = parents[2]))
 
         operator = get_current_operator(text_block)
         if operator is not None:
             return list(iter_operator_inner_completions(operator, text_block))
 
-        # layout.operator("#text#.#move#")
-        operator_start = text_block.get_current_text_after_pattern("\.operator\((\"|\')")
-        if operator_start is not None:
-            if "." not in operator_start:
-                return get_category_completions(operator_start)
-            else:
-                category, operator_name_start  = operator_start.split(".", maxsplit = 1)[:2]
-                return list(iter_operator_completions(operator_name_start, category_name = category))
+        completions = []
+        completions.extend(iter_operator_completion_after_pattern(text_block, "bpy\.ops\."))
+        completions.extend(iter_operator_completion_after_pattern(text_block, "\.operator\((\"|\')"))
+        completions.extend(iter_operator_completion_after_pattern(text_block, "keymap_items\.new\((\"|\')"))
+        return completions
 
-        return []
-
+# pattern#text#.#move#
+def iter_operator_completion_after_pattern(text_block, pattern = ""):
+    operator_start = text_block.get_current_text_after_pattern(pattern)
+    if operator_start is None: return
+    if "." not in operator_start:
+        yield from get_category_completions(operator_start)
+    else:
+        category, operator_name_start  = operator_start.split(".", maxsplit = 1)[:2]
+        yield from iter_operator_completions(operator_name_start, category_name = category)
 
 # bpy.ops.#text#
 def get_category_completions(current_word):
