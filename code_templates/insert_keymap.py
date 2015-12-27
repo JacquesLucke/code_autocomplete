@@ -44,8 +44,8 @@ class InsertKeymap(bpy.types.Operator, InsertTemplateBase):
 
 keymap_template = '''addon_keymaps = []
 def register_keymaps():
-    wm = bpy.context.window_manager
-    km = wm.keyconfigs.addon.keymaps.new(name = "3D View", space_type = "VIEW_3D")
+    addon = bpy.context.window_manager.keyconfigs.addon
+    km = addon.keymaps.new(name = "3D View", space_type = "VIEW_3D")
 
     addon_keymaps.append(km)
 

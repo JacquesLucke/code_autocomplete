@@ -15,7 +15,7 @@ addon_info_template = '''bl_info = {
     "description": "",
     "author": "Your Name",
     "version": (0, 0, 1),
-    "blender": (2, 74, 0),
+    "blender": (2, 76, 0),
     "location": "View3D",
     "warning": "This addon is still in development.",
     "wiki_url": "",

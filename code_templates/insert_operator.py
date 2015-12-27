@@ -87,17 +87,16 @@ modal_operator_draw_template = '''class CLASS_NAME(bpy.types.Operator):
         context.area.tag_redraw()
 
         if event.type == "LEFTMOUSE":
-            self.cancel(context)
-            return {"FINISHED"}
+            return self.finish()
 
         if event.type in {"RIGHTMOUSE", "ESC"}:
-            self.cancel(context)
-            return {"CANCELLED"}
+            return self.finish()
 
         return {"RUNNING_MODAL"}
 
-    def cancel(self, context):
+    def finish(self):
         bpy.types.SpaceView3D.draw_handler_remove(self._handle, "WINDOW")
+        return {"FINISHED"}
 
     def draw_callback_px(tmp, self, context):
         pass
