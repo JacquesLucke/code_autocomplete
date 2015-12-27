@@ -78,13 +78,9 @@ class TextBlock:
         return self.get_last_word(self.text_before_cursor)
 
     @property
-    def selected_text(self):
-        wm = bpy.context.window_manager
-        clipboard = wm.clipboard
-        bpy.ops.text.copy(self.override)
-        text = wm.clipboard
-        wm.clipboard = clipboard
-        return text
+    def line_index(self):
+        return self.text_block.line_index
+
 
     @property
     def lines(self):
