@@ -1,6 +1,7 @@
 import blf
 import textwrap
 from bgl import *
+from . utils import getDpi
 from mathutils import Vector
 from . rectangle import Rectangle
 
@@ -16,14 +17,14 @@ class TextBox:
         self.font = 1
         self.line_height = 23
         self.padding = 5
-        
+
     def draw(self):
-        blf.size(self.font, self.font_size, 12)
-        
+        blf.size(self.font, self.font_size, int(getDpi()))
+
         self.calc_lines()
         background = self.get_background_rectangle()
         background.draw()
-        
+
         glColor4f(*self.text_color)
         pos = self.position.copy()
         pos.x += self.padding
@@ -33,15 +34,15 @@ class TextBox:
             pos.y -= self.line_height
             blf.position(self.font, pos.x, pos.y, 0)
             blf.draw(self.font, line)
-        
+
     def calc_lines(self):
         lines = self.text.split("\n")
         while len(lines) > 0:
             if lines[-1] != "": break
             del lines[-1]
-        
+
         self.lines = lines
-        
+
     def get_background_rectangle(self):
         self.calc_height()
         self.calc_width()
@@ -54,10 +55,10 @@ class TextBox:
         background.color = self.background_color
         background.border_color = self.background_border_color
         return background
-        
+
     def calc_height(self):
         self.height = 2 * self.padding + self.line_height * len(self.lines)
-        
+
     def calc_width(self):
         widths = [blf.dimensions(self.font, line)[0] for line in self.lines]
         self.width = max(widths) + 2 * self.padding

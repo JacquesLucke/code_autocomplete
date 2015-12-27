@@ -1,13 +1,15 @@
 import bpy
 import re
 from mathutils import Vector
-from .. graphics.list_box import ListItem, ListBox
-from .. graphics.text_box import TextBox
 from . exception import BlockEvent
-from . event_utils import is_event, is_event_in_list, is_mouse_click, get_mouse_region_position, is_event_over_area
 from . suggestions import complete
 from .. settings import get_preferences
-import time
+from .. graphics.text_box import TextBox
+from .. graphics.utils import getDpiFactor
+from .. graphics.list_box import ListItem, ListBox
+from . event_utils import (is_event, is_event_in_list,
+                           is_mouse_click, get_mouse_region_position,
+                           is_event_over_area)
 
 move_index_commands = {
     "DOWN_ARROW" : 1,
@@ -202,14 +204,14 @@ class ContextUI:
 
         s = settings.context_box
         self.context_box.font_size = s.font_size
-        self.context_box.line_height = s.line_height
-        self.context_box.width = s.width
-        self.context_box.padding = s.padding
+        self.context_box.line_height = s.line_height * getDpiFactor()
+        self.context_box.width = s.width * getDpiFactor()
+        self.context_box.padding = s.padding * getDpiFactor()
 
         s = settings.description_box
         self.description_box.font_size = s.font_size
-        self.description_box.line_height = s.line_height
-        self.description_box.padding = s.padding
+        self.description_box.line_height = s.line_height * getDpiFactor()
+        self.description_box.padding = s.padding * getDpiFactor()
 
     def insert_items(self, items):
         self.context_box.items = items

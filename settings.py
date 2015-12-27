@@ -16,16 +16,16 @@ class CompletionProviders (bpy.types.PropertyGroup):
     use_operator_completion = BoolProperty(default = True, name = "Use Operator Completion", update = prop_changed)
 
 class ContextBoxProperties(bpy.types.PropertyGroup):
-    font_size = IntProperty(default = 80, name = "Font Size", min = 10, update = prop_changed)
-    line_height = IntProperty(default = 23, name = "Line Height", min = 5, update = prop_changed)
+    font_size = IntProperty(default = 12, name = "Font Size", min = 10, update = prop_changed)
+    line_height = IntProperty(default = 21, name = "Line Height", min = 5, update = prop_changed)
     width = IntProperty(default = 200, name = "Width", min = 10, update = prop_changed)
-    padding = IntProperty(default = 5, name = "Padding", min = 0, update = prop_changed)
+    padding = IntProperty(default = 4, name = "Padding", min = 0, update = prop_changed)
     lines = IntProperty(default = 8, name = "Lines", min = 1, update = prop_changed)
 
 class DescriptionBoxProperties(bpy.types.PropertyGroup):
-    font_size = IntProperty(default = 80, name = "Font Size", min = 10, update = prop_changed)
-    line_height = IntProperty(default = 23, name = "Line Height", min = 5, update = prop_changed)
-    padding = IntProperty(default = 5, name = "Padding", min = 0, update = prop_changed)
+    font_size = IntProperty(default = 12, name = "Font Size", min = 10, update = prop_changed)
+    line_height = IntProperty(default = 21, name = "Line Height", min = 5, update = prop_changed)
+    padding = IntProperty(default = 4, name = "Padding", min = 0, update = prop_changed)
 
 class FakeModuleProperties(bpy.types.PropertyGroup):
     docstring_width = IntProperty(default = 70, name = "Docstring Width", min = 10)
@@ -72,4 +72,4 @@ class AddonPreferences(bpy.types.AddonPreferences):
 
 def get_preferences():
     addon = bpy.context.user_preferences.addons.get(addon_name)
-    return getattr(addon, "preferences", None)    
+    return getattr(addon, "preferences", None)
