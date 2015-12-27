@@ -21,13 +21,15 @@ use_quote_marks = False
 class GenerateFakeBPY(bpy.types.Operator):
     bl_idname = "code_autocomplete.regenerate_fake_bpy"
     bl_label = "Generate Fake BPY"
-    bl_description = ""
+    bl_description = "Regenerate the fake bpy module that the jedi autocompletion needs"
     bl_options = {"REGISTER"}
 
     def execute(self, context):
         regenerate_fake_bpy()
         return {"FINISHED"}
 
+def fake_bpy_module_exists():
+    return os.path.exists(private_path)
 
 def regenerate_fake_bpy():
     remove_old_fake()

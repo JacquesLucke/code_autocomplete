@@ -1,10 +1,11 @@
 import bpy
-from .. settings import get_preferences
-from .. text_block import TextBlock
 from . exception import BlockEvent
-from . autocomplete_handler import AutocompleteHandler
 from . event_utils import is_event
+from .. text_block import TextBlock
+from .. settings import get_preferences
 from . active_text_area import ActiveTextArea
+from . autocomplete_handler import AutocompleteHandler
+from . suggestions.generate_fake_bpy import fake_bpy_module_exists
 
 is_running = False
 active_text_area = ActiveTextArea()
@@ -17,16 +18,19 @@ class Autocomplete(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        if is_running:
-            layout.operator("code_autocomplete.stop_modal_operator")
+
+        fake_module_needs_rebuild = not fake_bpy_module_exists()
+        operator_name = "stop_modal_operator" if is_running else "start_modal_operator"
+
+        row = layout.row(align = True)
+        row.operator("code_autocomplete." + operator_name)
+        if not fake_module_needs_rebuild:
+            row.operator("code_autocomplete.regenerate_fake_bpy", text = "", icon = "RECOVER_AUTO")
         else:
-            layout.operator("code_autocomplete.start_modal_operator")
-        layout.operator("code_autocomplete.regenerate_fake_bpy", "Build bpy Module")
+            layout.operator("code_autocomplete.regenerate_fake_bpy", "Build BPY Module", icon = "ERROR")
 
         providers = get_preferences().completion_providers
         layout.prop(providers, "use_jedi_completion")
-        layout.prop(providers, "use_word_completion")
-        layout.prop(providers, "use_operator_completion")
 
 
 class StartModalOperator(bpy.types.Operator):
