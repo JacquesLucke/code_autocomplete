@@ -15,9 +15,18 @@ class InsertTemplateMenu(bpy.types.Menu):
         layout.separator()
         layout.operator("code_autocomplete.insert_addon_info", "Addon Info")
         layout.operator("code_autocomplete.insert_register", "Register")
-        layout.operator("code_autocomplete.insert_keymap", "Keymap")
         layout.operator("code_autocomplete.insert_license", "License")
-        layout.operator("code_autocomplete.insert_keymap_item", "Keymap Item")
+        layout.menu("code_autocomplete_insert_keymap_menu", "Keymap")
+
+class InsertKeymapMenu(bpy.types.Menu):
+    bl_idname = "code_autocomplete_insert_keymap_menu"
+    bl_label = "Insert Template"
+
+    def draw(self, context):
+        layout = self.layout
+        layout.operator_context = "INVOKE_DEFAULT"
+        layout.operator("code_autocomplete.insert_keymap", text = "Keymap")
+        layout.operator("code_autocomplete.insert_keymap_item", text = "Keymap Item")
 
 class InsertTemplateBase:
     bl_options = {"REGISTER"}
