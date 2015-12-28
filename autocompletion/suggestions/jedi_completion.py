@@ -30,7 +30,8 @@ class JediCompletionProvider(Provider):
         try:
             script = jedi.Script(source, line_index, character_index, filepath)
             completions = script.completions()
-            return [JediCompletion(c) for c in completions if c.name != fake_package_name]
+            ignored_words = (fake_package_name, "_bpy_path")
+            return [JediCompletion(c) for c in completions if c.name not in ignored_words]
         except:
             return []
 
