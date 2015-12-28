@@ -19,6 +19,9 @@ class InsertTemplateMenu(bpy.types.Menu):
         layout.operator("code_autocomplete.insert_license", "License")
         layout.menu("code_autocomplete_insert_keymap_menu", "Keymap")
 
+def draw_template_menu(self, context):
+    self.layout.menu("code_autocomplete_insert_template_menu", text = "Code Autocomplete")
+
 class InsertKeymapMenu(bpy.types.Menu):
     bl_idname = "code_autocomplete_insert_keymap_menu"
     bl_label = "Insert Template"
