@@ -20,12 +20,14 @@ class Autocomplete(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
-        fake_module_needs_rebuild = not fake_bpy_module_exists()
-        operator_name = "stop_modal_operator" if is_running else "start_modal_operator"
 
         row = layout.row(align = True)
-        row.operator("code_autocomplete." + operator_name)
-        if not fake_module_needs_rebuild:
+        if not is_running:
+            row.operator("code_autocomplete.start_modal_operator", text = "Start")
+        else:
+            row.operator("code_autocomplete.stop_modal_operator", text = "Stop")
+
+        if fake_bpy_module_exists():
             row.operator("code_autocomplete.regenerate_fake_bpy", text = "", icon = "RECOVER_AUTO")
         else:
             layout.operator("code_autocomplete.regenerate_fake_bpy", "Build BPY Module", icon = "ERROR")
