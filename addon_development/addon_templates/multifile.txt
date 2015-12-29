@@ -1,5 +1,5 @@
 '''
-Copyright (C) 2015 YOUR NAME
+Copyright (C) CURRENT_YEAR YOUR NAME
 YOUR@MAIL.com
 
 Created by YOUR NAME
@@ -23,7 +23,7 @@ bl_info = {
     "description": "",
     "author": "Your Name",
     "version": (0, 0, 1),
-    "blender": (2, 76, 0),
+    "blender": BLENDER_VERSION,
     "location": "View3D",
     "warning": "This addon is still in development.",
     "wiki_url": "",

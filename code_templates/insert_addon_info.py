@@ -7,7 +7,7 @@ class InsertAddonInfo(bpy.types.Operator, InsertTemplateBase):
     bl_description = ""
 
     def execute(self, context):
-        changes = { "CURRENT_VERSION" : str(bpy.app.version) }
+        changes = { "BLENDER_VERSION" : str(bpy.app.version) }
         insert_template(addon_info_template, changes)
         return {"FINISHED"}
 
@@ -16,7 +16,7 @@ addon_info_template = '''bl_info = {
     "description": "",
     "author": "Your Name",
     "version": (0, 0, 1),
-    "blender": CURRENT_VERSION,
+    "blender": BLENDER_VERSION,
     "location": "View3D",
     "warning": "This addon is still in development.",
     "wiki_url": "",
