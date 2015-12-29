@@ -1,6 +1,6 @@
+import os
 import bpy
 import sys
-import os
 from bpy.app.handlers import persistent
 from . utils import get_addon_name, get_settings
 from . panels import directory_visibility
@@ -10,29 +10,29 @@ class RestartBlender(bpy.types.Operator):
     bl_label = "Restart Blender"
     bl_description = "Close and open a new Blender instance to test the Addon on the startup file. (Currently only supported for windows)"
     bl_options = {"REGISTER"}
-    
+
     @classmethod
     def poll(cls, context):
         return sys.platform == "win32"
-    
+
     def invoke(self, context, event):
         return context.window_manager.invoke_confirm(self, event)
-    
+
     def execute(self, context):
         bpy.ops.code_autocomplete.save_files()
         save_status()
         start_another_blender_instance()
         bpy.ops.wm.quit_blender()
-        return {"FINISHED"}         
-      
+        return {"FINISHED"}
+
 
 # Save current settings to reload them in the new instance
-##########################################################      
+##########################################################
 
-restart_data_path = os.path.join(os.path.dirname(__file__), "restart_data.txt")   
+restart_data_path = os.path.join(os.path.dirname(__file__), "restart_data.txt")
 
 id_addon_name = "ADDON_NAME: "
-id_current_path = "CURRENT_PATH: "  
+id_current_path = "CURRENT_PATH: "
 id_visiblie_path = "VISIBLE_PATH: "
 
 def save_status():
@@ -44,10 +44,10 @@ def save_status():
     for path, is_open in directory_visibility.items():
         if is_open:
             file.write(id_visiblie_path + path + "\n")
-            
+
     file.close()
- 
-@persistent 
+
+@persistent
 def open_status(scene):
     if os.path.exists(restart_data_path):
         file = open(restart_data_path)
@@ -55,10 +55,10 @@ def open_status(scene):
         file.close()
         os.remove(restart_data_path)
         parse_startup_file_lines(lines)
-        
-bpy.app.handlers.load_post.append(open_status)        
-        
-def parse_startup_file_lines(lines):        
+
+bpy.app.handlers.load_post.append(open_status)
+
+def parse_startup_file_lines(lines):
     for line in lines:
         if line.startswith(id_addon_name):
             get_settings().addon_name = line[len(id_addon_name):].strip()
@@ -74,19 +74,19 @@ def parse_startup_file_lines(lines):
         if line.startswith(id_visiblie_path):
             path = line[len(id_visiblie_path):].strip()
             bpy.ops.code_autocomplete.set_directory_visibility(directory = path, visibility = True)
-            
+
 
 
 # Restart Blender
 ##########################
-            
+
 def start_another_blender_instance():
-    open_file(bpy.app.binary_path) 
- 
-# only works for windows currently   
+    open_file(bpy.app.binary_path)
+
+# only works for windows currently
 def open_file(path):
     if sys.platform == "win32":
         os.startfile(path)
     else:
         opener = "open" if sys.platform == "darwin" else "xdg-open"
-        subprocess.call([opener, path])            
+        subprocess.call([opener, path])
