@@ -96,7 +96,7 @@ class CreateNewAddon(bpy.types.Operator):
             code = code.replace("CURRENT_YEAR", str(datetime.now().year))
             code = code.replace("BLENDER_VERSION", str(bpy.app.version))
             new_addon_file("__init__.py", code)
-            
+
             code = self.read_template_file("developer_utils.txt")
             new_addon_file("developer_utils.py", code)
 

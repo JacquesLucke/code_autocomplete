@@ -62,6 +62,6 @@ def get_directory_names(directory):
 def get_file_names(directory):
     return [name for path, name in get_directory_content(directory) if os.path.isfile(path)]
 
-ignore_names = ["__pycache__", ".git"]        
+ignore_names = ["__pycache__", ".git"]
 def get_directory_content(directory):
     return [(os.path.join(directory, name), name) for name in os.listdir(directory) if name not in ignore_names]

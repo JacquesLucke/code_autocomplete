@@ -12,7 +12,7 @@ class InsertKeymapItem(bpy.types.Operator, InsertTemplateBase):
         wm = context.window_manager
         self.temp_keymap = wm.keyconfigs.addon.keymaps.new("3D View", space_type = "VIEW_3D")
         self.temp_keymap_item = self.temp_keymap.keymap_items.new(self.bl_idname, type = "P", value = "PRESS")
-        
+
         dpiFactor = getDpiFactor()
         return context.window_manager.invoke_props_dialog(self, 300 * dpiFactor, 200 * dpiFactor)
 
