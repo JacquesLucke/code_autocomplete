@@ -30,9 +30,6 @@ class DescriptionBoxProperties(bpy.types.PropertyGroup):
     line_height = IntProperty(default = 21, name = "Line Height", min = 5, update = prop_changed)
     padding = IntProperty(default = 4, name = "Padding", min = 0, update = prop_changed)
 
-class FakeModuleProperties(bpy.types.PropertyGroup):
-    docstring_width = IntProperty(default = 70, name = "Docstring Width", min = 10)
-    use_quote_marks = BoolProperty(default = False, name = "Use Quote Marks", description = "Create quote marks for each possible item for a enum property")
 
 class AddonPreferences(bpy.types.AddonPreferences):
     bl_idname = addon_name
@@ -40,8 +37,9 @@ class AddonPreferences(bpy.types.AddonPreferences):
     completion_providers = PointerProperty(type = CompletionProviders)
     context_box = PointerProperty(type = ContextBoxProperties)
     description_box = PointerProperty(type = DescriptionBoxProperties)
-    fake_module = PointerProperty(type = FakeModuleProperties)
-    debug = BoolProperty(default = False, name = "Debug", update = prop_changed)
+    
+    debug = BoolProperty(default = False, name = "Debug",
+        update = prop_changed, description = "Turn on to get some debug information from this addon")
 
     def draw(self, context):
         layout = self.layout
@@ -67,10 +65,6 @@ class AddonPreferences(bpy.types.AddonPreferences):
         col.prop(self.description_box, "line_height")
         col.prop(self.description_box, "padding")
 
-        col = layout.column(align = True)
-        col.label("Fake Module")
-        col.prop(self.fake_module, "docstring_width")
-        col.prop(self.fake_module, "use_quote_marks")
         layout.prop(self, "debug")
 
 def get_preferences():

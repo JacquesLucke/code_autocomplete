@@ -42,15 +42,8 @@ def remove_old_fake():
 def generate_fake_bpy():
     try: os.makedirs(directory)
     except: pass
-    update_settings()
     create_init()
     create_private_subdirectory()
-
-def update_settings():
-    global docstring_width, use_quote_marks
-    s = get_preferences().fake_module
-    docstring_width = s.docstring_width
-    use_quote_marks = s.use_quote_marks
 
 def create_init():
     path = os.path.join(directory, "__init__.py")
