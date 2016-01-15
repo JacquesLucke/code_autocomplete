@@ -22,7 +22,7 @@ Created by Jacques Lucke
 
 bl_info = {
     "name":        "Code Autocomplete",
-    "description": "Improve the scripting experience in Blenders text editor.",
+    "description": "Autocompletion, templates and addon development tools for the text editor.",
     "author":      "Jacques Lucke",
     "version":     (2, 0, 0),
     "blender":     (2, 7, 0),
