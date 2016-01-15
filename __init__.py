@@ -25,7 +25,7 @@ bl_info = {
     "description": "Improve the scripting experience in Blenders text editor.",
     "author":      "Jacques Lucke",
     "version":     (2, 0, 0),
-    "blender":     (2, 7, 4),
+    "blender":     (2, 7, 0),
     "location":    "Text Editor",
     "category":    "Development"
     }
