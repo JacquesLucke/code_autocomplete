@@ -42,7 +42,7 @@ class Autocomplete(bpy.types.Panel):
 class StartModalOperator(bpy.types.Operator):
     bl_idname = "code_autocomplete.start_modal_operator"
     bl_label = "Start Modal Operator"
-    bl_description = ""
+    bl_description = "Activate the autocomplete feature in the text editor"
     bl_options = {"REGISTER"}
 
     def execute(self, context):
@@ -56,7 +56,7 @@ class StartModalOperator(bpy.types.Operator):
 class StopModalOperator(bpy.types.Operator):
     bl_idname = "code_autocomplete.stop_modal_operator"
     bl_label = "Stop Modal Operator"
-    bl_description = ""
+    bl_description = "Stop the autocompletion in the text editor"
     bl_options = {"REGISTER"}
 
     def execute(self, context):

@@ -11,9 +11,12 @@ def prop_changed(self, context):
             area.tag_redraw()
 
 class CompletionProviders (bpy.types.PropertyGroup):
-    use_jedi_completion = BoolProperty(default = True, name = "Use Jedi Completion", update = prop_changed)
-    use_word_completion = BoolProperty(default = True, name = "Use Word Completion", update = prop_changed)
-    use_operator_completion = BoolProperty(default = True, name = "Use Operator Completion", update = prop_changed)
+    use_jedi_completion = BoolProperty(default = True, name = "Use Jedi Completion",
+        update = prop_changed, description = "Use the Jedi autocompletion library for python")
+    use_word_completion = BoolProperty(default = True, name = "Use Word Completion",
+        update = prop_changed, description = "The context box will also contain words that you already used in the file")
+    use_operator_completion = BoolProperty(default = True, name = "Use Operator Completion",
+        update = prop_changed, description = "Activate the autocompletion for calling operators (bpy.ops)")
 
 class ContextBoxProperties(bpy.types.PropertyGroup):
     font_size = IntProperty(default = 12, name = "Font Size", min = 10, update = prop_changed)

@@ -27,7 +27,7 @@ class AddonDeveloperPanel(bpy.types.Panel):
         if not current_addon_exists():
             if not is_addon_name_valid():
                 if get_addon_name() == "":
-                    layout.label("Insert the name of your addon.", icon = "INFO")
+                    layout.label("Insert the name of your addon", icon = "INFO")
                 else:
                     layout.operator("code_autocomplete.make_addon_name_valid", icon = "ERROR", text = "Correct Addon Name")
             else:
