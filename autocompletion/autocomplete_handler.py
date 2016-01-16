@@ -91,7 +91,7 @@ class AutocompleteHandler:
             return self.hide()
 
         char = event.unicode.lower()
-        if len(char) > 0:
+        if len(char) > 0 and not event.alt:
             if char in "abcdefghijklmnopqrstuvwxyz0123456789_({[\\/=@.":
                 return self.show()
             if char in ":":
