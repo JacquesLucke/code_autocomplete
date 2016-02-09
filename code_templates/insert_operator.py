@@ -78,8 +78,8 @@ modal_operator_draw_template = '''class CLASS_NAME(bpy.types.Operator):
         return True
 
     def invoke(self, context, event):
-        args = (self, context)
-        self._handle = bpy.types.SpaceView3D.draw_handler_add(self.draw_callback_px, args, "WINDOW", "POST_PIXEL")
+        args = ()
+        self.draw_handler = bpy.types.SpaceView3D.draw_handler_add(self.draw_callback_px, args, "WINDOW", "POST_PIXEL")
         context.window_manager.modal_handler_add(self)
         return {"RUNNING_MODAL"}
 
@@ -95,9 +95,9 @@ modal_operator_draw_template = '''class CLASS_NAME(bpy.types.Operator):
         return {"RUNNING_MODAL"}
 
     def finish(self):
-        bpy.types.SpaceView3D.draw_handler_remove(self._handle, "WINDOW")
+        bpy.types.SpaceView3D.draw_handler_remove(self.draw_handler, "WINDOW")
         return {"FINISHED"}
 
-    def draw_callback_px(tmp, self, context):
+    def draw_callback_px(self):
         pass
     '''
