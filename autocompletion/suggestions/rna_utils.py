@@ -52,7 +52,7 @@ def get_enum_items(property):
 def get_property_default(property):
     if len(getattr(property, "default_array", [])) > 0:
         return repr(property.default_array[:])
-    return repr(property.default)
+    return repr(getattr(property, "default", None))
 
 def get_readable_property_type(property):
     suffix = "[{}]".format(property.array_length) if getattr(property, "array_length", 1) > 1 else ""
