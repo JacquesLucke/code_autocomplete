@@ -47,7 +47,7 @@ def generate_fake_bpy():
 
 def create_init():
     path = os.path.join(directory, "__init__.py")
-    file = open(path, "w+")
+    file = open(path, "w+", encoding='utf-8')
     file.write(init_content)
     file.close()
 
@@ -248,7 +248,7 @@ def get_property_declaration(property):
 
 def write_code_file(name, code):
     path = os.path.join(private_path, name.lower() + ".py")
-    file = open(path, "w+")
+    file = open(path, "w+", encoding='utf-8')
     file.write(code)
     file.close()
 
